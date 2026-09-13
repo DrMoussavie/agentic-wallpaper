@@ -11,7 +11,7 @@
     const r=(x,y,w,h,c=skin.shell)=>{if(w<=0||h<=0)return;ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h)));};
     const line=(x0,y0,x1,y1,c=skin.rim,width=1)=>{x0=Math.round(x0);y0=Math.round(y0);x1=Math.round(x1);y1=Math.round(y1);let dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1,e=dx+dy;for(let n=0;n<180;n++){r(x0,y0,width,width,c);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx;}if(e2<=dx){e+=dx;y0+=sy;}}};
     const text=(s,x,y,c=skin.accent)=>{ctx.font='5px monospace';ctx.fillStyle=c;ctx.fillText(s,Math.round(x),Math.round(y));};
-    const pose={x:0,y:0,l:[-8,-7],r:[8,-7],gaze:0,eyes:'normal',walk:0,headY:0,behind:()=>{},front:()=>{},over:()=>{}};
+    const pose={x:0,y:0,l:[-8,-7],r:[8,-7],gaze:0,eyes:'normal',walk:0,headY:0,feetX:0,behind:()=>{},front:()=>{},over:()=>{}};
     root.TransitGestures.animate(action,p,time,pose,{r,line,text,skin,colors,ctx,robot,provider,opt});
     if(['idle','think'].includes(action)&&!opt.translating){
       if(opt.mood==='grumpy'){pose.eyes='flat';pose.l=[3,-10];pose.r=[-3,-10];pose.walk=0;}
@@ -23,12 +23,15 @@
     if(opt.watching){pose.eyes='up';pose.gaze=1;pose.walk=0;pose.x=0;pose.l=[-8,-7];pose.r=[8,-7];}
     if(opt.holding){pose.keepHands=true;pose.l=[-8,-7];pose.r=[9,-10];}
     // The finished answer is shown as a small letter held up until it is read or the robot goes home.
-    if(opt.delivered&&!opt.translating&&!opt.social){const front=pose.front;pose.r=[10,-19];pose.eyes=pose.eyes==='blink'?'blink':'normal';pose.front=()=>{front();r(6,-29,9,7,skin.accent);r(7,-28,7,5,colors.white);r(7,-28,1,1,skin.accent);r(13,-28,1,1,skin.accent);r(8,-27,2,1,skin.accent);r(11,-27,2,1,skin.accent);r(10,-26,1,1,skin.accent);};}
+    if(opt.delivered&&!opt.translating&&!opt.social){const front=pose.front;pose.r=[10,-19];pose.eyes=pose.eyes==='blink'?'blink':'normal';pose.front=()=>{front();const [hx,hy]=pose.r,lx=hx-4,ly=hy-10;r(lx,ly,9,7,skin.accent);r(lx+1,ly+1,7,5,colors.white);r(lx+1,ly+1,1,1,skin.accent);r(lx+7,ly+1,1,1,skin.accent);r(lx+2,ly+2,2,1,skin.accent);r(lx+5,ly+2,2,1,skin.accent);r(lx+4,ly+3,1,1,skin.accent);};}
+    // Sitting on the bench: body lowered, hands on the knees, the letter stays up if there is one.
+    if(opt.seated){pose.walk=0;pose.x=0;pose.y+=4;pose.headY=0;pose.feetX=5;pose.l=[-6,-4];pose.r=opt.delivered?[9,-17]:[6,-4];}
     if(opt.dance&&['idle','think'].includes(action)&&!opt.translating&&!opt.social){const beat=Math.floor(time*4)%2,hop=Math.floor(time*8)%2;pose.walk=0;pose.x=0;pose.eyes='happy';pose.headY=beat?1:0;pose.y=hop?-1:0;pose.l=[-9,beat?-19:-8];pose.r=[9,beat?-8:-19];}
     let lf=0,rf=0;if(pose.walk){const s=Math.sin(time*9);lf=Math.round(s*3*pose.walk);rf=-lf;pose.y+=Math.abs(s)>.7?-1:0;if(!pose.keepHands){pose.l=[-8,-7-s*3];pose.r=[8,-7+s*3];}}
     pose.behind();ctx.save();ctx.translate(Math.round(pose.x),Math.round(pose.y));
     if(action==='archive'){ctx.beginPath();ctx.rect(-50,-80,100,80-pose.y);ctx.clip();}
-    r(-5-lf,-3-(lf<0?1:0),4,3,skin.boot);r(2-rf,-3-(rf<0?1:0),4,3,skin.boot);r(-5-lf,-3-(lf<0?1:0),3,1,skin.light);r(2-rf,-3-(rf<0?1:0),3,1,skin.light);
+    const fx=pose.feetX;r(-5-lf+fx,-3-(lf<0?1:0),4,3,skin.boot);r(2-rf+fx,-3-(rf<0?1:0),4,3,skin.boot);r(-5-lf+fx,-3-(lf<0?1:0),3,1,skin.light);r(2-rf+fx,-3-(rf<0?1:0),3,1,skin.light);
+    if(fx)r(-3,-4,fx+4,2,skin.joint);
     r(-4,-12,8,8,skin.rim);r(-3,-11,6,7);r(-2,-10,4,1,skin.light);r(-1,-8,2,2,skin.accent);r(-3,-4,6,1,skin.joint);
     const arm=(hand,side)=>{const sx=side*5,sy=-10,ex=(sx+hand[0])/2+side,ey=(sy+hand[1])/2+1;line(sx,sy,ex,ey,skin.joint,2);line(ex,ey,hand[0],hand[1],skin.shell,2);r(sx-1,sy-1,3,3,skin.rim);};
     arm(pose.l,-1);arm(pose.r,1);

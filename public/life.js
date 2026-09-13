@@ -14,6 +14,10 @@
     const door={x:homeX,y:homeY-2},gate={x:homeX,y:homeY+30};
     const bounds={left:left+17,right:right-25,top:Math.min(height-45,homeY+37),bottom:Math.max(homeY+42,height-bottomInset)};
     const busY=Math.min(height-22,homeY+24),hub={x:right-23,y:busY};
+    // The waiting corner: a paved patch with a bench whose length follows the screen width (2 to 6 seats).
+    const benchLength=clamp(Math.round(span*.07),46,118),seats=Math.max(2,Math.floor((benchLength-6)/19));
+    const bench={x:Math.round(Math.min(right-benchLength/2-16,homeX+house.width/2+42+benchLength/2)),y:gate.y+16,length:benchLength,seats};
+    const corner={left:bench.x-benchLength/2-12,right:bench.x+benchLength/2+14,top:bench.y-18,bottom:bench.y+46};
     const plants=[];
     // Sparse groups across the whole screen; population changes never reshuffle the scenery.
     const field={left:24,right:width-24,top:42,bottom:height-Math.max(20,bottomInset-12)},fw=field.right-field.left,fh=field.bottom-field.top;
@@ -21,7 +25,8 @@
     const clear=p=>p.x-p.width/2>=field.left&&p.x+p.width/2<=field.right&&p.y-p.width>=field.top&&p.y<=field.bottom&&
       !(Math.abs(p.x-homeX)<house.width/2+p.width+14&&p.y>homeY-house.height-12&&p.y<gate.y+20)&&
       !(Math.abs(p.y-busY)<p.width+12)&&
-      !(p.x>right-90&&p.y>homeY-45&&p.y<homeY+18);
+      !(p.x>right-90&&p.y>homeY-45&&p.y<homeY+18)&&
+      !(p.x+p.width/2>corner.left-6&&p.x-p.width/2<corner.right+6&&p.y>corner.top-6&&p.y-p.width<corner.bottom+6);
     for(let row=0;row<rows;row++)for(let col=0;col<columns;col++){
       let anchor=null;
       for(let attempt=0;attempt<8&&!anchor;attempt++){
@@ -36,7 +41,7 @@
       }
     }
     plants.push({x:homeX-58*houseScale,y:homeY+1,width:21,type:'flowers'},{x:homeX+58*houseScale,y:homeY+2,width:18,type:'grass'});
-    return{width,height,left,right,house,door,gate,bounds,hub,busY,plants,bench:{x:right-60,y:homeY-5},terminal:{x:right-23,y:homeY-2}};
+    return{width,height,left,right,house,door,gate,bounds,hub,busY,plants,bench,corner,terminal:{x:right-23,y:homeY-2}};
   }
   class Life {
     constructor(seed=Math.floor(Math.random()*4294967296)){this.seed=seed;this.random=random(seed);this.actors=new Map();this.encounters=[];this.ripples=[];this.time=0;this.nextMeeting=10;this.nextExit=0;this.doorUntil=0;this.count=0;this.stats={spawned:0,meetings:0,walked:0,returned:0,departed:0,shots:0,baskets:0};this.deliveries=[];this.tracked=new WeakSet();this.bursts=[];this.player=null;this.nextPlay=18;this.width=360;this.height=640;this.bounds={left:30,right:330,top:64,bottom:610};this.resize(360,640);}
@@ -58,7 +63,7 @@
     portalSpot(parent){return{x:parent.x+35,y:parent.y};}
     portal(a,parent,world){const spot=this.portalSpot(parent);a.phase='portal';a.x=spot.x;a.y=spot.y;a.target=null;a.route=[];a.vx=a.vy=0;a.releaseAt=this.time+clamp(2.8-(world.time-parent.agent.since),0,2.8);}
     separate(strength,passes=2){
-      if(strength<=0)return;const actors=[...this.actors.values()].filter(a=>a.phase==='outside');
+      if(strength<=0)return;const actors=[...this.actors.values()].filter(a=>a.phase==='outside'&&!a.parked);
       for(let pass=0;pass<passes;pass++){for(let i=0;i<actors.length;i++)for(let j=i+1;j<actors.length;j++){
         const a=actors[i],b=actors[j],family=a.agent.parent===b.id||b.agent.parent===a.id||a.agent.parent&&a.agent.parent===b.agent.parent,rx=family?24:a.meeting&&a.meeting===b.meeting?27:34,ry=family?28:42,dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx/rx,dy/ry);if(d>=1)continue;
         const amount=(1-d)*.5*strength,px=(d>.001?dx/d:rx)*amount,py=(d>.001?dy/d:0)*amount;a.x-=px;a.y-=py;b.x+=px;b.y+=py;
@@ -83,6 +88,19 @@
       return this.time-(a.restingSince??this.time)>=LINGER;
     }
     lingering(a){const g=a.agent;return a.phase==='outside'&&!!g.resting&&!g.parent&&g.action==='idle'&&!this.wantsHome(a);}
+    // Seats on the bench first, then standing spots on the paving; a full corner leaves the robot where it is.
+    spots(){
+      const b=this.scene.bench,c=this.scene.corner,list=[];
+      for(let i=0;i<b.seats;i++)list.push({x:Math.round(b.x-b.length/2+10+i*19),y:b.y+1,seated:true});
+      for(let x=c.left+12;x<=c.right-10;x+=20)list.push({x:Math.round(x),y:b.y+38,seated:false});
+      return list;
+    }
+    rest(a,dt){
+      const spots=this.spots();
+      if(a.spot==null||a.spot>=spots.length){const taken=new Set([...this.actors.values()].filter(o=>o!==a&&o.spot!=null).map(o=>o.spot));const free=spots.findIndex((s,i)=>!taken.has(i));if(free<0){a.spot=null;a.parked=false;return;}a.spot=free;if(a.meeting)this.cancel(a.meeting);a.target=null;}
+      const spot=this.constrain({...spots[a.spot]}),pace=Math.max(21,Math.hypot(this.bounds.right-this.bounds.left,this.bounds.bottom-this.bounds.top)/24);
+      if(this.move(a,spot,dt,pace)){a.parked=true;a.seated=spots[a.spot].seated;a.facing=1;a.walking=false;}else{a.parked=false;a.seated=false;}
+    }
     queue(a){a.phase='queued';a.x=this.scene.door.x;a.y=this.scene.door.y;a.target=null;a.route=[];a.vx=a.vy=0;a.releaseAt=Math.max(this.time+.15,this.nextExit);this.nextExit=a.releaseAt+.9;}
     returnHome(a){if(a.meeting)this.cancel(a.meeting);a.phase='returning';a.target=null;a.route=[{x:a.x,y:this.scene.gate.y},{...this.scene.gate},{...this.scene.door}];a.vx=a.vy=0;}
     sync(world){
@@ -156,7 +174,7 @@
       if(settings.toy===false||settings.hoop===false||!ball||!hoop){for(const a of this.actors.values())if(a.play)this.stopPlaying(a,ball);}
       else this.startGame(ball,hoop,roaming);
       for(const e of [...this.encounters]){const [a,b]=e.ids.map(id=>this.actors.get(id));if(!roaming||!social||!a||!b||a.phase!=='outside'||b.phase!=='outside'||!wanderable(a.agent)||!wanderable(b.agent)||this.time-e.created>e.timeout){this.cancel(e);continue;}if(e.started===null&&distance(a,a.target||a)<3&&distance(b,b.target||b)<3){e.started=this.time;a.target=b.target=null;a.facing=1;b.facing=-1;this.stats.meetings++;}if(e.started!==null&&this.time-e.started>4.6)this.cancel(e);}
-      if(roaming&&social&&this.time>=this.nextMeeting){this.nextMeeting=this.time+12+this.random()*8;const available=this.outside().filter(a=>a.phase==='outside'&&!a.agent.parent&&wanderable(a.agent)&&!a.meeting&&!this.wantsHome(a));if(available.length>=2&&this.encounters.length<2){const a=available[Math.floor(this.random()*available.length)],b=available.filter(v=>v!==a).sort((x,y)=>distance(x,a)-distance(y,a))[0];this.startMeeting(a,b);}}
+      if(roaming&&social&&this.time>=this.nextMeeting){this.nextMeeting=this.time+12+this.random()*8;const available=this.outside().filter(a=>a.phase==='outside'&&!a.agent.parent&&!a.agent.resting&&wanderable(a.agent)&&!a.meeting&&!this.wantsHome(a));if(available.length>=2&&this.encounters.length<2){const a=available[Math.floor(this.random()*available.length)],b=available.filter(v=>v!==a).sort((x,y)=>distance(x,a)-distance(y,a))[0];this.startMeeting(a,b);}}
       const groups=new Map();
       if(roaming)for(const a of this.actors.values()){
         const parent=this.actors.get(a.agent.parent);
@@ -185,6 +203,8 @@
           continue;
         }
         a.expecting=false;
+        if(this.lingering(a)){this.rest(a,dt);continue;}
+        if(a.spot!=null){a.spot=null;a.parked=false;a.seated=false;}
         if(a.play){if(!roaming)this.stopPlaying(a,ball);else{this.play(a,dt,ball,hoop);continue;}}
         // A robot waiting for its prompt stands still so the capsule lands in its hands.
         const delivery=this.pendingDelivery(a.id);
@@ -214,7 +234,7 @@
     }
     // Progress of every prompt still travelling: 0 while the robot walks out, then 0 -> 1 along the conduit.
     flights(){return this.deliveries.filter(d=>d.arrived===null).map(d=>({id:d.id,provider:d.provider,progress:d.launched===null?0:clamp((this.time-d.launched)/FLIGHT,0,1),launched:d.launched!==null}));}
-    invite(x,y,id=null,world){if(world.mode==='live'&&world.connection!=='open')return;this.ripples.push({x:clamp(x,0,this.width),y:clamp(y,0,this.height),since:this.time});const p=this.constrain({x,y}),eligible=a=>a.phase==='outside'&&wanderable(a.agent)&&!this.wantsHome(a);if(id){const a=this.actors.get(id);if(a&&eligible(a)){if(a.meeting)this.cancel(a.meeting);a.target=null;a.waveUntil=this.time+2.4;a.nextWander=a.waveUntil+3;}return;}this.outside().filter(eligible).sort((a,b)=>distance(a,p)-distance(b,p)).slice(0,2).forEach((a,i)=>{if(a.meeting)this.cancel(a.meeting);a.target=this.constrain({x:p.x+(i-.5)*36,y:p.y,speed:Math.max(12,distance(a,p)/18)});});}
+    invite(x,y,id=null,world){if(world.mode==='live'&&world.connection!=='open')return;this.ripples.push({x:clamp(x,0,this.width),y:clamp(y,0,this.height),since:this.time});const p=this.constrain({x,y}),eligible=a=>a.phase==='outside'&&wanderable(a.agent)&&!this.wantsHome(a)&&!a.agent.resting;if(id){const a=this.actors.get(id);if(a&&eligible(a)){if(a.meeting)this.cancel(a.meeting);a.target=null;a.waveUntil=this.time+2.4;a.nextWander=a.waveUntil+3;}return;}this.outside().filter(eligible).sort((a,b)=>distance(a,p)-distance(b,p)).slice(0,2).forEach((a,i)=>{if(a.meeting)this.cancel(a.meeting);a.target=this.constrain({x:p.x+(i-.5)*36,y:p.y,speed:Math.max(12,distance(a,p)/18)});});}
     visual(a,world){
       if(world.mode==='live'&&world.connection!=='open')return{action:'offline',age:world.time-a.agent.since};
       if(a.play&&a.phase==='outside'){if(a.play.stage==='aim')return{action:'idle',age:this.time-a.play.since,flip:a.facing<0,throwing:true};if(a.play.stage==='watch')return{action:'idle',age:this.time-a.play.since,flip:a.facing<0,watching:true};if(a.walking)return{action:'walk',age:this.time-a.born,flip:a.facing<0,translating:true,holding:true};}
@@ -226,10 +246,10 @@
       if(this.time<a.waveUntil)return{action:'idle',age:2.4-(a.waveUntil-this.time),social:'hello',flip:a.facing<0};
       if(a.agent.reaction&&a.agent.reaction.kind!=='prompt'&&world.time-a.agent.reaction.since<4.4)return{action:'receive',age:world.time-a.agent.reaction.since};
       if(a.cheerUntil>this.time&&a.cheer==='miss')return{action:'idle',age:this.time-a.born,flip:a.facing<0,mood:'grumpy'};
-      if(this.lingering(a))return{action:'idle',age:world.time-a.agent.since,flip:a.facing<0,delivered:true};
+      if(this.lingering(a))return{action:'idle',age:world.time-a.agent.since,flip:a.parked?false:a.facing<0,delivered:true,seated:!!a.seated};
       return{action:a.agent.action==='archive'?'idle':a.agent.action,age:world.time-a.agent.since,flip:a.orbiting&&a.facing<0,social:a.orbiting&&wanderable(a.agent)&&(this.time+a.orbitSlot*2)%14<1.7?'hello':undefined};
     }
-    snapshot(){return{seed:this.seed,stats:{...this.stats},house:{...this.scene.house,resting:[...this.actors.values()].filter(a=>a.phase==='home').length,doorOpen:this.doorUntil>this.time},encounters:this.encounters.map(e=>({kind:e.kind,ids:e.ids,started:e.started})),actors:[...this.actors.values()].map(a=>({id:a.id,parent:a.agent.parent,x:a.x,y:a.y,phase:a.phase,walking:a.walking,orbiting:a.orbiting,target:a.target?{...a.target}:null,action:a.agent.action,expecting:!!a.expecting,play:a.play?.stage||null,lingering:this.lingering(a)})),deliveries:this.flights(),player:this.player,bounds:{...this.bounds}};}
+    snapshot(){return{seed:this.seed,stats:{...this.stats},house:{...this.scene.house,resting:[...this.actors.values()].filter(a=>a.phase==='home').length,doorOpen:this.doorUntil>this.time},encounters:this.encounters.map(e=>({kind:e.kind,ids:e.ids,started:e.started})),actors:[...this.actors.values()].map(a=>({id:a.id,parent:a.agent.parent,x:a.x,y:a.y,phase:a.phase,walking:a.walking,orbiting:a.orbiting,target:a.target?{...a.target}:null,action:a.agent.action,expecting:!!a.expecting,play:a.play?.stage||null,lingering:this.lingering(a),spot:a.spot??null,seated:!!a.seated})),deliveries:this.flights(),player:this.player,bounds:{...this.bounds}};}
   }
   root.TransitLife={Life,random,compose};
 })(globalThis);

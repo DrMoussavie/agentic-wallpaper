@@ -7,7 +7,7 @@
   function writeBest(value){try{root.localStorage?.setItem(BEST_KEY,String(value));}catch{}}
   function createRenderer(canvas,world){
     const ctx=canvas.getContext('2d',{alpha:false});let W=360,H=640,viewScale=1,linkBoxes=[],linkToast=0,life=new root.TransitLife.Life(),previousTime=world.time,lastCount=-1;
-    const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:false,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true},images={},packetPaths=new Map();
+    const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:true,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true},images={},packetPaths=new Map();
     let bubbleRects=[];const random=root.TransitLife.random(life.seed^0x7e5721);let nextChatter=8,quietSince=null;
     const spectrum=root.TransitAudio?.createSpectrum(),guide=root.TransitPet?new root.TransitPet.Guide():null;let lastFooter=-1,lastMediaVisible=false,contentHeight=640,bottomInset=0,lastDpr=1;let promptVisuals=[];
     const media=root.TransitMedia?.createNowPlaying();
@@ -52,6 +52,18 @@
       if(opening<1){const leaf=doorWidth/2*(1-opening);box(s.door.x-doorWidth/2,s.door.y-doorHeight,leaf,doorHeight,'#96aaa5');box(s.door.x+doorWidth/2-leaf,s.door.y-doorHeight,leaf,doorHeight,'#819a94');box(s.door.x-doorWidth/2,s.door.y-doorHeight,leaf,1,'#c1cdc0');box(s.door.x+doorWidth/2-leaf,s.door.y-doorHeight,leaf,1,'#c1cdc0');}
       const sleeping=[...life.actors.values()].filter(a=>a.phase==='home').length;if(sleeping){text(`z ${sleeping}`,house.x+house.width*.38,house.y-house.height*.62,'#abb793',5);}
       for(let y=s.door.y+6;y<s.gate.y;y+=7){box(s.door.x-8,y,16,3,'#1d2b29');box(s.door.x-7,y,14,1,'#3a4c45');}
+    }
+    // The waiting corner: paving, a bench sized by the screen, and a small mail sign. Everything scales with the layout.
+    function drawCorner(s){
+      const c=s.corner,b=s.bench,half=b.length/2;
+      for(let y=c.top;y<c.bottom;y+=4)for(let x=c.left;x<c.right;x+=6){const dark=((x-c.left)/6+(y-c.top)/4)%2<1;box(x,y,5,3,dark?'#132420':'#17291f');}
+      path([{x:c.left,y:c.top},{x:c.right,y:c.top},{x:c.right,y:c.bottom},{x:c.left,y:c.bottom},{x:c.left,y:c.top}],'#22382f');
+      // Backrest first: it stays readable behind seated robots.
+      box(b.x-half,b.y-23,b.length,3,'#6f7f78');box(b.x-half+1,b.y-20,2,12,'#3b5144');box(b.x+half-3,b.y-20,2,12,'#3b5144');
+      box(b.x-half,b.y-9,b.length,3,'#8b9a87');box(b.x-half+2,b.y-5,b.length-4,3,'#586c5c');
+      for(let x=b.x-half+3;x<=b.x+half-5;x+=Math.max(14,Math.floor((b.length-8)/Math.max(1,Math.round(b.length/24)))))box(x,b.y-2,2,7,'#3b5144');
+      box(b.x+half-3,b.y-2,2,7,'#3b5144');
+      const px=c.right-6,py=c.top+3;box(px,py-16,2,20,'#4a5a57');box(px-4,py-24,10,8,'#25403a');box(px-3,py-23,8,6,'#dfe8e3');path([{x:px-3,y:py-23},{x:px+1,y:py-19},{x:px+5,y:py-23}],'#638373');
     }
     function route(from,to){const y=life.scene.busY;return[{x:from.x,y:from.y-9},{x:from.x,y},{x:to.x,y},{x:to.x,y:to.y-9}];}
     function ballSprite(x,y){
@@ -121,7 +133,7 @@
       for(const plant of s.plants)prop(plant.type,plant.x,plant.y+(dancing&&plant.type==='flowers'?Math.round(Math.sin(life.time*9+plant.x*.3)*(1+mids*1.5)):0),plant.width);
       spectrum?.draw(ctx,W,contentHeight,settings.audioWidth);
       if(settings.media)media?.draw(ctx,W,contentHeight,settings.audioWidth,settings.audio);
-      const b=s.bench;box(b.x-14,b.y-9,29,3,'#8b9a87');box(b.x-12,b.y-5,25,3,'#586c5c');box(b.x-10,b.y-2,2,7,'#3b5144');box(b.x+9,b.y-2,2,7,'#3b5144');
+      drawCorner(s);
       const terminal=s.terminal;box(terminal.x-6,terminal.y-22,13,19,'#a7b7b3');box(terminal.x-4,terminal.y-20,9,12,'#0f262c');box(terminal.x-2,terminal.y-17,5,1,'#80cbd1');box(terminal.x-2,terminal.y-14,3,1,'#688b7e');box(terminal.x-3,terminal.y-3,7,4,'#485e57');
       drawHouse(s);path([{x:terminal.x,y:terminal.y+1},{x:terminal.x,y:s.busY}],'#233930');
       const lookup=id=>id==='hub'||id==='dock'?s.hub:life.actors.get(id);

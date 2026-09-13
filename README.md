@@ -47,7 +47,7 @@ Same rig, 22 animations each: arrive, think, read, search, type, tool, test, sen
 
 ## Features
 
-- 🏠 **A common house.** Robots rest inside, come out through the door when a prompt arrives, wait in the garden holding up the reply once the answer ends ("All yours!"), and walk home after five minutes or the next nap signal. A new prompt brings them back out — no teleporting.
+- 🏠 **A common house.** Robots rest inside, come out through the door when a prompt arrives, sit on the bench of a paved waiting corner beside the house holding up the reply once the answer ends ("All yours!"), and walk home after five minutes or the next nap signal. The bench scales with the screen (2–5 seats). A new prompt brings them back out — no teleporting.
 - 🤖 **Sub-agents** appear as mini-bots orbiting their parent and report back when they finish.
 - 📬 **Prompts land in the robot's hands.** The letter waits at the terminal until its robot is standing in the garden, then flies down the conduit and is caught mid-gesture — no more envelopes stuck at the door. A robot stepping out for a prompt gets a little splash.
 - 🌀 **Sub-agents step out of the portal** their parent opens while "Calling backup!", not out of the house.
