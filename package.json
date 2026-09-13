@@ -1,6 +1,6 @@
 {
   "name": "agent-transit",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "private": true,
   "type": "module",
   "description": "Un petit monde pixel art pour les agents Codex et Claude Code.",

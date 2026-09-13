@@ -13,6 +13,7 @@
     const media=root.TransitMedia?.createNowPlaying();
     const ball=root.TransitToy?new root.TransitToy.Ball():null,hoop=root.TransitToy?.Hoop?new root.TransitToy.Hoop(life.seed):null;let toyHintAt=0,toyHintUntil=0,savedBest=readBest();if(hoop)hoop.best=savedBest;
     const visitors=root.TransitVisitors?new root.TransitVisitors.Visitors(life.seed):null;let clockHour=null;
+    const footprints=root.TransitVisitors?.Footprints?new root.TransitVisitors.Footprints():null;
     let groove=0,danceSince=null,dancing=false,petting=null;
     let terrainKey='',terrain=[];
     const terrainCanvas=typeof root.OffscreenCanvas==='function'?new root.OffscreenCanvas(1,1):root.document?.createElement?.('canvas');
@@ -83,12 +84,43 @@
       ctx.globalAlpha=alpha;box(x+1,y,width-2,height,'#10231f');box(x,y+1,width,height-2,color);box(tail,y+height,3,3,color);text(value,x+width/2,y+fontSize+2,'#122b35',fontSize,'center');ctx.globalAlpha=1;
     }
     function drawHouse(s){
-      const house=s.house;prop('house',house.x,house.y,house.width,house.height);
+      const house=s.house;
+      if(images.entrance){ctx.globalAlpha=visitors?.night?.68:.85;prop('entrance',s.door.x,house.y+34,house.width,40);ctx.globalAlpha=1;}
+      prop('house',house.x,house.y,house.width,house.height);
       const opening=life.doorOpening||0,doorWidth=house.width*.195,doorHeight=house.height*.365;
       // These two sliding leaves sit precisely inside the generated open doorway.
       if(opening<1){const leaf=doorWidth/2*(1-opening);box(s.door.x-doorWidth/2,s.door.y-doorHeight,leaf,doorHeight,'#96aaa5');box(s.door.x+doorWidth/2-leaf,s.door.y-doorHeight,leaf,doorHeight,'#819a94');box(s.door.x-doorWidth/2,s.door.y-doorHeight,leaf,1,'#c1cdc0');box(s.door.x+doorWidth/2-leaf,s.door.y-doorHeight,leaf,1,'#c1cdc0');}
       const sleeping=[...life.actors.values()].filter(a=>a.phase==='home').length;if(sleeping){text(`z ${sleeping}`,house.x+house.width*.38,house.y-house.height*.62,'#abb793',5);}
-      for(let y=s.door.y+6;y<s.gate.y;y+=7){box(s.door.x-8,y,16,3,'#1d2b29');box(s.door.x-7,y,14,1,'#3a4c45');}
+      if(!images.entrance)for(let y=s.door.y+6;y<s.gate.y;y+=7){box(s.door.x-8,y,16,3,'#1d2b29');box(s.door.x-7,y,14,1,'#3a4c45');}
+    }
+    function drawFootprints(){
+      if(!footprints)return;
+      const walkers=life.outside().filter(a=>a.phase!=='portal').map(a=>({id:a.id,x:a.x,y:a.y,walking:a.walking}));
+      if(settings.pet&&guide?.x!=null)walkers.push({id:'pet',x:guide.x,y:guide.y,walking:guide.walking,dog:true});
+      footprints.update(life.time,walkers,W,H);
+      for(const m of footprints.marks){
+        ctx.save();ctx.translate(m.x,m.y);ctx.rotate(Math.round(m.angle/(Math.PI/2))*Math.PI/2);
+        ctx.globalAlpha=.28*Math.pow(Math.max(0,1-(life.time-m.time)/8),1.5);
+        if(m.dog){box(-1,0,3,2,'#83938a');box(-2,-2,1,1,'#83938a');box(0,-3,1,1,'#83938a');box(2,-2,1,1,'#83938a');}
+        else{box(-1,-1,2,3,'#8a9b94');box(-1,2,2,1,'#8a9b94');}
+        ctx.restore();
+      }
+    }
+    function conduit(points,progress,color,small=false){
+      ctx.globalAlpha=Math.min(1,progress*8,(1-progress)*8)*(small?.65:1);
+      path(points,'#395052',small?3:5);path(points,'#101e22',small?1:3);
+      for(const p of [points[0],points.at(-1)]){box(p.x-3,p.y-2,6,4,'#52676a');box(p.x-2,p.y-1,4,2,color);}
+      ctx.globalAlpha=1;
+    }
+    function drawServer(s){
+      const p=s.terminal;
+      prop('server',p.x,p.y+4,24,36);
+      const active=life.flights().length>0||world.packets.some(packet=>world.time>=packet.start&&world.time<packet.start+packet.duration);
+      const online=world.mode==='demo'||world.connection==='open';
+      const pulse=active?(Math.floor(life.time*5)%2?1:.35):.45;
+      ctx.globalAlpha=pulse;box(p.x+6,p.y-14,2,2,online?'#70d1d9':'#6d7678');
+      box(p.x+6,p.y-8,2,2,active?'#efbf68':'#75664c');ctx.globalAlpha=1;
+      if(settings.tubes){path([{x:p.x,y:p.y+4},{x:p.x,y:s.busY}],'#3e5557',5);path([{x:p.x,y:p.y+4},{x:p.x,y:s.busY}],'#111f23',3);}
     }
     // The waiting corner: paving, a bench sized by the screen, and a small mail sign. Everything scales with the layout.
     function drawCorner(s){
@@ -196,38 +228,61 @@
       }
     }
     // The sky marks the time of day: sun and slow clouds by day, moon and twinkling stars by night, warm light at dawn and dusk.
-    let skyKey='',stars=[],clouds=[];
+    let skySeed=null,sky=null;
     function drawSky(s){
       const hour=visitors?.hour??12,tone=root.TransitVisitors?.skyTone(hour),cycle=settings.background==='cycle';
-      const light=tone?.light??1,skyBottom=Math.max(54,Math.min(180,H*.2,s.busY+2)),key=[W,skyBottom,life.seed].join(':');
+      // Keep the wall's foot behind the house foundation on every aspect ratio.
+      const light=tone?.light??1,skyBottom=Math.max(20,Math.min(180,H*.2,s.house.y-34));
       if(cycle&&tone){
         // Broad, low-brightness bands keep the sky blue and the ground charcoal.
         const gradient=ctx.createLinearGradient(0,0,0,skyBottom);gradient.addColorStop(0,tone.sky);gradient.addColorStop(.7,tone.sky);gradient.addColorStop(1,tone.horizon);
         ctx.fillStyle=gradient;ctx.fillRect(0,0,W,skyBottom);
         for(let i=0;i<4;i++){ctx.globalAlpha=(4-i)/5;box(0,skyBottom+i*3,W,3,tone.horizon);}ctx.globalAlpha=1;
       }
-      if(key!==skyKey){skyKey=key;const rng=root.TransitLife.random(life.seed^0x51a7);stars=[];clouds=[];
-        for(let i=0;i<Math.max(5,Math.round(W/95));i++)stars.push({x:Math.round(18+rng()*(W-36)),y:Math.round(15+rng()*Math.max(4,skyBottom-36)),phase:rng()*7});
-        for(let i=0;i<Math.max(2,Math.round(W/340));i++)clouds.push({x:rng()*W,y:Math.round(25+rng()*Math.max(4,skyBottom-55)),w:36+Math.round(rng()*20),speed:1+rng()*1.5});}
+      if(skySeed!==life.seed){skySeed=life.seed;sky=root.TransitVisitors?.Sky?new root.TransitVisitors.Sky(skySeed):null;}
+      sky?.update(life.time,W,skyBottom,light);
       const image=images.sky;
       const sprite=(index,x,y,width,alpha)=>{
         if(!image||alpha<=0)return;ctx.globalAlpha=alpha;
         ctx.drawImage(image,index*48,0,48,32,Math.round(x-width/2),Math.round(y-width/3),width,Math.round(width*2/3));
       };
       if(light<1){
-        for(const st of stars)sprite(4,st.x,st.y,14,(1-light)*(.3+.35*(.5+.5*Math.sin(life.time*.65+st.phase))));
+        for(const st of sky?.stars||[]){
+          const intensity=sky.brightness(st,life.time);ctx.globalAlpha=(1-light)*intensity;
+          const c=st.warm?'#efdbad':'#b8d2e6';box(st.x,st.y,st.size,st.size,c);
+          if(st.size===2&&intensity>.55){ctx.globalAlpha*=(intensity-.55)/.45;box(st.x-2,st.y,6,1,c);box(st.x,st.y-2,1,6,c);}
+        }
         sprite(3,W-42,32,34,(1-light)*.85);
-        const comet=life.time%85;
-        if(comet>65&&comet<66.8){
-          const q=(comet-65)/1.8;sprite(5,W*.78-q*W*.25,22+q*(skyBottom-34),26,Math.sin(q*Math.PI)*(1-light)*.65);
+        const comet=sky?.meteor;
+        if(comet){
+          const age=life.time-comet.start;
+          // Each segment follows the head with a delay, leaving a tail that
+          // continues fading after the head has vanished.
+          for(let i=22;i>=0;i--){
+            const q=(age-i*.018)/comet.duration;if(q<0||q>1)continue;
+            const opacity=Math.min(1,q*12,(1-q)*8)*(1-i/23)*(1-light);
+            ctx.globalAlpha=opacity;const x=comet.x+comet.dx*q,y=comet.y+comet.dy*q;
+            box(x,y,i<3?2:1,1,i<3?'#f4ead1':'#83b4d7');
+            if(i===0){box(x-1,y,4,1,'#f4ead1');box(x,y-1,1,3,'#f4ead1');}
+          }
         }
       }
       if(light>0){
         const progress=Math.max(0,Math.min(1,(hour-7)/13)),sx=35+(W-70)*progress,sy=skyBottom*.65-Math.sin(progress*Math.PI)*skyBottom*.38;
         sprite(0,sx,Math.max(22,sy),32+Math.round(Math.sin(life.time*.6)),light*.85);
-        clouds.forEach((cl,i)=>{const x=((cl.x+life.time*cl.speed)%(W+cl.w*2))-cl.w;sprite(1+i%2,x,cl.y+Math.round(Math.sin(life.time*.12+i)),cl.w,light*(cycle?.38:.23));});
+        (sky?.clouds||[]).forEach(cl=>{const x=((cl.x+life.time*cl.speed)%(W+cl.w*2))-cl.w;
+          const breathe=.88+.12*Math.sin(life.time*.15+cl.phase);
+          sprite(cl.kind,x,cl.y+Math.round(Math.sin(life.time*.1+cl.phase)*2),Math.round(cl.w),light*cl.opacity*breathe*(cycle?1:.65));});
       }
       ctx.globalAlpha=1;
+      if(cycle&&images.wall){
+        // Repeat the generated tile at its native pixel size, never stretch it.
+        const y=Math.round(skyBottom)-3;
+        ctx.globalAlpha=.38+light*.4;
+        for(let x=0;x<W;x+=192){const width=Math.min(192,W-x);ctx.drawImage(images.wall,0,0,width,20,x,y,width,20);}
+        ctx.globalAlpha=1;
+        box(0,y+20,W,2,tone.ground);
+      }
     }
     function drawBurst(b){
       const age=life.time-b.since,q=Math.min(1,age/1.3),c=colors[b.provider]||'#c9daa0';ctx.globalAlpha=1-q;
@@ -267,6 +322,7 @@
       if(settings.visitors!==false||settings.background==='cycle')drawSky(s);
       if(settings.background==='grid')for(let x=15;x<W;x+=28)for(let y=35;y<H;y+=28)box(x,y,1,1,'#0c171b');
       drawTerrain();
+      drawFootprints();
       // The house anchors the upper left; its garden follows the available screen width.
       path([{x:s.left+6,y:s.busY+5},{x:s.right-8,y:s.busY+5}],'#18231f');
       for(let x=s.left+14;x<s.right-5;x+=13)box(x,s.busY+8,6,1,'#142019');
@@ -276,16 +332,14 @@
       spectrum?.draw(ctx,W,contentHeight,settings.audioWidth);
       if(settings.media)media?.draw(ctx,W,contentHeight,settings.audioWidth,settings.audio);
       drawCorner(s);
-      const terminal=s.terminal;box(terminal.x-6,terminal.y-22,13,19,'#a7b7b3');box(terminal.x-4,terminal.y-20,9,12,'#0f262c');box(terminal.x-2,terminal.y-17,5,1,'#80cbd1');box(terminal.x-2,terminal.y-14,3,1,'#688b7e');box(terminal.x-3,terminal.y-3,7,4,'#485e57');
-      drawHouse(s);path([{x:terminal.x,y:terminal.y+1},{x:terminal.x,y:s.busY}],'#233930');
-      const lookup=id=>id==='hub'||id==='dock'?s.hub:life.actors.get(id);
+      drawServer(s);drawHouse(s);
+      const lookup=id=>id==='hub'||id==='dock'?{x:s.terminal.x,y:s.terminal.y+13}:life.actors.get(id);
       const packets=world.packets.filter(p=>p.kind!=='agent'&&p.kind!=='prompt'&&p.kind!=='result'&&t>=p.start&&t<p.start+p.duration).slice(-3);
       for(const p of [...packetPaths.keys()])if(!world.packets.includes(p))packetPaths.delete(p);
-      if(settings.tubes&&packets.length)path([{x:s.door.x,y:s.busY},{x:s.hub.x,y:s.busY}],'#314742');
       for(const packet of packets){
         const from=lookup(packet.from),to=lookup(packet.to);if(!from||!to||from.phase&&from.phase!=='outside'||to.phase&&to.phase!=='outside')continue;
         if(!packetPaths.has(packet))packetPaths.set(packet,route(from,to));const points=packetPaths.get(packet),q=(t-packet.start)/packet.duration,c=colors[packet.provider];
-        if(settings.tubes){ctx.globalAlpha=Math.min(1,q*5,(1-q)*5)*.65;path(points,'#3c5d59');ctx.globalAlpha=1;const p=atPath(points,q);box(p.x-1,p.y-1,3,2,c);}
+        if(settings.tubes){conduit(points,q,c,true);for(let i=3;i>=0;i--){const p=atPath(points,Math.max(0,q-i*.025));ctx.globalAlpha=1-i*.22;box(p.x-1,p.y-1,i===0?4:2,2,c);}ctx.globalAlpha=1;}
       }
       for(const ripple of life.ripples){const age=life.time-ripple.since,rad=4+age*9;ctx.globalAlpha=Math.max(0,1-age/2);path([{x:ripple.x-rad,y:ripple.y},{x:ripple.x,y:ripple.y-rad*.3},{x:ripple.x+rad,y:ripple.y},{x:ripple.x,y:ripple.y+rad*.3},{x:ripple.x-rad,y:ripple.y}],'#52786a');ctx.globalAlpha=1;}
       const ordered=life.outside().sort((a,b)=>a.y-b.y);
@@ -350,7 +404,7 @@
       };
       // Prompts wait at the terminal until their robot stands in the garden, then land in its hands.
       for(const flight of life.flights()){
-        const actor=life.actors.get(flight.id);if(!actor)continue;const c=colors[flight.provider],start={x:s.terminal.x,y:s.terminal.y-14};
+        const actor=life.actors.get(flight.id);if(!actor)continue;const c=colors[flight.provider],start={x:s.terminal.x,y:s.terminal.y+4};
         if(!flight.launched){
           const hover=Math.round(Math.sin(life.time*3)*1.5),p={x:start.x,y:start.y-4+hover};
           ctx.globalAlpha=.5+Math.sin(life.time*6)*.2;for(let i=0;i<4;i++){const angle=i*Math.PI/2+life.time*2;box(start.x+Math.cos(angle)*9-1,start.y+Math.sin(angle)*9-1,2,2,c);}ctx.globalAlpha=1;
@@ -359,7 +413,7 @@
         const scale=actor.agent.parent?.62:1,side=actor.facing<0?-1:1,endpoint={x:actor.x+side*10*scale,y:actor.y-12*scale};
         const points=[start,{x:s.terminal.x,y:s.busY},{x:endpoint.x,y:s.busY},endpoint];
         const progress=flight.progress,eased=progress<.5?2*progress*progress:1-Math.pow(-2*progress+2,2)/2,p=atPath(points,eased);
-        if(settings.tubes){ctx.globalAlpha=Math.min(1,progress*8,(1-progress)*8);path(points,'#233a37',3);path(points,'#071511',1);ctx.globalAlpha=1;}
+        if(settings.tubes)conduit(points,progress,c);
         for(let i=1;i<=9;i++){const trail=atPath(points,Math.max(0,eased-i*.012));ctx.globalAlpha=(10-i)*.08;box(trail.x-1,trail.y-1,i<4?3:2,2,c);}ctx.globalAlpha=1;
         const launch=1-Math.min(1,progress*7);if(launch>0){const r=4+(1-launch)*14;ctx.globalAlpha=launch;for(let i=0;i<4;i++){const angle=i*Math.PI/2;box(start.x+Math.cos(angle)*r-1,start.y+Math.sin(angle)*r-1,3,3,c);}ctx.globalAlpha=1;}
         envelope(p,c,'PROMPT',Math.max(0,(progress-.86)/.14));
@@ -368,9 +422,9 @@
       for(const packet of world.packets.filter(p=>p.kind==='result'&&t>=p.start&&t<p.start+p.duration)){
         const actor=life.actors.get(packet.from);if(!actor)continue;
         const endpoint=['home','queued','entering','portal'].includes(actor.phase)?{x:s.door.x,y:s.door.y-13}:{x:actor.x+6,y:actor.y-14};
-        const points=[endpoint,{x:endpoint.x,y:s.busY},{x:s.terminal.x,y:s.busY},{x:s.terminal.x,y:s.terminal.y-14}];
+        const points=[endpoint,{x:endpoint.x,y:s.busY},{x:s.terminal.x,y:s.busY},{x:s.terminal.x,y:s.terminal.y+4}];
         const progress=(t-packet.start)/packet.duration,eased=progress<.5?2*progress*progress:1-Math.pow(-2*progress+2,2)/2,c=colors[packet.provider],p=atPath(points,eased);
-        if(settings.tubes){ctx.globalAlpha=Math.min(1,progress*8,(1-progress)*8);path(points,'#233a37',3);path(points,'#071511',1);ctx.globalAlpha=1;}
+        if(settings.tubes)conduit(points,progress,c);
         for(let i=1;i<=9;i++){const trail=atPath(points,Math.max(0,eased-i*.012));ctx.globalAlpha=(10-i)*.08;box(trail.x-1,trail.y-1,i<4?3:2,2,c);}ctx.globalAlpha=1;
         envelope(p,c,'REPLY');
         promptVisuals.push({kind:'result',to:packet.to,x:p.x,y:p.y,progress});

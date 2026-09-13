@@ -9,6 +9,7 @@ for(const file of ['animations.js','gestures.js','rig.js','world.js','props.js',
 await cp(path.join(root,'public/assets/props'),path.join(dest,'assets/props'),{recursive:true});
 await cp(path.join(root,'public/assets/pet'),path.join(dest,'assets/pet'),{recursive:true});
 await cp(path.join(root,'site'),dest,{recursive:true});
+await copyFile(path.join(root,'public/sky-preview.html'),path.join(dest,'sky-preview.html'));
 await cp(path.join(root,'docs/media'),path.join(dest,'media'),{recursive:true,force:true}).catch(()=>{});
 await writeFile(path.join(dest,'.nojekyll'),'');
 console.log('site assembled in _site/');

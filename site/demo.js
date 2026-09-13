@@ -33,6 +33,7 @@
     app.world.mode = 'demo'; app.world.connection = 'open';
     app.world.demoPopulation = Math.min(8, Math.max(4, Math.round(window.innerWidth / 260)));
     app.renderer.settings.bottomMargin = 0; app.renderer.settings.scale = 1.4;
+    app.renderer.settings.background = 'cycle';
     app.renderer.resize(); app.renderer.draw();
     scheduleSubagents(app.world);
   });

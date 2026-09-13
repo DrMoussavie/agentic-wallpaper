@@ -2,7 +2,7 @@
 <style>body{background:#090e11;color:#c4d4d4;font:14px monospace;max-width:1100px;margin:24px auto;padding:0 20px}main{display:flex;gap:20px}section{flex:1;min-width:0}canvas{width:100%;height:65vh;image-rendering:pixelated;border:1px solid #30424a}a{color:#98c9cd}</style>
 <h1>Le même jardin, à midi et à minuit</h1><p>Prévisualisation des deux ambiances. Le fond réel suit l’heure du PC.</p>
 <main><section><h2>Jour · 12 h</h2><canvas id="day"></canvas></section><section><h2>Nuit · 0 h</h2><canvas id="night"></canvas></section></main>
-<p><a href="/index.html">Retour au jardin</a></p>
+<p><a href="index.html">Retour au jardin</a></p>
 <script src="animations.js"></script><script src="gestures.js"></script><script src="rig.js"></script><script src="world.js"></script><script src="props.js"></script><script src="life.js"></script><script src="visitors.js"></script><script src="free-renderer.js"></script>
 <script>
 const previews=['day','night'].map((id,i)=>{const world=new TransitWorld.World();world.mode='live';world.connection='open';const r=TransitRenderer.createRenderer(document.getElementById(id),world);r.life.seed=17;r.settings.background='cycle';r.settings.audio=false;r.settings.media=false;r.clockHour=i?0:12;r.resize();return {world,r};});

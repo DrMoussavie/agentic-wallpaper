@@ -49,7 +49,7 @@ const localization={
   }
 };
 await writeFile(path.join(dest,'project.json'),JSON.stringify({title:'Agentic Wallpaper',description:'A live pixel-art garden where your local Claude Code and Codex sessions are little robots. Decor, dog, ball, hoop and native audio work on their own; real agents need the free local relay: github.com/DrMoussavie/agentic-wallpaper',type:'web',file:'wallpaper.html',preview:'preview.png',general:{properties,localization,supportsaudioprocessing:true}},null,2)+'\n');
-await writeFile(path.join(dest,'INSTALLATION.txt'),`AGENTIC WALLPAPER — WALLPAPER ENGINE
+await writeFile(path.join(dest,'INSTALLATION.txt'),String.raw`AGENTIC WALLPAPER — WALLPAPER ENGINE
 https://github.com/DrMoussavie/agentic-wallpaper
 
 WHAT WORKS RIGHT AWAY
@@ -58,8 +58,14 @@ and fireflies, and the native audio spectrum. Every visual setting is in the
 wallpaper properties panel (right side of Wallpaper Engine). Labels follow your
 Steam language (English by default, French available).
 
+DAY / NIGHT
+Select Background > Local day/night cycle — blue sky. The PC clock drives
+the sun, clouds, midnight-blue sky, twinkling stars and occasional shooting
+stars. The dark garden stays below a repeating stone wall behind the house.
+Absolute black remains the default. No relay is needed for the sky.
+
 INSTALL
-Copy this folder to projects\myprojectsgent-transit inside your Wallpaper
+Copy this folder to projects\myprojects\agent-transit inside your Wallpaper
 Engine folder, then pick "Agentic Wallpaper" in the Installed tab.
 
 REAL AGENTS (CLAUDE CODE AND CODEX)

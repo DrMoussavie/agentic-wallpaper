@@ -56,6 +56,9 @@
         <div class="tile"><span class="dot green"></span><h3>The answer ends</h3><p>A little celebration, then the robot walks back home. A new prompt brings it out again; a closed session archives it.</p></div>
       </div>
       <ul class="features">
+        <li><b>A tiny mail server</b> sends prompt envelopes through pneumatic conduits and receives replies. A stone entrance grounds the house; robots and the dog leave tiny footprints that fade away.</li>
+        <li><b>A real local day/night cycle.</b> Blue skies over dark ground, slow clouds, a moon, individually twinkling stars and occasional shooting stars. A small repeating stone wall sits behind the house. <a href="sky-preview.html">Compare day and night →</a></li>
+        <li><b>Ten skins for each robot family.</b> Mostly classic colours (75%), occasional colourful variants and a rare bright gold Stardust (1%). The same shapes and antennae throughout every animation.</li>
         <li><b>Sub-agents</b> pop out of a portal their parent opens (“Calling backup!”), orbit it as mini-bots and report back when done.</li>
         <li><b>Codex is white &amp; cyan</b>, one antenna. <b>Claude is dark &amp; amber</b>, two antennas.</li>
         <li><b>Prompts land in their hands.</b> The envelope waits at the terminal, slides down the conduit, and the robot starts its quest with the capsule in hand.</li>
@@ -97,9 +100,9 @@
 <pre id="agent-prompt">Install Agentic Wallpaper from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
 
 1. Check Node.js &gt;= 20 is available (if not: winget install OpenJS.NodeJS.LTS).
-2. Clone the repo into a permanent folder, e.g. %USERPROFILE%gent-transit.
+2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit.
 3. In that folder run: powershell -NoProfile -ExecutionPolicy Bypass -File Install.ps1 -NoAnimation
-   It installs the dependencies, merges the hooks into ~/.claude/settings.json and the Codex config (backups kept, nothing else changed), builds the wallpaper and copies it into Wallpaper Engine's projects\myprojectsgent-transit, registers a per-user scheduled task that starts the relay only while the wallpaper is selected, and starts the relay now. If it says Wallpaper Engine was not found, copy dist\wallpaper there yourself (find my Steam library path first).
+   It installs the dependencies, merges the hooks into ~/.claude/settings.json and the Codex config (backups kept, nothing else changed), builds the wallpaper and copies it into Wallpaper Engine's projects\myprojects\agent-transit, registers a per-user scheduled task that starts the relay only while the wallpaper is selected, and starts the relay now. If it says Wallpaper Engine was not found, copy dist\wallpaper there yourself (find my Steam library path first).
 4. Verify http://127.0.0.1:49157/health answers.
 5. Select "Agentic Wallpaper" in Wallpaper Engine → Installed is a click I do myself; just tell me.
 6. IMPORTANT — end your answer with an explicit reminder, in bold: if I use Codex, I must approve the hooks myself in the Codex app (Settings → Hooks → From configuration → Approve on each Agentic Wallpaper entry), otherwise they are silently ignored and no robot will appear. If I use Claude Code, nothing to approve: the hooks are picked up automatically.

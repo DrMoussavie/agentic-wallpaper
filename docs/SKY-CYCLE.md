@@ -5,11 +5,24 @@ Le cycle suit l'horloge locale du PC ; il n'utilise pas la position géographiqu
 ni des heures astronomiques de lever/coucher. Aube progressive de 6 à 8 h,
 crépuscule de 19 à 21 h, nuit entre les deux. Le sol reste sombre.
 
+Palette actuelle : ciel de jour RGB 48/98/145, ciel de minuit 18/42/94.
+Le [muret généré](WALL-TEXTURE.md) utilise une tuile de 192 × 20 pixels,
+répétée horizontalement. Son pied reste au moins 17 pixels au-dessus des
+fondations de la maison, qui le masque et paraît posée au premier plan.
+Le site public propose aussi sky-preview.html ; la démonstration utilise le
+cycle réel. Le fond installé conserve le choix de fond de l’utilisateur.
+
 Image générée avec Image Gen intégré, puis importée en sprites à fond transparent :
 public/assets/props/sky-v1.png, six cellules de 48 × 32.
 Soleil, deux nuages, lune, groupe d'étoiles et étoile filante.
-Animations : trajectoire solaire selon l'heure, nuages lents, scintillement et
-une courte étoile filante toutes les 85 secondes de fonctionnement nocturne.
+Animations : trajectoire solaire selon l'heure, nuages de tailles, vitesses et
+opacités différentes. Entre 18 et 110 étoiles individuelles selon la surface du
+ciel, avec scintillements et enveloppes de luminosité indépendants.
+Première étoile filante après 4 à 10 secondes de nuit, puis départs espacés de
+14 à 38 secondes. Position, direction, longueur et vitesse varient. La tête
+traverse le ciel en 0,65 à 1,3 seconde ; la traînée compte au plus 23 segments
+retardés et disparaît progressivement après la tête. Une seule étoile filante
+à la fois, pas de timers supplémentaires ni de textures créées à chaque image.
 Les animations suivent la pause du fond ; l'ambiance se resynchronise avec
 l'heure du PC à la reprise. Le cycle de fond fonctionne même sans papillons.
 
