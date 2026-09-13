@@ -7,71 +7,78 @@ for(const file of ['wallpaper.html','animations.js','gestures.js','rig.js','worl
 await mkdir(path.join(dest,'assets'),{recursive:true});
 await cp(path.join(root,'public/assets/props'),path.join(dest,'assets/props'),{recursive:true});
 await copyFile(path.join(root,'public/assets/model-01.png'),path.join(dest,'preview.png'));
-const properties={tubes:{order:2,text:'Conduits de données',type:'bool',value:true},pet:{order:3,text:'Chien guide (attentes et erreurs)',type:'bool',value:true},pixelscale:{order:4,text:'Taille des personnages',type:'combo',value:1,options:[{label:'Miniatures',value:.75},{label:'Petits',value:1},{label:'Plus grands',value:1.4}]},background:{order:5,text:'Fond',type:'combo',value:0,options:[{label:'Noir absolu',value:0},{label:'Bleu nuit',value:1},{label:'Micro-points',value:2}]}};
-properties.roam={order:6,text:'Promenades des agents disponibles',type:'bool',value:true};
-properties.social={order:7,text:'Rencontres décoratives et réactions au clic',type:'bool',value:true};
-properties.bubbles={order:9,text:'Petites bulles en anglais',type:'bool',value:true};
-properties.toy={order:10,text:'Balle à lancer (le chien la range)',type:'bool',value:true};
-properties.hoop={order:16,text:'Panier de basket itinérant (robots et balle)',type:'bool',value:true};
-properties.visitors={order:17,text:'Papillons le jour, lucioles la nuit',type:'bool',value:true};
-properties.bubbleScale={order:11,text:'Taille des bulles',type:'combo',value:1.4,options:[{label:'Petites',value:1},{label:'Lisibles',value:1.4},{label:'Grandes',value:1.8}]};
-properties.media={order:13,text:'Titre et artiste de la musique',type:'bool',value:true};
-properties.bottomMargin={order:14,text:'Marge basse / barre des tâches (px)',type:'slider',value:80,min:0,max:200,step:4,precision:0};
-properties.audioSource={order:15,text:'Source du spectre',type:'combo',value:'relay',options:[{label:'Fréquences 40 Hz–20 kHz (relais local)',value:'relay'},{label:'Audio natif WE (décoratif, sans relais)',value:'wallpaper-engine'}]};
-properties.audioWidth={order:12,text:'Largeur du spectre (%)',type:'slider',value:35,min:20,max:100,step:5,precision:0};
-properties.audio={order:8,text:'Spectre du son du PC',type:'bool',value:true};
-await writeFile(path.join(dest,'project.json'),JSON.stringify({title:'Agentic Wallpaper',description:'Un laboratoire pixel art adaptatif pour les sessions locales Codex et Claude Code. Nécessite le pont Agent Transit pour les événements réels.',type:'web',file:'wallpaper.html',preview:'preview.png',general:{properties,supportsaudioprocessing:true}},null,2)+'\n');
-await writeFile(path.join(dest,'INSTALLATION.txt'),`AGENT TRANSIT — WALLPAPER ENGINE
+// Property labels are localization tokens (ui_*): Wallpaper Engine shows the user's Steam language, English otherwise.
+const properties={
+  tubes:{order:2,text:'ui_tubes',type:'bool',value:true},
+  pet:{order:3,text:'ui_pet',type:'bool',value:true},
+  pixelscale:{order:4,text:'ui_pixelscale',type:'combo',value:1,options:[{label:'ui_scale_mini',value:.75},{label:'ui_scale_small',value:1},{label:'ui_scale_large',value:1.4}]},
+  background:{order:5,text:'ui_background',type:'combo',value:0,options:[{label:'ui_bg_black',value:0},{label:'ui_bg_night',value:1},{label:'ui_bg_grid',value:2}]},
+  roam:{order:6,text:'ui_roam',type:'bool',value:true},
+  social:{order:7,text:'ui_social',type:'bool',value:true},
+  audio:{order:8,text:'ui_audio',type:'bool',value:true},
+  bubbles:{order:9,text:'ui_bubbles',type:'bool',value:true},
+  toy:{order:10,text:'ui_toy',type:'bool',value:true},
+  bubbleScale:{order:11,text:'ui_bubblescale',type:'combo',value:1.4,options:[{label:'ui_bubble_small',value:1},{label:'ui_bubble_readable',value:1.4},{label:'ui_bubble_large',value:1.8}]},
+  audioWidth:{order:12,text:'ui_audiowidth',type:'slider',value:35,min:20,max:100,step:5,precision:0},
+  media:{order:13,text:'ui_media',type:'bool',value:true},
+  bottomMargin:{order:14,text:'ui_bottommargin',type:'slider',value:80,min:0,max:200,step:4,precision:0},
+  audioSource:{order:15,text:'ui_audiosource',type:'combo',value:'relay',options:[{label:'ui_audio_relay',value:'relay'},{label:'ui_audio_native',value:'wallpaper-engine'}]},
+  hoop:{order:16,text:'ui_hoop',type:'bool',value:true},
+  visitors:{order:17,text:'ui_visitors',type:'bool',value:true}
+};
+const localization={
+  'en-us':{
+    ui_tubes:'Data conduits',ui_pet:'Guide dog (flags waits and errors)',ui_pixelscale:'Character size',ui_scale_mini:'Miniature',ui_scale_small:'Small',ui_scale_large:'Larger',
+    ui_background:'Background',ui_bg_black:'Absolute black',ui_bg_night:'Night blue',ui_bg_grid:'Micro-dots',
+    ui_roam:'Idle robots wander around',ui_social:'Decorative meetings and click reactions',ui_audio:'PC sound spectrum',ui_bubbles:'Small speech bubbles',ui_toy:'Ball to throw (the dog puts it away)',
+    ui_bubblescale:'Bubble size',ui_bubble_small:'Small',ui_bubble_readable:'Readable',ui_bubble_large:'Large',
+    ui_audiowidth:'Spectrum width (%)',ui_media:'Track title and artist',ui_bottommargin:'Bottom margin / taskbar (px)',
+    ui_audiosource:'Spectrum source',ui_audio_relay:'40 Hz–20 kHz bands (local relay)',ui_audio_native:'Native WE audio (decorative, no relay)',
+    ui_hoop:'Roaming basketball hoop (robots and ball)',ui_visitors:'Butterflies by day, fireflies at night'
+  },
+  'fr-fr':{
+    ui_tubes:'Conduits de données',ui_pet:'Chien guide (attentes et erreurs)',ui_pixelscale:'Taille des personnages',ui_scale_mini:'Miniatures',ui_scale_small:'Petits',ui_scale_large:'Plus grands',
+    ui_background:'Fond',ui_bg_black:'Noir absolu',ui_bg_night:'Bleu nuit',ui_bg_grid:'Micro-points',
+    ui_roam:'Promenades des agents disponibles',ui_social:'Rencontres décoratives et réactions au clic',ui_audio:'Spectre du son du PC',ui_bubbles:'Petites bulles en anglais',ui_toy:'Balle à lancer (le chien la range)',
+    ui_bubblescale:'Taille des bulles',ui_bubble_small:'Petites',ui_bubble_readable:'Lisibles',ui_bubble_large:'Grandes',
+    ui_audiowidth:'Largeur du spectre (%)',ui_media:'Titre et artiste de la musique',ui_bottommargin:'Marge basse / barre des tâches (px)',
+    ui_audiosource:'Source du spectre',ui_audio_relay:'Fréquences 40 Hz–20 kHz (relais local)',ui_audio_native:'Audio natif WE (décoratif, sans relais)',
+    ui_hoop:'Panier de basket itinérant (robots et balle)',ui_visitors:'Papillons le jour, lucioles la nuit'
+  }
+};
+await writeFile(path.join(dest,'project.json'),JSON.stringify({title:'Agentic Wallpaper',description:'A live pixel-art garden where your local Claude Code and Codex sessions are little robots. Decor, dog, ball, hoop and native audio work on their own; real agents need the free local relay: github.com/DrMoussavie/agentic-wallpaper',type:'web',file:'wallpaper.html',preview:'preview.png',general:{properties,localization,supportsaudioprocessing:true}},null,2)+'\n');
+await writeFile(path.join(dest,'INSTALLATION.txt'),`AGENTIC WALLPAPER — WALLPAPER ENGINE
+https://github.com/DrMoussavie/agentic-wallpaper
 
-Le dossier contient le fond Web et ses ressources. Le décor, la balle, le chien
-utilisent Wallpaper Engine directement. Le spectre précis utilise le relais local,
-déjà lancé automatiquement sur le PC configuré. Un mode audio natif décoratif
-sans relais reste sélectionnable dans les propriétés. Le mode démo a été supprimé.
+WHAT WORKS RIGHT AWAY
+The garden, the house, the guide dog, the ball, the basketball hoop, butterflies
+and fireflies, and the native audio spectrum. Every visual setting is in the
+wallpaper properties panel (right side of Wallpaper Engine). Labels follow your
+Steam language (English by default, French available).
 
-Pour le créateur : placer ce dossier dans projects/myprojects/agent-transit de
-Wallpaper Engine, puis sélectionner Agent Transit et choisir l’écran voulu.
-Tous les réglages visuels sont dans les propriétés du fond : largeur du spectre,
-taille des bulles et des personnages, titre/artiste, décor, conduits, chien, balle
-et promenades.
-Le spectre reste en bas à gauche, à 35 % de largeur par défaut (20 à 100 %).
-Une marge basse de 80 px (réglable de 0 à 200 px) protège la barre des tâches.
-Les textes sont dessinés à la résolution réelle de l’écran, même en grande taille.
+INSTALL
+Copy this folder to projects\myprojectsgent-transit inside your Wallpaper
+Engine folder, then pick "Agentic Wallpaper" in the Installed tab.
 
-Pour les abonnés au Workshop : s’abonner et appliquer le fond suffit pour les
-fonctions autonomes. Aucun installateur n’est inclus ou exécuté par le fond.
-
-VRAIS AGENTS CODEX ET CLAUDE
-Le suivi des conversations nécessite le relais Agent Transit sur 127.0.0.1:49157
-et les hooks configurés dans les applications. Le Workshop ne peut pas installer
-ces composants ni lancer un programme local à votre place. Sans relais, aucun
-faux agent n’apparaît. Si le relais est déjà lancé, le fond s’y connecte tout seul.
-
-MUSIQUE
-Le titre et l’artiste viennent des sessions multimédias Windows compatibles.
-Activer l’intégration multimédia dans Wallpaper Engine. Aucun texte factice
-n’est affiché en l’absence de titre ; cette API est absente du navigateur local.
+REAL AGENTS (CLAUDE CODE AND CODEX)
+The robots are your real local sessions. They need the free local relay and
+the agent hooks, which a wallpaper cannot install by itself:
+  https://github.com/DrMoussavie/agentic-wallpaper  (see docs/INSTALL-WALLPAPER-ENGINE.md,
+  or paste the install prompt from the README into Claude Code or Codex).
+Without the relay no fake agents are shown; the wallpaper says how to connect.
+Clicking the title or the link in the wallpaper opens the repository.
 
 AUDIO
-Par défaut, Wallpaper Engine ET le navigateur utilisent le même flux WASAPI
-du relais : 48 bandes logarithmiques de 40 Hz à 20 kHz, avec graduations Hz.
-Aucun renforcement ni seconde conversion des valeurs. Une perte du relais
-affiche une déconnexion ; elle ne bascule pas vers une autre analyse.
-Option explicite : audio natif Wallpaper Engine, purement décoratif.
-Les données natives n’ont pas de calibration Hz documentée : pas de graduations
-Hz inventées dans Wallpaper Engine. Dégradé vertical vert, jaune, orange, rouge.
+By default the spectrum uses the relay: 48 log bands, 40 Hz–20 kHz, Hz labels.
+Without the relay set "Spectrum source" to "Native WE audio" — decorative,
+no Hz calibration. A lost relay shows a disconnection instead of guessing.
 
-Jeu : cliquer pour sortir la balle, glisser-lâcher pour la lancer et la faire
-rebondir avec le curseur. Après 4 s d’immobilité, le chien la range. Reprendre
-la balle avant qu’il la touche annule sa récupération.
-Un panier de basket est toujours présent à un endroit libre du jardin et
-change de place à chaque panier marqué. Les robots disponibles
-vont eux-mêmes tirer de temps en temps ; tout événement réel interrompt le jeu.
-La meilleure série est mémorisée localement par le fond.
-Le jour, un papillon visite les fleurs et le chien le poursuit ; la nuit
-(21 h – 7 h, heure du PC), des lucioles. Quand les graves du son du PC
-montent quelques secondes, les robots au repos dansent et les fleurs vibrent.
+MUSIC
+Track title and artist come from Windows media sessions. Enable media
+integration in Wallpaper Engine settings and use a player that reports to it.
 
-Ce dossier est un export local, pas une publication Workshop déjà effectuée.
-Guide : https://docs.wallpaperengine.io/en/web/first/gettingstarted.html
+PRIVACY
+The relay listens on 127.0.0.1 only. Prompts, messages and commands are never
+sent to the wallpaper — only the kind of activity. No model API, no API key.
 `);
 console.log('Fond exporté : '+dest);
