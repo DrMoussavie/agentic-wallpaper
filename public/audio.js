@@ -74,9 +74,9 @@
         const labels=nativeAudio||span<90?[]:span<140?[[40,'40 Hz'],[20000,'20k Hz']]:span<400?[[40,'40 Hz'],[1000,'1k'],[20000,'20k Hz']]:[[40,'40 Hz'],[100,'100'],[1000,'1k'],[5000,'5k'],[20000,'20k Hz']];
         for(const [hz,label] of labels){ctx.textAlign=hz===40?'left':hz===20000?'right':'center';ctx.fillText(label,Math.round(margin+Math.log(hz/40)/Math.log(500)*span),height-8);}
         ctx.textAlign='left';ctx.fillStyle='#46685a';
-        if(nativeAudio&&span>=60){ctx.fillText('GRAVES',margin,height-8);ctx.textAlign='right';ctx.fillText('AIGUS',margin+span,height-8);ctx.textAlign='left';}
+        if(nativeAudio&&span>=60){ctx.fillText('BASS',margin,height-8);ctx.textAlign='right';ctx.fillText('TREBLE',margin+span,height-8);ctx.textAlign='left';}
         else if(!nativeAudio&&span>=40&&span<90)ctx.fillText('40–20k Hz',margin,height-8);
-        ctx.fillText(span<100?(live?'AUDIO':'…'):live?'SON DU PC':this.status==='connecting'?'CONNEXION AUDIO…':audioSource==='relay'?'RELAIS AUDIO DÉCONNECTÉ':'AUDIO INDISPONIBLE',margin,base-maxHeight-8);
+        ctx.fillText(span<100?(live?'AUDIO':'…'):live?'PC AUDIO':this.status==='connecting'?'CONNECTING AUDIO…':audioSource==='relay'?'AUDIO RELAY OFFLINE':'AUDIO UNAVAILABLE',margin,base-maxHeight-8);
       },
       close(){closed=true;source?.close();source=null;values.fill(0);peaks.fill(0);status='paused';}
     };

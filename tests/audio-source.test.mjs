@@ -23,7 +23,7 @@ test('WE et navigateur : mêmes 48 bandes, mêmes pixels et graduations Hz, aucu
     const fill=ctx.fillText.bind(ctx);ctx.fillText=(text,...args)=>{labels.push(text);fill(text,...args);};
     env.audio.draw(ctx,1920,1080,35);images.push(c.toBuffer('image/png'));
     assert.ok(labels.includes('40 Hz')&&labels.includes('100')&&labels.includes('1k')&&labels.includes('5k')&&labels.includes('20k Hz'));
-    assert.ok(!labels.includes('GRAVES'));assert.ok(Math.abs(env.audio.level-.64)<1e-6);
+    assert.ok(!labels.includes('BASS'));assert.ok(Math.abs(env.audio.level-.64)<1e-6);
   }
   assert.equal(wallpaper.streams[0].url,'http://127.0.0.1:49157/audio/stream');assert.equal(browser.streams[0].url,'/audio/stream');
   assert.deepEqual(images[0],images[1],'identical data must produce identical spectrum');

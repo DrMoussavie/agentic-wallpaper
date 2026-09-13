@@ -37,7 +37,7 @@ Les sous-agents sont plus petits et comptés séparément des conversations.
 
 ## Son du PC
 
-Wallpaper Engine et le navigateur utilisent par défaut le même flux du relais : 48 bandes logarithmiques de 40 Hz à 20 kHz. Le mode natif WE sans relais reste une option explicitement décorative, avec ses étiquettes Graves / Aigus. Il ne remplace jamais automatiquement le spectre précis. Le titre et l’artiste utilisent son intégration multimédia Windows, quand un lecteur les fournit. La largeur du spectre est réglable de 20 à 100 %, ancrée en bas à gauche.
+Wallpaper Engine et le navigateur utilisent par défaut le même flux du relais : 48 bandes logarithmiques de 40 Hz à 20 kHz. Le mode natif WE sans relais reste une option explicitement décorative, avec ses étiquettes Bass / Treble. Il ne remplace jamais automatiquement le spectre précis. Le titre et l’artiste utilisent son intégration multimédia Windows, quand un lecteur les fournit. La largeur du spectre est réglable de 20 à 100 %, ancrée en bas à gauche.
 
 Les détails de mesure ci-dessous concernent le spectre précis, dans le navigateur comme dans Wallpaper Engine.
 

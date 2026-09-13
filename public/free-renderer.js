@@ -164,9 +164,9 @@
       if(age<.9){ctx.globalAlpha=1-age/.9;for(let i=0;i<8;i++){const angle=i*Math.PI/4,rad=7+age*22;box(r.x+Math.cos(angle)*rad,r.y-6+Math.sin(angle)*rad*.6,2,2,i%2?'#a7cd90':'#f1cd6c');}ctx.globalAlpha=1;}
       // Scoreboard text follows the bubble size setting so it stays readable on any screen.
       const k=Math.max(.75,Math.min(2,settings.bubbleScale)),small=Math.round(4*k),medium=Math.round(5*k),big=Math.round(6*k);
-      if(hoop.streak>1)text(`SÉRIE ${hoop.streak}`,x,y-47-medium,'#f1c76b',medium,'center');
+      if(hoop.streak>1)text(`STREAK ${hoop.streak}`,x,y-47-medium,'#f1c76b',medium,'center');
       if(hoop.flashUntil>hoop.time){ctx.globalAlpha=Math.min(1,(hoop.flashUntil-hoop.time)*1.5);text('SWISH!',x+f*8,y-52-medium-big,'#f1c76b',big,'center');ctx.globalAlpha=1;}
-      if(hoop.score>0)text(`${hoop.score} PTS · RECORD ${hoop.best}`,x,y+5+small,'#5f8272',small,'center');
+      if(hoop.score>0)text(`${hoop.score} PTS · BEST ${hoop.best}`,x,y+5+small,'#5f8272',small,'center');
     }
     // Trees stand in the foreground: robots and the dog pass behind them, and a tree fades while someone is hidden by it.
     // Tree positions are settled once per layout: 4 to 14 trees, all four kinds, spaced out, never above the house floor.
