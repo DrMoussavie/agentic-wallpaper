@@ -7,7 +7,7 @@
   function writeBest(value){try{root.localStorage?.setItem(BEST_KEY,String(value));}catch{}}
   function createRenderer(canvas,world){
     const ctx=canvas.getContext('2d',{alpha:false});let W=360,H=640,viewScale=1,linkBoxes=[],linkToast=0,life=new root.TransitLife.Life(),previousTime=world.time,lastCount=-1;
-    const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:true,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true,terrain:true},images={},packetPaths=new Map();
+    const settings={tubes:true,background:'cycle',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:true,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true,terrain:true},images={},packetPaths=new Map();
     let bubbleRects=[];const random=root.TransitLife.random(life.seed^0x7e5721);let nextChatter=8,quietSince=null;
     const spectrum=root.TransitAudio?.createSpectrum(),guide=root.TransitPet?new root.TransitPet.Guide():null;let lastFooter=-1,lastMediaVisible=false,contentHeight=640,bottomInset=0,lastDpr=1;let promptVisuals=[];
     const media=root.TransitMedia?.createNowPlaying();

@@ -13,7 +13,7 @@ const properties={
   tubes:{order:2,text:'ui_tubes',type:'bool',value:true},
   pet:{order:3,text:'ui_pet',type:'bool',value:true},
   pixelscale:{order:4,text:'ui_pixelscale',type:'combo',value:1,options:[{label:'ui_scale_mini',value:.75},{label:'ui_scale_small',value:1},{label:'ui_scale_large',value:1.4}]},
-  background:{order:5,text:'ui_background',type:'combo',value:0,options:[{label:'ui_bg_black',value:0},{label:'ui_bg_night',value:1},{label:'ui_bg_grid',value:2},{label:'ui_bg_cycle',value:3}]},
+  background:{order:5,text:'ui_background',type:'combo',value:3,options:[{label:'ui_bg_black',value:0},{label:'ui_bg_night',value:1},{label:'ui_bg_grid',value:2},{label:'ui_bg_cycle',value:3}]},
   roam:{order:6,text:'ui_roam',type:'bool',value:true},
   social:{order:7,text:'ui_social',type:'bool',value:true},
   audio:{order:8,text:'ui_audio',type:'bool',value:true},
