@@ -1,0 +1,199 @@
+
+> agent-transit@1.0.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: Toutes les séquences changent réellement de pixels, dans les deux familles
+ok 1 - Toutes les séquences changent réellement de pixels, dans les deux familles
+  ---
+  duration_ms: 954.4469
+  ...
+# Subtest: Modèle commun immuable et seules variantes autorisées
+ok 2 - Modèle commun immuable et seules variantes autorisées
+  ---
+  duration_ms: 0.2565
+  ...
+# Subtest: Rendu des barres : signal injecté, silence et perte de connexion sans valeurs fantômes
+ok 3 - Rendu des barres : signal injecté, silence et perte de connexion sans valeurs fantômes
+  ---
+  duration_ms: 30.4904
+  ...
+# Subtest: Pont isolé : authentification, nettoyage, déduplication, snapshot et protection des fichiers
+ok 4 - Pont isolé : authentification, nettoyage, déduplication, snapshot et protection des fichiers
+  ---
+  duration_ms: 111.7209
+  ...
+# Subtest: Vrai processus de hook → pont isolé, pour les deux familles ; sortie toujours neutre
+ok 5 - Vrai processus de hook → pont isolé, pour les deux familles ; sortie toujours neutre
+  ---
+  duration_ms: 556.0198
+  ...
+# Subtest: Les deux familles conservent la relation parent/enfant et une reprise ne clone pas
+ok 6 - Les deux familles conservent la relation parent/enfant et une reprise ne clone pas
+  ---
+  duration_ms: 4.7431
+  ...
+# Subtest: Les mots imprimés et les sous-chaînes ne sont pas des outils reconnus
+ok 7 - Les mots imprimés et les sous-chaînes ne sont pas des outils reconnus
+  ---
+  duration_ms: 3.008
+  ...
+# Subtest: Pas de contenu de conversation, de commande ou de chemin transmis
+ok 8 - Pas de contenu de conversation, de commande ou de chemin transmis
+  ---
+  duration_ms: 0.4906
+  ...
+# Subtest: Notification de repos distincte du besoin d’aide ; coéquipier inconnu ignoré
+ok 9 - Notification de repos distincte du besoin d’aide ; coéquipier inconnu ignoré
+  ---
+  duration_ms: 0.5223
+  ...
+# Subtest: Une tentative de délégation ne crée pas de personnage
+ok 10 - Une tentative de délégation ne crée pas de personnage
+  ---
+  duration_ms: 0.2854
+  ...
+# Subtest: Envoi : pas de capsule avant le succès ; pas de faux destinataire
+ok 11 - Envoi : pas de capsule avant le succès ; pas de faux destinataire
+  ---
+  duration_ms: 0.5658
+  ...
+# Subtest: Retour opaque ≠ réussite ; échec explicite reconnu
+ok 12 - Retour opaque ≠ réussite ; échec explicite reconnu
+  ---
+  duration_ms: 0.6522
+  ...
+# Subtest: Outils concurrents : un retour ne termine pas le travail restant
+ok 13 - Outils concurrents : un retour ne termine pas le travail restant
+  ---
+  duration_ms: 0.4914
+  ...
+# Subtest: Événements dupliqués ignorés et snapshots conservent les attentes
+ok 14 - Événements dupliqués ignorés et snapshots conservent les attentes
+  ---
+  duration_ms: 0.5703
+  ...
+# Subtest: Validation de frontière supprime les champs inconnus
+ok 15 - Validation de frontière supprime les champs inconnus
+  ---
+  duration_ms: 0.6765
+  ...
+# Subtest: 2, 20 et 64 agents produisent autant de modules, sans limitation à 12
+ok 16 - 2, 20 et 64 agents produisent autant de modules, sans limitation à 12
+  ---
+  duration_ms: 2.3515
+  ...
+# Subtest: Installation réversible et idempotente sans écraser les paramètres ni les autres hooks
+ok 17 - Installation réversible et idempotente sans écraser les paramètres ni les autres hooks
+  ---
+  duration_ms: 34.881
+  ...
+# Subtest: La porte est commune ; les destinations du jardin sont procédurales et reproductibles
+ok 18 - La porte est commune ; les destinations du jardin sont procédurales et reproductibles
+  ---
+  duration_ms: 11.4418
+  ...
+# Subtest: Les agents restent dans les limites en formats arbitraires, sans grille de postes
+ok 19 - Les agents restent dans les limites en formats arbitraires, sans grille de postes
+  ---
+  duration_ms: 122.117
+  ...
+# Subtest: Promenades et rencontres sont réelles, sans modifier les événements des deux fournisseurs
+ok 20 - Promenades et rencontres sont réelles, sans modifier les événements des deux fournisseurs
+  ---
+  duration_ms: 6.104
+  ...
+# Subtest: Travail, attente et erreur interrompent les rencontres ; le clic ne les détourne pas
+ok 21 - Travail, attente et erreur interrompent les rencontres ; le clic ne les détourne pas
+  ---
+  duration_ms: 4.4775
+  ...
+# Subtest: Resize conserve les identités et la position relative ; déconnexion et pause figent les déplacements
+ok 22 - Resize conserve les identités et la position relative ; déconnexion et pause figent les déplacements
+  ---
+  duration_ms: 1.846
+  ...
+# Subtest: Un sous-agent sort de la maison pour rejoindre le secteur du parent, sans duplication
+ok 23 - Un sous-agent sort de la maison pour rejoindre le secteur du parent, sans duplication
+  ---
+  duration_ms: 0.5101
+  ...
+# Subtest: Désactiver les promenades arrête les trajets libres et supprime les rencontres
+ok 24 - Désactiver les promenades arrête les trajets libres et supprime les rencontres
+  ---
+  duration_ms: 5.9422
+  ...
+# Subtest: Un changement de format écarte immédiatement les silhouettes dehors, même en pause
+ok 25 - Un changement de format écarte immédiatement les silhouettes dehors, même en pause
+  ---
+  duration_ms: 21.7635
+  ...
+# Subtest: Codex et Claude : sortie, fin de réponse, retour réel à la porte, repos et reprise du même agent
+ok 26 - Codex et Claude : sortie, fin de réponse, retour réel à la porte, repos et reprise du même agent
+  ---
+  duration_ms: 16.3108
+  ...
+# Subtest: Une session close finit son trajet, une nouvelle conversation reçoit sa propre identité
+ok 27 - Une session close finit son trajet, une nouvelle conversation reçoit sa propre identité
+  ---
+  duration_ms: 8.0579
+  ...
+# Subtest: Un nouveau prompt interrompt le retour sans téléporter le robot
+ok 28 - Un nouveau prompt interrompt le retour sans téléporter le robot
+  ---
+  duration_ms: 2.8174
+  ...
+# Subtest: Le chien patrouille tout le jardin même si tous les agents travaillent
+ok 29 - Le chien patrouille tout le jardin même si tous les agents travaillent
+  ---
+  duration_ms: 11.4834
+  ...
+# Subtest: Le chien repère les attentes et erreurs des deux familles ; clic, résolution et déconnexion
+ok 30 - Le chien repère les attentes et erreurs des deux familles ; clic, résolution et déconnexion
+  ---
+  duration_ms: 1.6217
+  ...
+# Subtest: Nouveaux prompts Codex et Claude : enveloppe visible avant la sortie, trajet et réaction, sans texte privé
+ok 31 - Nouveaux prompts Codex et Claude : enveloppe visible avant la sortie, trajet et réaction, sans texte privé
+  ---
+  duration_ms: 60.1068
+  ...
+# Subtest: Un hook tardif retrouve le parent dans le seul en-tête sans changer de robot
+ok 32 - Un hook tardif retrouve le parent dans le seul en-tête sans changer de robot
+  ---
+  duration_ms: 18.9262
+  ...
+# Subtest: Premier sous-agent : arrivée ; reprise : réveil du même agent
+ok 33 - Premier sous-agent : arrivée ; reprise : réveil du même agent
+  ---
+  duration_ms: 0.5969
+  ...
+# Subtest: Contrôle et reset : fins prouvées, calcul silencieux conservé, hooks concurrents prioritaires
+ok 34 - Contrôle et reset : fins prouvées, calcul silencieux conservé, hooks concurrents prioritaires
+  ---
+  duration_ms: 99.9319
+  ...
+# Subtest: Clic en bas : losange au pointeur et destination dans le bas de l’écran
+ok 35 - Clic en bas : losange au pointeur et destination dans le bas de l’écran
+  ---
+  duration_ms: 9.3923
+  ...
+# Subtest: Le vrai rendu ne déborde pas pour 2 et 20 agents sur quatre formats
+ok 36 - Le vrai rendu ne déborde pas pour 2 et 20 agents sur quatre formats
+  ---
+  duration_ms: 1143.3508
+  ...
+# Subtest: Clics et rendu progressent réellement ; un rafraîchissement immobile reste identique
+ok 37 - Clics et rendu progressent réellement ; un rafraîchissement immobile reste identique
+  ---
+  duration_ms: 370.011
+  ...
+1..37
+# tests 37
+# suites 0
+# pass 37
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2176.7752

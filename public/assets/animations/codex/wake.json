@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "codex",
+  "action": "wake",
+  "name": "Réveil",
+  "duration": 4,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Sommeil",
+    "Un œil ouvert",
+    "Se redresser",
+    "Se lever",
+    "Bras levés",
+    "Grand étirement",
+    "Sourire",
+    "Prêt"
+  ]
+}

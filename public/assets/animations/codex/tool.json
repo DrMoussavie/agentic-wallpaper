@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "codex",
+  "action": "tool",
+  "name": "Exécution",
+  "duration": 5.2,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Prise de la clé",
+    "Outil levé",
+    "Approche du boulon",
+    "Premier tour",
+    "Second tour",
+    "La machine répond",
+    "Outil retiré",
+    "Outil rangé"
+  ]
+}

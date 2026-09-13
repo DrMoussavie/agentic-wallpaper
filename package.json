@@ -1,0 +1,21 @@
+{
+  "name": "agent-transit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Un petit monde pixel art pour les agents Codex et Claude Code.",
+  "scripts": {
+    "start": "node bridge/server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "hooks:install": "node scripts/install-hooks.mjs install",
+    "hooks:remove": "node scripts/install-hooks.mjs remove",
+    "export": "node scripts/export.mjs",
+    "assets": "node scripts/export-assets.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^1.0.9"
+  }
+}

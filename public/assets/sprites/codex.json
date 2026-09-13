@@ -1,0 +1,340 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "codex",
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "columns": 16,
+  "rows": 22,
+  "animations": {
+    "arrive": {
+      "row": 0,
+      "frames": 16,
+      "duration": 3.6,
+      "steps": [
+        "Porte fermée",
+        "Ouverture du sas",
+        "Premier pas",
+        "Sortie du sas",
+        "Arrêt",
+        "Main levée",
+        "Petit salut",
+        "Prêt"
+      ]
+    },
+    "idle": {
+      "row": 1,
+      "frames": 16,
+      "duration": 4.8,
+      "steps": [
+        "Regard à gauche",
+        "Retour au centre",
+        "Regard à droite",
+        "Clignement",
+        "Petit hochement",
+        "Main vers l’antenne",
+        "Antenne ajustée",
+        "Main baissée"
+      ]
+    },
+    "walk": {
+      "row": 2,
+      "frames": 16,
+      "duration": 2.4,
+      "steps": [
+        "Appui gauche",
+        "Pied droit levé",
+        "Pas droit",
+        "Appui droit",
+        "Pied gauche levé",
+        "Pas gauche",
+        "Bras alternés",
+        "Retour à l’appui"
+      ]
+    },
+    "think": {
+      "row": 3,
+      "frames": 16,
+      "duration": 5.6,
+      "steps": [
+        "Main à la tête",
+        "Il se gratte",
+        "Départ des petits pas",
+        "Aller",
+        "Demi-tour",
+        "Retour",
+        "L’idée apparaît",
+        "Il se redresse"
+      ]
+    },
+    "read": {
+      "row": 4,
+      "frames": 16,
+      "duration": 8,
+      "steps": [
+        "Livre au côté",
+        "Prise du livre",
+        "Livre levé",
+        "Couvertures ouvertes",
+        "Prise de la page",
+        "Page vers la gauche",
+        "Fermeture du livre",
+        "Livre rangé"
+      ]
+    },
+    "search": {
+      "row": 5,
+      "frames": 16,
+      "duration": 5.2,
+      "steps": [
+        "Main vers la loupe",
+        "Loupe sortie",
+        "Il se penche",
+        "Balayage à droite",
+        "Balayage à gauche",
+        "Inspection de l’indice",
+        "Petit signal",
+        "Loupe rangée"
+      ]
+    },
+    "type": {
+      "row": 6,
+      "frames": 16,
+      "duration": 8,
+      "steps": [
+        "Portable fermé",
+        "Pose sur la table",
+        "Ouverture de l’écran",
+        "Main gauche au clavier",
+        "Main droite au clavier",
+        "Texte et validation",
+        "Fermeture de l’écran",
+        "Portable repris"
+      ]
+    },
+    "tool": {
+      "row": 7,
+      "frames": 16,
+      "duration": 5.2,
+      "steps": [
+        "Prise de la clé",
+        "Outil levé",
+        "Approche du boulon",
+        "Premier tour",
+        "Second tour",
+        "La machine répond",
+        "Outil retiré",
+        "Outil rangé"
+      ]
+    },
+    "test": {
+      "row": 8,
+      "frames": 16,
+      "duration": 5.6,
+      "steps": [
+        "Prise de l’éprouvette",
+        "Éprouvette levée",
+        "Inclinaison",
+        "Versement",
+        "Mélange",
+        "Bulles",
+        "Observation",
+        "Rangement"
+      ]
+    },
+    "send": {
+      "row": 9,
+      "frames": 16,
+      "duration": 6,
+      "steps": [
+        "Papier déplié",
+        "Pliage",
+        "Capsule ouverte",
+        "Capsule fermée",
+        "Vers le tube",
+        "Chargement",
+        "Expédition",
+        "Petit salut"
+      ]
+    },
+    "receive": {
+      "row": 10,
+      "frames": 16,
+      "duration": 6,
+      "steps": [
+        "Capsule en approche",
+        "Mains prêtes",
+        "Réception",
+        "Amortir le colis",
+        "Ouvrir la capsule",
+        "Sortir le message",
+        "Consulter",
+        "Ranger"
+      ]
+    },
+    "spawn": {
+      "row": 11,
+      "frames": 16,
+      "duration": 6,
+      "steps": [
+        "Vers le bouton",
+        "Appuyer",
+        "Sas activé",
+        "Chargement",
+        "Apparition",
+        "Sortie du petit assistant",
+        "Indiquer le chemin",
+        "Accompagner du regard"
+      ]
+    },
+    "wait": {
+      "row": 12,
+      "frames": 16,
+      "duration": 4.8,
+      "steps": [
+        "Prise du drapeau",
+        "Drapeau levé",
+        "Agiter à gauche",
+        "Agiter à droite",
+        "Regard vers toi",
+        "Nouvelle agitation",
+        "Maintenir le signal",
+        "Main baissée"
+      ]
+    },
+    "error": {
+      "row": 13,
+      "frames": 16,
+      "duration": 4.8,
+      "steps": [
+        "La machine tousse",
+        "Surprise",
+        "Petit saut",
+        "Prise de l’extincteur",
+        "Premier jet",
+        "Second jet",
+        "Vérification",
+        "Signaler l’incident"
+      ]
+    },
+    "celebrate": {
+      "row": 14,
+      "frames": 16,
+      "duration": 4.8,
+      "steps": [
+        "Préparation",
+        "Fléchir",
+        "Décollage",
+        "Bras levés",
+        "Confettis",
+        "Atterrissage",
+        "Salut",
+        "Retour au calme"
+      ]
+    },
+    "compact": {
+      "row": 15,
+      "frames": 16,
+      "duration": 5.6,
+      "steps": [
+        "Première feuille",
+        "Empiler",
+        "Mains en place",
+        "Presser",
+        "Compresser",
+        "Relâcher",
+        "Fermer la boîte",
+        "Ranger"
+      ]
+    },
+    "pause": {
+      "row": 16,
+      "frames": 16,
+      "duration": 4,
+      "steps": [
+        "Dernier pas",
+        "Freinage",
+        "Poser les mains",
+        "Se baisser",
+        "S’asseoir",
+        "Souffler",
+        "Attendre",
+        "Repos"
+      ]
+    },
+    "sleep": {
+      "row": 17,
+      "frames": 16,
+      "duration": 6,
+      "steps": [
+        "Paupières lourdes",
+        "Bâillement",
+        "Se baisser",
+        "S’installer",
+        "Tête posée",
+        "Sommeil",
+        "Petite respiration",
+        "Un z s’envole"
+      ]
+    },
+    "wake": {
+      "row": 18,
+      "frames": 16,
+      "duration": 4,
+      "steps": [
+        "Sommeil",
+        "Un œil ouvert",
+        "Se redresser",
+        "Se lever",
+        "Bras levés",
+        "Grand étirement",
+        "Sourire",
+        "Prêt"
+      ]
+    },
+    "archive": {
+      "row": 19,
+      "frames": 16,
+      "duration": 5.6,
+      "steps": [
+        "Vers le casier",
+        "Quelques pas",
+        "Arrivée au casier",
+        "Ouvrir le couvercle",
+        "S’installer",
+        "Descendre",
+        "Dernier regard",
+        "Couvercle fermé"
+      ]
+    },
+    "clean": {
+      "row": 20,
+      "frames": 16,
+      "duration": 5.6,
+      "steps": [
+        "Prise du balai",
+        "Mise en place",
+        "Balayer à gauche",
+        "Balayer à droite",
+        "Avancer",
+        "Pousser les pixels",
+        "Vers la corbeille",
+        "Rangement"
+      ]
+    },
+    "offline": {
+      "row": 21,
+      "frames": 16,
+      "duration": 4.8,
+      "steps": [
+        "Prise inspectée",
+        "Débrancher",
+        "Regarder la fiche",
+        "Rebrancher",
+        "Attendre",
+        "Réessayer",
+        "Contrôler le signal",
+        "État inconnu"
+      ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "codex",
+  "action": "arrive",
+  "name": "Arrivée",
+  "duration": 3.6,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Porte fermée",
+    "Ouverture du sas",
+    "Premier pas",
+    "Sortie du sas",
+    "Arrêt",
+    "Main levée",
+    "Petit salut",
+    "Prêt"
+  ]
+}

@@ -1,0 +1,318 @@
+{
+  "model": "agent-transit-model-01",
+  "families": {
+    "codex": [
+      {
+        "id": "arrive",
+        "name": "Arrivée",
+        "board": "animations/codex/arrive.png",
+        "sprites": "animations/codex/arrive-sprites.png",
+        "manifest": "animations/codex/arrive.json"
+      },
+      {
+        "id": "idle",
+        "name": "Veille",
+        "board": "animations/codex/idle.png",
+        "sprites": "animations/codex/idle-sprites.png",
+        "manifest": "animations/codex/idle.json"
+      },
+      {
+        "id": "walk",
+        "name": "Marche",
+        "board": "animations/codex/walk.png",
+        "sprites": "animations/codex/walk-sprites.png",
+        "manifest": "animations/codex/walk.json"
+      },
+      {
+        "id": "think",
+        "name": "Réflexion",
+        "board": "animations/codex/think.png",
+        "sprites": "animations/codex/think-sprites.png",
+        "manifest": "animations/codex/think.json"
+      },
+      {
+        "id": "read",
+        "name": "Lecture",
+        "board": "animations/codex/read.png",
+        "sprites": "animations/codex/read-sprites.png",
+        "manifest": "animations/codex/read.json"
+      },
+      {
+        "id": "search",
+        "name": "Recherche",
+        "board": "animations/codex/search.png",
+        "sprites": "animations/codex/search-sprites.png",
+        "manifest": "animations/codex/search.json"
+      },
+      {
+        "id": "type",
+        "name": "Écriture",
+        "board": "animations/codex/type.png",
+        "sprites": "animations/codex/type-sprites.png",
+        "manifest": "animations/codex/type.json"
+      },
+      {
+        "id": "tool",
+        "name": "Exécution",
+        "board": "animations/codex/tool.png",
+        "sprites": "animations/codex/tool-sprites.png",
+        "manifest": "animations/codex/tool.json"
+      },
+      {
+        "id": "test",
+        "name": "Vérification",
+        "board": "animations/codex/test.png",
+        "sprites": "animations/codex/test-sprites.png",
+        "manifest": "animations/codex/test.json"
+      },
+      {
+        "id": "send",
+        "name": "Envoi",
+        "board": "animations/codex/send.png",
+        "sprites": "animations/codex/send-sprites.png",
+        "manifest": "animations/codex/send.json"
+      },
+      {
+        "id": "receive",
+        "name": "Réception",
+        "board": "animations/codex/receive.png",
+        "sprites": "animations/codex/receive-sprites.png",
+        "manifest": "animations/codex/receive.json"
+      },
+      {
+        "id": "spawn",
+        "name": "Délégation",
+        "board": "animations/codex/spawn.png",
+        "sprites": "animations/codex/spawn-sprites.png",
+        "manifest": "animations/codex/spawn.json"
+      },
+      {
+        "id": "wait",
+        "name": "Besoin de toi",
+        "board": "animations/codex/wait.png",
+        "sprites": "animations/codex/wait-sprites.png",
+        "manifest": "animations/codex/wait.json"
+      },
+      {
+        "id": "error",
+        "name": "Incident",
+        "board": "animations/codex/error.png",
+        "sprites": "animations/codex/error-sprites.png",
+        "manifest": "animations/codex/error.json"
+      },
+      {
+        "id": "celebrate",
+        "name": "Tour terminé",
+        "board": "animations/codex/celebrate.png",
+        "sprites": "animations/codex/celebrate-sprites.png",
+        "manifest": "animations/codex/celebrate.json"
+      },
+      {
+        "id": "compact",
+        "name": "Rangement mémoire",
+        "board": "animations/codex/compact.png",
+        "sprites": "animations/codex/compact-sprites.png",
+        "manifest": "animations/codex/compact.json"
+      },
+      {
+        "id": "pause",
+        "name": "Interruption",
+        "board": "animations/codex/pause.png",
+        "sprites": "animations/codex/pause-sprites.png",
+        "manifest": "animations/codex/pause.json"
+      },
+      {
+        "id": "sleep",
+        "name": "Sieste",
+        "board": "animations/codex/sleep.png",
+        "sprites": "animations/codex/sleep-sprites.png",
+        "manifest": "animations/codex/sleep.json"
+      },
+      {
+        "id": "wake",
+        "name": "Réveil",
+        "board": "animations/codex/wake.png",
+        "sprites": "animations/codex/wake-sprites.png",
+        "manifest": "animations/codex/wake.json"
+      },
+      {
+        "id": "archive",
+        "name": "Au casier",
+        "board": "animations/codex/archive.png",
+        "sprites": "animations/codex/archive-sprites.png",
+        "manifest": "animations/codex/archive.json"
+      },
+      {
+        "id": "clean",
+        "name": "Petit ménage",
+        "board": "animations/codex/clean.png",
+        "sprites": "animations/codex/clean-sprites.png",
+        "manifest": "animations/codex/clean.json"
+      },
+      {
+        "id": "offline",
+        "name": "Signal perdu",
+        "board": "animations/codex/offline.png",
+        "sprites": "animations/codex/offline-sprites.png",
+        "manifest": "animations/codex/offline.json"
+      }
+    ],
+    "claude": [
+      {
+        "id": "arrive",
+        "name": "Arrivée",
+        "board": "animations/claude/arrive.png",
+        "sprites": "animations/claude/arrive-sprites.png",
+        "manifest": "animations/claude/arrive.json"
+      },
+      {
+        "id": "idle",
+        "name": "Veille",
+        "board": "animations/claude/idle.png",
+        "sprites": "animations/claude/idle-sprites.png",
+        "manifest": "animations/claude/idle.json"
+      },
+      {
+        "id": "walk",
+        "name": "Marche",
+        "board": "animations/claude/walk.png",
+        "sprites": "animations/claude/walk-sprites.png",
+        "manifest": "animations/claude/walk.json"
+      },
+      {
+        "id": "think",
+        "name": "Réflexion",
+        "board": "animations/claude/think.png",
+        "sprites": "animations/claude/think-sprites.png",
+        "manifest": "animations/claude/think.json"
+      },
+      {
+        "id": "read",
+        "name": "Lecture",
+        "board": "animations/claude/read.png",
+        "sprites": "animations/claude/read-sprites.png",
+        "manifest": "animations/claude/read.json"
+      },
+      {
+        "id": "search",
+        "name": "Recherche",
+        "board": "animations/claude/search.png",
+        "sprites": "animations/claude/search-sprites.png",
+        "manifest": "animations/claude/search.json"
+      },
+      {
+        "id": "type",
+        "name": "Écriture",
+        "board": "animations/claude/type.png",
+        "sprites": "animations/claude/type-sprites.png",
+        "manifest": "animations/claude/type.json"
+      },
+      {
+        "id": "tool",
+        "name": "Exécution",
+        "board": "animations/claude/tool.png",
+        "sprites": "animations/claude/tool-sprites.png",
+        "manifest": "animations/claude/tool.json"
+      },
+      {
+        "id": "test",
+        "name": "Vérification",
+        "board": "animations/claude/test.png",
+        "sprites": "animations/claude/test-sprites.png",
+        "manifest": "animations/claude/test.json"
+      },
+      {
+        "id": "send",
+        "name": "Envoi",
+        "board": "animations/claude/send.png",
+        "sprites": "animations/claude/send-sprites.png",
+        "manifest": "animations/claude/send.json"
+      },
+      {
+        "id": "receive",
+        "name": "Réception",
+        "board": "animations/claude/receive.png",
+        "sprites": "animations/claude/receive-sprites.png",
+        "manifest": "animations/claude/receive.json"
+      },
+      {
+        "id": "spawn",
+        "name": "Délégation",
+        "board": "animations/claude/spawn.png",
+        "sprites": "animations/claude/spawn-sprites.png",
+        "manifest": "animations/claude/spawn.json"
+      },
+      {
+        "id": "wait",
+        "name": "Besoin de toi",
+        "board": "animations/claude/wait.png",
+        "sprites": "animations/claude/wait-sprites.png",
+        "manifest": "animations/claude/wait.json"
+      },
+      {
+        "id": "error",
+        "name": "Incident",
+        "board": "animations/claude/error.png",
+        "sprites": "animations/claude/error-sprites.png",
+        "manifest": "animations/claude/error.json"
+      },
+      {
+        "id": "celebrate",
+        "name": "Tour terminé",
+        "board": "animations/claude/celebrate.png",
+        "sprites": "animations/claude/celebrate-sprites.png",
+        "manifest": "animations/claude/celebrate.json"
+      },
+      {
+        "id": "compact",
+        "name": "Rangement mémoire",
+        "board": "animations/claude/compact.png",
+        "sprites": "animations/claude/compact-sprites.png",
+        "manifest": "animations/claude/compact.json"
+      },
+      {
+        "id": "pause",
+        "name": "Interruption",
+        "board": "animations/claude/pause.png",
+        "sprites": "animations/claude/pause-sprites.png",
+        "manifest": "animations/claude/pause.json"
+      },
+      {
+        "id": "sleep",
+        "name": "Sieste",
+        "board": "animations/claude/sleep.png",
+        "sprites": "animations/claude/sleep-sprites.png",
+        "manifest": "animations/claude/sleep.json"
+      },
+      {
+        "id": "wake",
+        "name": "Réveil",
+        "board": "animations/claude/wake.png",
+        "sprites": "animations/claude/wake-sprites.png",
+        "manifest": "animations/claude/wake.json"
+      },
+      {
+        "id": "archive",
+        "name": "Au casier",
+        "board": "animations/claude/archive.png",
+        "sprites": "animations/claude/archive-sprites.png",
+        "manifest": "animations/claude/archive.json"
+      },
+      {
+        "id": "clean",
+        "name": "Petit ménage",
+        "board": "animations/claude/clean.png",
+        "sprites": "animations/claude/clean-sprites.png",
+        "manifest": "animations/claude/clean.json"
+      },
+      {
+        "id": "offline",
+        "name": "Signal perdu",
+        "board": "animations/claude/offline.png",
+        "sprites": "animations/claude/offline-sprites.png",
+        "manifest": "animations/claude/offline.json"
+      }
+    ]
+  },
+  "generatedAt": "2026-09-12T18:26:43.360Z"
+}

@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "claude",
+  "action": "test",
+  "name": "Vérification",
+  "duration": 5.6,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Prise de l’éprouvette",
+    "Éprouvette levée",
+    "Inclinaison",
+    "Versement",
+    "Mélange",
+    "Bulles",
+    "Observation",
+    "Rangement"
+  ]
+}

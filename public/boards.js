@@ -1,0 +1,30 @@
+(function(){
+  const specs=Object.values(TransitAnimations.ACTIONS);let provider='codex',playing=true,last=0,time=0;const cards=[];
+  const grid=document.getElementById('animation-grid');
+  for(const [i,spec] of specs.entries()){
+    const card=document.createElement('article');card.className='animation-card';card.dataset.action=spec.id;
+    card.innerHTML=`<div class="card-title"><span>${String(i+1).padStart(2,'0')}</span><h2></h2><small>${spec.duration.toFixed(1)} s</small></div><canvas width="160" height="80"></canvas><div class="phase-row"><span class="phase-index"></span><span class="phase-name"></span></div><div class="phase-progress"><i></i></div><p class="card-desc"></p><div class="card-footer"><button>Ⅱ Pause</button><input type="range" min="0" max="999" value="0" step="1"></div>`;
+    card.querySelector('h2').textContent=spec.name;card.querySelector('.card-desc').textContent=spec.description;
+    const c={spec,card,canvas:card.querySelector('canvas'),ctx:card.querySelector('canvas').getContext('2d'),paused:false,local:0,slider:card.querySelector('input'),button:card.querySelector('button')};
+    c.canvas.setAttribute('aria-label',`Animation : ${spec.name}`);c.slider.setAttribute('aria-label',`Progression de ${spec.name}`);
+    const inspect=document.createElement('button');inspect.textContent='Planche ↗';inspect.className='inspect';inspect.onclick=()=>openDetail(spec.id);card.querySelector('.card-footer').append(inspect);
+    c.button.onclick=()=>{c.paused=!c.paused;c.button.textContent=c.paused?'▶ Jouer':'Ⅱ Pause';};
+    c.slider.oninput=()=>{c.paused=true;c.local=Number(c.slider.value)/1000*spec.duration;c.button.textContent='▶ Jouer';render(c);};
+    cards.push(c);grid.append(card);
+  }
+  function render(c){const ctx=c.ctx;ctx.imageSmoothingEnabled=false;ctx.fillStyle='#000';ctx.fillRect(0,0,160,80);ctx.fillStyle='#243c48';ctx.fillRect(34,66,93,1);const p=TransitAnimations.phase(c.spec.id,c.local);TransitSprites.robot(ctx,68,65,provider,c.spec.id,c.local,{scale:1});c.card.querySelector('.phase-index').textContent=`${Math.floor(p.progress*8)+1}/8`;c.card.querySelector('.phase-name').textContent=c.spec.steps[Math.floor(p.progress*8)];c.card.querySelector('.phase-progress i').style.width=`${p.progress*100}%`;c.slider.value=Math.floor(p.progress*999);}
+  function frame(now){requestAnimationFrame(frame);if(now-last<1000/24)return;const dt=last?Math.min((now-last)/1000,.15):0;last=now;if(document.hidden)return;if(playing)time+=dt;for(const c of cards){if(playing&&!c.paused)c.local+=dt;render(c);}if(detail.open){if(detailPlaying)detailTime+=dt;drawDetail();}}
+  document.getElementById('provider').onchange=e=>{provider=e.target.value;cards.forEach(render);};
+  document.getElementById('play-all').onclick=()=>{playing=!playing;document.getElementById('play-all').textContent=playing?'Ⅱ Tout mettre en pause':'▶ Tout animer';};
+  const factory=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
+  function atlasData(family=provider){const a=TransitSheets.atlas(factory,family);return{png:a.canvas.toDataURL('image/png'),manifest:a.manifest};}
+  const save=(data,name)=>{const a=document.createElement('a');a.href=data;a.download=name;a.click();};
+  document.getElementById('atlas').onclick=()=>{const data=atlasData();save(data.png,`agent-transit-${provider}-sprites.png`);save('data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data.manifest,null,2)),`agent-transit-${provider}-sprites.json`);};
+  const detail=document.createElement('dialog');detail.className='detail';detail.innerHTML='<header><div><span class="eyebrow">UNE ACTION · UN SEUL MODÈLE</span><h2></h2></div><button class="close" aria-label="Fermer la planche">×</button></header><div class="detail-live"><canvas width="224" height="128"></canvas><div><p class="detail-step"></p><p class="detail-desc"></p><button class="detail-play">Ⅱ Pause</button><input class="detail-scrub" type="range" min="0" max="999" value="0" aria-label="Progression de la séquence"><a class="detail-download" download>↓ Planche PNG</a><a class="detail-sprites" download>↓ Bande des 24 sprites</a></div></div><img class="detail-sheet" alt="Les huit étapes de cette animation"></img>';
+  document.body.append(detail);let detailId='read',detailTime=0,detailPlaying=true;
+  function openDetail(id){detailId=id;detailTime=0;detailPlaying=true;const a=TransitAnimations.ACTIONS[id];detail.querySelector('h2').textContent=`${a.name} · ${provider==='codex'?'Codex':'Claude'}`;detail.querySelector('.detail-desc').textContent=a.description;detail.querySelector('.detail-sheet').src=`assets/animations/${provider}/${id}.png`;detail.querySelector('.detail-download').href=`assets/animations/${provider}/${id}.png`;detail.querySelector('.detail-sprites').href=`assets/animations/${provider}/${id}-sprites.png`;detail.querySelector('.detail-play').textContent='Ⅱ Pause';detail.showModal();drawDetail();}
+  function drawDetail(){const a=TransitAnimations.ACTIONS[detailId],canvas=detail.querySelector('canvas'),ctx=canvas.getContext('2d'),p=(detailTime%a.duration)/a.duration;ctx.fillStyle='#000';ctx.fillRect(0,0,224,128);ctx.imageSmoothingEnabled=false;TransitSprites.robot(ctx,82,104,provider,detailId,detailTime,{scale:2});detail.querySelector('.detail-step').textContent=`${Math.floor(p*8)+1}/8 — ${a.steps[Math.floor(p*8)]}`;detail.querySelector('.detail-scrub').value=Math.floor(p*999);}
+  detail.querySelector('.close').onclick=()=>detail.close();detail.querySelector('.detail-play').onclick=()=>{detailPlaying=!detailPlaying;detail.querySelector('.detail-play').textContent=detailPlaying?'Ⅱ Pause':'▶ Jouer';};detail.querySelector('.detail-scrub').oninput=e=>{detailPlaying=false;detailTime=Number(e.target.value)/1000*TransitAnimations.ACTIONS[detailId].duration;detail.querySelector('.detail-play').textContent='▶ Jouer';drawDetail();};
+  window.TransitBoards={cards,atlasData,openDetail,setTime(t){playing=false;cards.forEach(c=>{c.local=t;render(c);});},get provider(){return provider;}};
+  cards.forEach(render);requestAnimationFrame(frame);
+})();

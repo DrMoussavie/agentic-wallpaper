@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "codex",
+  "action": "read",
+  "name": "Lecture",
+  "duration": 8,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Livre au côté",
+    "Prise du livre",
+    "Livre levé",
+    "Couvertures ouvertes",
+    "Prise de la page",
+    "Page vers la gauche",
+    "Fermeture du livre",
+    "Livre rangé"
+  ]
+}

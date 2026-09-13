@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "claude",
+  "action": "type",
+  "name": "Écriture",
+  "duration": 8,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Portable fermé",
+    "Pose sur la table",
+    "Ouverture de l’écran",
+    "Main gauche au clavier",
+    "Main droite au clavier",
+    "Texte et validation",
+    "Fermeture de l’écran",
+    "Portable repris"
+  ]
+}

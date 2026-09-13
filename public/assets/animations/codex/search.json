@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "codex",
+  "action": "search",
+  "name": "Recherche",
+  "duration": 5.2,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Main vers la loupe",
+    "Loupe sortie",
+    "Il se penche",
+    "Balayage à droite",
+    "Balayage à gauche",
+    "Inspection de l’indice",
+    "Petit signal",
+    "Loupe rangée"
+  ]
+}

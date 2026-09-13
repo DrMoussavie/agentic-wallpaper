@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "codex",
+  "action": "wait",
+  "name": "Besoin de toi",
+  "duration": 4.8,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Prise du drapeau",
+    "Drapeau levé",
+    "Agiter à gauche",
+    "Agiter à droite",
+    "Regard vers toi",
+    "Nouvelle agitation",
+    "Maintenir le signal",
+    "Main baissée"
+  ]
+}

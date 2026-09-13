@@ -1,0 +1,24 @@
+{
+  "model": "agent-transit-model-01",
+  "provider": "codex",
+  "action": "walk",
+  "name": "Marche",
+  "duration": 2.4,
+  "frames": 24,
+  "cellWidth": 96,
+  "cellHeight": 80,
+  "origin": {
+    "x": 38,
+    "y": 61
+  },
+  "steps": [
+    "Appui gauche",
+    "Pied droit levé",
+    "Pas droit",
+    "Appui droit",
+    "Pied gauche levé",
+    "Pas gauche",
+    "Bras alternés",
+    "Retour à l’appui"
+  ]
+}
