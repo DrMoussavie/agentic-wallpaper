@@ -169,19 +169,50 @@
       if(hoop.score>0)text(`${hoop.score} PTS · RECORD ${hoop.best}`,x,y+5+small,'#5f8272',small,'center');
     }
     // Trees stand in the foreground: robots and the dog pass behind them, and a tree fades while someone is hidden by it.
-    function drawTrees(ordered){
-      if(!images.trees)return;
-      const s=life.scene,rng=root.TransitLife.random(life.seed^0x7a3e1),b=life.bounds,count=Math.max(3,Math.min(14,Math.round((b.right-b.left)*(b.bottom-b.top)/90000)));
+    // Tree positions are settled once per layout: 4 to 14 trees, all four kinds, spaced out, never above the house floor.
+    let treeKey='',trees=[];
+    function placeTrees(){
+      const s=life.scene,b=life.bounds,key=[W,H,life.seed,lastFooter].join(':');if(key===treeKey)return;treeKey=key;trees=[];
+      const rng=root.TransitLife.random(life.seed^0x7a3e1),count=Math.max(4,Math.min(12,Math.round((b.right-b.left)*(b.bottom-b.top)/100000)));
       for(let i=0;i<count;i++){
         const width=30+(i%3)*4,height=Math.round(width*4/3);
-        const x=Math.round(b.left+rng()*(b.right-b.left)),y=Math.round(s.house.y+height+8+rng()*Math.max(1,b.bottom-s.house.y-height-8));
-        if(y-height<s.house.y+2||x<width/2||x>W-width/2||y>H-lastFooter)return;
-        if(s.corner&&x>s.corner.left-24&&x<s.corner.right+24&&y>s.corner.top-15&&y<s.corner.bottom+height)return;
-        if(Math.abs(x-s.house.x)<s.house.width/2+width&&y<s.gate.y+40)return;
+        for(let attempt=0;attempt<40;attempt++){
+          const x=Math.round(b.left+rng()*(b.right-b.left)),y=Math.round(s.house.y+height+8+rng()*Math.max(1,b.bottom-s.house.y-height-8));
+          if(y-height<s.house.y+2||x<width/2||x>W-width/2||y>H-lastFooter)continue;
+          if(s.corner&&x>s.corner.left-24&&x<s.corner.right+24&&y>s.corner.top-15&&y<s.corner.bottom+height)continue;
+          if(Math.abs(x-s.house.x)<s.house.width/2+width&&y<s.gate.y+40)continue;
+          if(Math.hypot(x-s.terminal.x,y-s.terminal.y)<50||trees.some(t=>Math.hypot(t.x-x,(t.y-y)*1.5)<width+26))continue;
+          trees.push({x,y,width,height,kind:i%4});break;
+        }
+      }
+    }
+    function drawTrees(ordered){
+      if(!images.trees)return;placeTrees();const night=visitors?.night;
+      for(const t of trees){
+        const {x,y,width,height}=t;
         const behind=ordered.some(a=>a.y<y+4&&a.y>y-height-6&&Math.abs(a.x-x)<width/2+9)||
           settings.pet&&guide?.x!==null&&guide?.y<y+4&&guide?.y>y-height&&Math.abs(guide.x-x)<width/2+8;
-        ctx.save();ctx.globalAlpha=behind?.42:.92;ctx.drawImage(images.trees,(i%4)*24,0,24,32,x-width/2,y-height,width,height);ctx.restore();
+        ctx.save();ctx.globalAlpha=(behind?.42:.92)*(night?.72:1);ctx.drawImage(images.trees,t.kind*24,0,24,32,x-width/2,y-height,width,height);ctx.restore();
       }
+    }
+    // The sky marks the time of day: sun and slow clouds by day, moon and twinkling stars by night, warm light at dawn and dusk.
+    let skyKey='',stars=[],clouds=[];
+    function drawSky(s){
+      const hour=visitors?.hour??12,night=visitors?.night,dusk=!night&&(hour<8||hour>=19),skyBottom=Math.max(20,s.house.y-s.house.height-6),key=[W,H,life.seed].join(':');
+      if(key!==skyKey){skyKey=key;const rng=root.TransitLife.random(life.seed^0x51a7);stars=[];clouds=[];
+        for(let i=0;i<Math.round(W/22);i++)stars.push({x:Math.round(30+rng()*(W-60)),y:Math.round(8+rng()*Math.max(4,skyBottom-8)),phase:rng()*7,size:rng()<.2?2:1});
+        for(let i=0;i<Math.max(2,Math.round(W/420));i++)clouds.push({x:rng()*W,y:Math.round(14+rng()*Math.max(4,skyBottom-24)),w:26+Math.round(rng()*22),speed:2+rng()*2.5});}
+      if(night){
+        for(const st of stars){const tw=.35+.65*Math.max(0,Math.sin(life.time*1.3+st.phase));if(st.y>skyBottom)continue;ctx.globalAlpha=tw;box(st.x,st.y,st.size,st.size,'#dfe8f3');}
+        ctx.globalAlpha=1;const mx=W-46,my=30;box(mx-5,my-7,10,14,'#e9edd8');box(mx-7,my-5,14,10,'#e9edd8');box(mx-3,my-9,6,18,'#e9edd8');
+        box(mx-1,my-7,10,14,'#000');box(mx+1,my-5,10,10,'#000');box(mx+2,my-9,6,18,'#000');
+      }else{
+        const t=Math.max(0,Math.min(1,(hour-7)/12)),sx=Math.round(60+(W-120)*t),sy=Math.round(skyBottom-4-Math.sin(t*Math.PI)*Math.max(6,skyBottom-18)),c=dusk?'#e9a15b':'#f1d27a';
+        box(sx-3,sx===0?0:sy-5,6,10,c);box(sx-5,sy-3,10,6,c);box(sx-2,sy-2,4,4,dusk?'#ffd2a3':'#fff3bc');
+        if(dusk){ctx.globalAlpha=.35;box(sx-8,sy,16,1,c);box(sx-11,sy+2,22,1,c);ctx.globalAlpha=1;}
+        for(const cl of clouds){const x=((cl.x+life.time*cl.speed)%(W+cl.w*2))-cl.w;ctx.globalAlpha=dusk?.5:.42;box(x,cl.y+2,cl.w,3,'#2b3a42');box(x+4,cl.y,cl.w-8,2,'#2b3a42');box(x+8,cl.y-2,cl.w-16,2,'#2b3a42');box(x+2,cl.y+5,cl.w-4,1,'#1f2c33');ctx.globalAlpha=1;}
+      }
+      ctx.globalAlpha=1;
     }
     function drawBurst(b){
       const age=life.time-b.since,q=Math.min(1,age/1.3),c=colors[b.provider]||'#c9daa0';ctx.globalAlpha=1-q;
@@ -218,6 +249,7 @@
       if(hoop&&hoop.best>savedBest){savedBest=hoop.best;writeBest(savedBest);}
       if(petting&&guide&&life.time-petting.since>1){guide.loveUntil=life.time+2.6;petting=null;}
       ctx.globalAlpha=1;ctx.fillStyle=settings.background==='night'?'#03080c':'#000';ctx.fillRect(0,0,W,H);
+      if(settings.visitors!==false)drawSky(s);
       if(settings.background==='grid')for(let x=15;x<W;x+=28)for(let y=35;y<H;y+=28)box(x,y,1,1,'#0c171b');
       drawTerrain();
       // The house anchors the upper left; its garden follows the available screen width.
