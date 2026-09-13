@@ -7,7 +7,7 @@
   function writeBest(value){try{root.localStorage?.setItem(BEST_KEY,String(value));}catch{}}
   function createRenderer(canvas,world){
     const ctx=canvas.getContext('2d',{alpha:false});let W=360,H=640,viewScale=1,linkBoxes=[],linkToast=0,life=new root.TransitLife.Life(),previousTime=world.time,lastCount=-1;
-    const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:true,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true,terrain:false},images={},packetPaths=new Map();
+    const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:true,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true,terrain:true},images={},packetPaths=new Map();
     let bubbleRects=[];const random=root.TransitLife.random(life.seed^0x7e5721);let nextChatter=8,quietSince=null;
     const spectrum=root.TransitAudio?.createSpectrum(),guide=root.TransitPet?new root.TransitPet.Guide():null;let lastFooter=-1,lastMediaVisible=false,contentHeight=640,bottomInset=0,lastDpr=1;let promptVisuals=[];
     const media=root.TransitMedia?.createNowPlaying();
@@ -27,16 +27,16 @@
       if(!terrainImage||!terrainImage.complete||!terrainImage.naturalWidth)return;
       const bottom=Math.max(70,H-lastFooter-12),key=[W,bottom,life.seed].join(':');
       // Screen blending makes the atlas's black margins invisible on all themes.
-      function composite(image){if(!settings.terrain)return;ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.38;ctx.drawImage(image,0,0);ctx.restore();}
+      function composite(image){if(!settings.terrain)return;ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=1;ctx.drawImage(image,0,0);ctx.restore();}
       if(key===terrainKey&&terrainCanvas){composite(terrainCanvas);return;}
       if(key!==terrainKey){
         terrainKey=key;terrain=[];
         // Patches never rise above the house floor and are scattered rather than gridded.
         const rng=root.TransitLife.random(life.seed^0x39d174),s=life.scene,top=Math.round(s.house.y+4),height=Math.max(40,bottom-top);
-        const count=Math.max(2,Math.round(W*height/52000)),base=Math.min(W/Math.max(1,Math.round(W/260))*.8,height/Math.max(1,Math.round(height/200))*1.35);
+        const count=6,base=Math.min(W/Math.max(1,Math.round(W/260))*.8,height/Math.max(1,Math.round(height/200))*1.35)/3;
         const sw=terrainImage.naturalWidth/4,sh=terrainImage.naturalHeight/3,offset=Math.floor(rng()*12);
         for(let i=0;i<count;i++){
-          const variant=(i+offset)%12,width=Math.min(base,220)*(.8+rng()*.2),ph=width*.72;let placed=null;
+          const variant=(i+offset)%12,width=Math.max(34,Math.min(base,74))*(.8+rng()*.25),ph=width*.72;let placed=null;
           for(let attempt=0;attempt<30&&!placed;attempt++){
             const x=4+rng()*Math.max(1,W-width-8),y=top+rng()*Math.max(1,height-ph);
             const overlapsCorner=s.corner&&x<s.corner.right+8&&x+width>s.corner.left-8&&y<s.corner.bottom+8&&y+ph>s.corner.top-8;
@@ -51,7 +51,7 @@
       if(terrainCanvas){terrainCanvas.width=W;terrainCanvas.height=H;}
       const target=terrainCanvas?terrainCanvas.getContext('2d'):ctx;
       target.save();target.imageSmoothingEnabled=false;target.globalCompositeOperation='screen';
-      if(!terrainCanvas)target.globalAlpha=.38;
+      if(!terrainCanvas)target.globalAlpha=1;
       if(terrainCanvas||settings.terrain)for(const p of terrain)target.drawImage(terrainImage,p.sx,p.sy,p.sw,p.sh,p.x,p.y,p.width,p.height);
       target.restore();
       if(terrainCanvas)composite(terrainCanvas);
@@ -171,18 +171,17 @@
     // Trees stand in the foreground: robots and the dog pass behind them, and a tree fades while someone is hidden by it.
     function drawTrees(ordered){
       if(!images.trees)return;
-      const s=life.scene,rng=root.TransitLife.random(life.seed^0x7a3e1);
-      terrain.forEach((patch,i)=>{
-        if(i>=14)return;
-        const width=30+(i%3)*4,height=Math.round(width*4/3),side=rng()<.5?.2:.78;
-        const x=Math.round(patch.x+patch.width*side),y=Math.round(patch.y+patch.height*(.6+rng()*.3));
+      const s=life.scene,rng=root.TransitLife.random(life.seed^0x7a3e1),b=life.bounds,count=Math.max(3,Math.min(14,Math.round((b.right-b.left)*(b.bottom-b.top)/90000)));
+      for(let i=0;i<count;i++){
+        const width=30+(i%3)*4,height=Math.round(width*4/3);
+        const x=Math.round(b.left+rng()*(b.right-b.left)),y=Math.round(s.house.y+height+8+rng()*Math.max(1,b.bottom-s.house.y-height-8));
         if(y-height<s.house.y+2||x<width/2||x>W-width/2||y>H-lastFooter)return;
         if(s.corner&&x>s.corner.left-24&&x<s.corner.right+24&&y>s.corner.top-15&&y<s.corner.bottom+height)return;
         if(Math.abs(x-s.house.x)<s.house.width/2+width&&y<s.gate.y+40)return;
         const behind=ordered.some(a=>a.y<y+4&&a.y>y-height-6&&Math.abs(a.x-x)<width/2+9)||
           settings.pet&&guide?.x!==null&&guide?.y<y+4&&guide?.y>y-height&&Math.abs(guide.x-x)<width/2+8;
         ctx.save();ctx.globalAlpha=behind?.42:.92;ctx.drawImage(images.trees,(i%4)*24,0,24,32,x-width/2,y-height,width,height);ctx.restore();
-      });
+      }
     }
     function drawBurst(b){
       const age=life.time-b.since,q=Math.min(1,age/1.3),c=colors[b.provider]||'#c9daa0';ctx.globalAlpha=1-q;

@@ -128,7 +128,7 @@
       if(ball?.basket&&Math.hypot(p.x-ball.basket.x,p.y-ball.basket.y)<40)return false;
       if(loose)return true;
       if(Math.abs(p.y-s.busY)<24)return false;
-      if(s.corner&&p.x>s.corner.left-30&&p.x<s.corner.right+30&&p.y>s.corner.top-48&&p.y<s.corner.bottom+14)return false;
+      if(s.corner&&p.x>s.corner.left-30&&p.x<s.corner.right+30&&p.y>s.corner.top-48&&p.y<s.corner.bottom+58)return false;
       if(Math.hypot(p.x-s.terminal.x,p.y-s.terminal.y)<46)return false;
       return s.plants.every(plant=>Math.abs(p.x-plant.x)>plant.width+16||Math.abs(p.y-plant.y)>plant.width+14);
     }

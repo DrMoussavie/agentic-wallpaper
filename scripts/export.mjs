@@ -26,7 +26,7 @@ const properties={
   audioSource:{order:15,text:'ui_audiosource',type:'combo',value:'relay',options:[{label:'ui_audio_relay',value:'relay'},{label:'ui_audio_native',value:'wallpaper-engine'}]},
   hoop:{order:16,text:'ui_hoop',type:'bool',value:true},
   visitors:{order:17,text:'ui_visitors',type:'bool',value:true},
-  terrain:{order:18,text:'ui_terrain',type:'bool',value:false}
+  terrain:{order:18,text:'ui_terrain',type:'bool',value:true}
 };
 const localization={
   'en-us':{
@@ -36,7 +36,7 @@ const localization={
     ui_bubblescale:'Bubble size',ui_bubble_small:'Small',ui_bubble_readable:'Readable',ui_bubble_large:'Large',
     ui_audiowidth:'Spectrum width (%)',ui_media:'Track title and artist',ui_bottommargin:'Bottom margin / taskbar (px)',
     ui_audiosource:'Spectrum source',ui_audio_relay:'40 Hz–20 kHz bands (local relay)',ui_audio_native:'Native WE audio (decorative, no relay)',
-    ui_hoop:'Roaming basketball hoop (robots and ball)',ui_visitors:'Butterflies by day, fireflies at night',ui_terrain:'Ground patches behind the garden (off by default)'
+    ui_hoop:'Roaming basketball hoop (robots and ball)',ui_visitors:'Butterflies by day, fireflies at night',ui_terrain:'Six small ground patches in the garden'
   },
   'fr-fr':{
     ui_tubes:'Conduits de données',ui_pet:'Chien guide (attentes et erreurs)',ui_pixelscale:'Taille des personnages',ui_scale_mini:'Miniatures',ui_scale_small:'Petits',ui_scale_large:'Plus grands',
@@ -45,7 +45,7 @@ const localization={
     ui_bubblescale:'Taille des bulles',ui_bubble_small:'Petites',ui_bubble_readable:'Lisibles',ui_bubble_large:'Grandes',
     ui_audiowidth:'Largeur du spectre (%)',ui_media:'Titre et artiste de la musique',ui_bottommargin:'Marge basse / barre des tâches (px)',
     ui_audiosource:'Source du spectre',ui_audio_relay:'Fréquences 40 Hz–20 kHz (relais local)',ui_audio_native:'Audio natif WE (décoratif, sans relais)',
-    ui_hoop:'Panier de basket itinérant (robots et balle)',ui_visitors:'Papillons le jour, lucioles la nuit',ui_terrain:'Plaques de sol au fond du jardin (désactivées par défaut)'
+    ui_hoop:'Panier de basket itinérant (robots et balle)',ui_visitors:'Papillons le jour, lucioles la nuit',ui_terrain:'Six petites plaques de sol dans le jardin'
   }
 };
 await writeFile(path.join(dest,'project.json'),JSON.stringify({title:'Agentic Wallpaper',description:'A live pixel-art garden where your local Claude Code and Codex sessions are little robots. Decor, dog, ball, hoop and native audio work on their own; real agents need the free local relay: github.com/DrMoussavie/agentic-wallpaper',type:'web',file:'wallpaper.html',preview:'preview.png',general:{properties,localization,supportsaudioprocessing:true}},null,2)+'\n');

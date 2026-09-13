@@ -55,7 +55,7 @@
     if(opt.delivered&&!opt.translating&&!opt.social){const front=pose.front;pose.r=[10,-19];pose.l=[-8,-7];pose.gaze=0;pose.headY=0;pose.x=0;pose.walk=0;pose.eyes=pose.eyes==='blink'?'blink':'normal';pose.front=()=>{front();const [hx,hy]=pose.r,lx=hx-4,ly=hy-10;r(lx,ly,9,7,skin.accent);r(lx+1,ly+1,7,5,colors.white);r(lx+1,ly+1,1,1,skin.accent);r(lx+7,ly+1,1,1,skin.accent);r(lx+2,ly+2,2,1,skin.accent);r(lx+5,ly+2,2,1,skin.accent);r(lx+4,ly+3,1,1,skin.accent);};}
     // Sitting on the bench: body lowered, hands on the knees, the letter stays up if there is one.
     if(opt.seated){pose.walk=0;pose.x=0;pose.y+=4;pose.headY=0;pose.feetX=5;pose.l=[-6,-4];pose.r=opt.delivered?[9,-17]:[6,-4];}
-    if(opt.dance&&['idle','think'].includes(action)&&!opt.translating&&!opt.social){const beat=Math.floor(time*4)%2,hop=Math.floor(time*8)%2;pose.walk=0;pose.x=0;pose.eyes='happy';pose.headY=beat?1:0;pose.y=hop?-1:0;pose.l=[-9,beat?-19:-8];pose.r=[9,beat?-8:-19];}
+    if(opt.dance&&!opt.delivered&&!opt.seated&&['idle','think'].includes(action)&&!opt.translating&&!opt.social){const beat=Math.floor(time*4)%2,hop=Math.floor(time*8)%2;pose.walk=0;pose.x=0;pose.eyes='happy';pose.headY=beat?1:0;pose.y=hop?-1:0;pose.l=[-9,beat?-19:-8];pose.r=[9,beat?-8:-19];}
     let lf=0,rf=0;if(pose.walk){const s=Math.sin(time*9);lf=Math.round(s*3*pose.walk);rf=-lf;pose.y+=Math.abs(s)>.7?-1:0;if(!pose.keepHands){pose.l=[-8,-7-s*3];pose.r=[8,-7+s*3];}}
     pose.behind();ctx.save();ctx.translate(Math.round(pose.x),Math.round(pose.y));
     if(action==='archive'){ctx.beginPath();ctx.rect(-50,-80,100,80-pose.y);ctx.clip();}
