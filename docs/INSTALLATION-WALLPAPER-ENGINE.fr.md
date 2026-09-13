@@ -66,6 +66,8 @@ Tout s'applique en direct, sans redémarrage.
 | Chien guide | activé | Patrouille, signale attentes et erreurs, rapporte la balle |
 | Balle à lancer | activé | Glisse sur le bureau pour lancer ; le chien la range |
 | Promenades / Rencontres | activé | Les robots disponibles se baladent et se saluent |
+| Panier de basket | activé | Change de place à chaque panier ; les robots disponibles tirent ; meilleure série mémorisée |
+| Papillons / lucioles | activé | Papillons le jour, lucioles de 21 h à 7 h (heure du PC) |
 | Bulles / taille | activé / Lisibles | Petites phrases en anglais |
 | Spectre du son du PC | activé | En bas à gauche, 48 bandes |
 | Source du spectre | Relais local | Passe sur **Audio natif WE** si tu **ne** lances **pas** le relais |

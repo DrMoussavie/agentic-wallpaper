@@ -66,6 +66,8 @@ All of them are live; no restart needed.
 | Guide dog | on | Patrols, flags waits and errors, fetches the ball |
 | Ball to throw | on | Drag on the desktop to throw; the dog brings it back |
 | Free roaming / Meetings | on | Idle robots wander and greet each other |
+| Basketball hoop | on | Moves after each basket; idle robots take shots; best streak is remembered |
+| Butterflies / fireflies | on | Butterflies by day, fireflies 21:00–07:00 (PC clock) |
 | Speech bubbles / size | on / Readable | Short English quips |
 | PC sound spectrum | on | Bottom-left, 48 bands |
 | Spectrum source | Local relay | Switch to **Native WE audio** if you do **not** run the relay |
