@@ -56,6 +56,17 @@ La sortie par défaut est revérifiée toutes les 3 secondes. Au silence les bar
 retombent à zéro ; en cas de panne, l’interface indique « Audio indisponible ».
 Certains périphériques/sons protégés peuvent ne pas être capturables.
 
+Panne connue et corrigée (septembre 2026) : `soundcard` 0.4.6 corrompt la
+mémoire du processus quand il lit les propriétés d’un périphérique (nom,
+nombre de canaux), ce que `get_microphone(..., include_loopback=True)` faisait
+pour chaque périphérique installé. Sur un PC riche en périphériques virtuels,
+les tableaux d’indices des bandes se retrouvaient vides et le script renvoyait
+« unavailable » en boucle, sans message. Le script construit désormais le
+loopback directement depuis l’identifiant de la sortie par défaut, demande deux
+canaux (le convertisseur WASAPI en mode partagé s’occupe du reste) et ne lit
+jamais ces propriétés. Ses erreurs remontent maintenant dans le journal du
+relais (`[audio] …`, au plus une ligne toutes les 30 s).
+
 Un seul processus d’analyse alimente tous les aperçus et fonds ouverts.
 Il est arrêté après 10 secondes sans client audio. Les aperçus masqués, la pause
 et la propriété audio désactivée ferment leur connexion. Le rendu normal reste

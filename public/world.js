@@ -30,7 +30,7 @@
     return points[0];
   }
   class World {
-    constructor(){this.agents=new Map();this.packets=[];this.log=[];this.time=0;this.connection='connecting';this.mode='demo';this.events=0;this.overflow=0;this.sequence=0;this.seen=new Set();this.demoCursor=0;this.demoCycle=-1;this.demoPopulation=6;this.idleDelay=35;this.archiveDelay=140;}
+    constructor(){this.agents=new Map();this.packets=[];this.log=[];this.time=0;this.connection='connecting';this.mode='demo';this.events=0;this.overflow=0;this.sequence=0;this.seen=new Set();this.demoCursor=0;this.demoCycle=-1;this.demoPopulation=6;this.idleDelay=300;this.archiveDelay=480;}
     reset(mode=this.mode){this.agents.clear();this.packets=[];this.log=[];this.seen.clear();this.events=0;this.overflow=0;this.time=0;this.mode=mode;this.demoCursor=0;this.demoCycle=-1;}
     setAction(a,action,next=null){a.action=action;a.since=this.time;a.next=next;}
     getAgent(e,id=e.agentId||e.sessionId){

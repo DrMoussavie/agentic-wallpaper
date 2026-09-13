@@ -17,6 +17,14 @@
       if(opt.mood==='grumpy'){pose.eyes='flat';pose.l=[3,-10];pose.r=[-3,-10];pose.walk=0;}
       if(opt.mood==='listening'){pose.r=[8,-25];pose.eyes='wink';pose.walk=0;}
     }
+    // Garden situations reuse the same joints: no extra sprite sheet is needed for them.
+    if(opt.expecting){pose.eyes='up';pose.gaze=1;pose.walk=0;pose.x=0;pose.headY=0;pose.l=[-8,-8];pose.r=[9,-15];}
+    if(opt.throwing){const wind=Math.floor(time*6)%2;pose.eyes='up';pose.gaze=0;pose.walk=0;pose.x=0;pose.y=wind;pose.l=[-4,-30+wind];pose.r=[4,-30+wind];}
+    if(opt.watching){pose.eyes='up';pose.gaze=1;pose.walk=0;pose.x=0;pose.l=[-8,-7];pose.r=[8,-7];}
+    if(opt.holding){pose.keepHands=true;pose.l=[-8,-7];pose.r=[9,-10];}
+    // The finished answer is shown as a small letter held up until it is read or the robot goes home.
+    if(opt.delivered&&!opt.translating&&!opt.social){const front=pose.front;pose.r=[10,-19];pose.eyes=pose.eyes==='blink'?'blink':'normal';pose.front=()=>{front();r(6,-29,9,7,skin.accent);r(7,-28,7,5,colors.white);r(7,-28,1,1,skin.accent);r(13,-28,1,1,skin.accent);r(8,-27,2,1,skin.accent);r(11,-27,2,1,skin.accent);r(10,-26,1,1,skin.accent);};}
+    if(opt.dance&&['idle','think'].includes(action)&&!opt.translating&&!opt.social){const beat=Math.floor(time*4)%2,hop=Math.floor(time*8)%2;pose.walk=0;pose.x=0;pose.eyes='happy';pose.headY=beat?1:0;pose.y=hop?-1:0;pose.l=[-9,beat?-19:-8];pose.r=[9,beat?-8:-19];}
     let lf=0,rf=0;if(pose.walk){const s=Math.sin(time*9);lf=Math.round(s*3*pose.walk);rf=-lf;pose.y+=Math.abs(s)>.7?-1:0;if(!pose.keepHands){pose.l=[-8,-7-s*3];pose.r=[8,-7+s*3];}}
     pose.behind();ctx.save();ctx.translate(Math.round(pose.x),Math.round(pose.y));
     if(action==='archive'){ctx.beginPath();ctx.rect(-50,-80,100,80-pose.y);ctx.clip();}
@@ -38,7 +46,8 @@
   function pet(ctx,x,y,time=0,opt={}){
     ctx.save();ctx.translate(Math.round(x),Math.round(y));if(opt.flip)ctx.scale(-1,1);
     const r=(a,b,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(a,b,w,h);};
-    const step=opt.moving===false?0:Math.floor(time*6)%2,tail=Math.floor(time*(opt.alert?9:4))%2;
+    const step=opt.moving===false?0:Math.floor(time*6)%2,tail=Math.floor(time*(opt.alert||opt.happy?9:4))%2;
+    if(opt.happy)ctx.translate(0,-(Math.floor(time*6)%2));
     r(-5,-7,10,5,'#afc0c8');r(-4,-8,8,1,'#e4edec');r(4,-10,5,6,'#dce8e9');r(7,-8,2,2,'#73d8e8');r(4,-12,2,3,'#6b8190');r(-6,-4,2,4-step,'#829aa8');r(2,-4,2,3+step,'#829aa8');r(-8,-8-tail,4,2,'#afc0c8');
     if(opt.alert)r(4,-5,4,1,opt.alert==='error'?'#ed8582':'#edb56d');
     ctx.restore();

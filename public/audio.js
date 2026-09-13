@@ -50,6 +50,9 @@
       setVisible(v){visible=!!v;connect();},
       get status(){return enabled?(status==='live'&&performance.now()-lastAt>3000?'unavailable':status):'disabled';},
       get level(){return this.status==='live'?Math.max(...values):null;},
+      // Bands 0-11 cover roughly 40-190 Hz, bands 14-30 the mid range; the garden dances on them.
+      get bass(){return this.status==='live'?Math.max(...values.subarray(0,12)):null;},
+      get mids(){return this.status==='live'?Math.max(...values.subarray(14,31)):null;},
       draw(ctx,width,height,widthPercent=35){
         if(!enabled)return;
         const nativeAudio=audioSource==='wallpaper-engine';

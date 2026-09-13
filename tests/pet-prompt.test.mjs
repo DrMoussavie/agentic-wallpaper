@@ -27,27 +27,45 @@ test('Le chien repère les attentes et erreurs des deux familles ; clic, résolu
   world.connection='offline';guide.update(.1,life,world,true);assert.equal(guide.targetId,null);assert.equal(guide.snapshot().focused,false);
 });
 
-test('Nouveaux prompts Codex et Claude : enveloppe visible avant la sortie, trajet et réaction, sans texte privé',()=>{
+test('Nouveaux prompts Codex et Claude : l’enveloppe attend au terminal, part quand le robot est placé et finit dans ses mains',()=>{
   for(const provider of ['codex','claude']){
     const world=new TransitWorld.World();world.mode='live';world.connection='open';
     const canvas=createCanvas(640,900);canvas.getBoundingClientRect=()=>({width:640,height:900});
-    const renderer=TransitRenderer.createRenderer(canvas,world);renderer.resize();
+    const renderer=TransitRenderer.createRenderer(canvas,world);renderer.settings.hoop=false;renderer.resize();
     const e=normalizeHook(provider,{session_id:'fixture-prompt',hook_event_name:'UserPromptSubmit',prompt:'PRIVATE-FIXTURE'});
     world.apply(e);renderer.draw();assert.equal(world.agents.size,1);assert.equal(renderer.snapshot().promptFlights.length,1);
-    const first=renderer.snapshot().promptFlights[0];assert.equal(first.x,renderer.scene.terminal.x);
+    const first=renderer.snapshot().promptFlights[0];assert.equal(first.x,renderer.scene.terminal.x);assert.equal(first.progress,0);
     world.apply({...e,id:e.id+'tool',type:'tool_start',action:'read',toolId:'working'});
-    for(let i=0;i<15;i++){world.update(.1);renderer.draw();}
-    const mid=renderer.snapshot().promptFlights[0];assert.ok(mid.progress>first.progress);assert.notDeepEqual([mid.x,mid.y],[first.x,first.y]);
+    const agent=world.visible()[0],actor=()=>renderer.life.actors.get(agent.id);
+    // The world packet expires while the robot still walks out; the garden keeps the letter waiting.
+    for(let i=0;i<50&&actor().phase!=='outside';i++){world.update(.1);renderer.draw();}
+    if(actor().phase!=='outside'){for(let i=0;i<400&&actor().phase!=='outside';i++){world.update(.1);renderer.draw();}}
+    assert.equal(actor().phase,'outside');assert.equal(world.packets.filter(p=>p.kind==='prompt').length,0);
+    const waiting=renderer.snapshot().promptFlights[0];assert.equal(waiting.progress,0);assert.equal(waiting.x,renderer.scene.terminal.x);
+    assert.ok(renderer.life.snapshot().actors[0].expecting===false||renderer.life.visual(actor(),world).action!=='walk');
+    for(let i=0;i<12;i++){world.update(.1);renderer.draw();}
+    const mid=renderer.snapshot().promptFlights[0];assert.ok(mid.progress>0&&mid.progress<1);assert.notDeepEqual([mid.x,mid.y],[waiting.x,waiting.y]);
+    assert.equal(renderer.life.visual(actor(),world).expecting,true);assert.equal(actor().walking,false);
     const snapshot={eventsCount:world.events,agents:[...world.agents.values()].map(a=>({...a,pending:[...a.pending],sinceAgo:world.time-a.since,lastAgo:world.time-a.last}))};
     world.restore(snapshot,true);renderer.draw();assert.equal(renderer.snapshot().promptFlights.length,1);assert.equal(renderer.snapshot().promptFlights[0].progress,mid.progress);
-    for(let i=0;i<25;i++){world.update(.1);renderer.draw();}
-    const agent=world.visible()[0];assert.equal(renderer.snapshot().promptFlights.length,0);assert.equal(agent.reaction.kind,'prompt');assert.equal(agent.action,'read');assert.equal(agent.pending.size,1);
+    for(let i=0;i<24;i++){world.update(.1);renderer.draw();}
+    assert.equal(renderer.snapshot().promptFlights.length,0);
+    const catching=renderer.life.visual(actor(),world);assert.equal(catching.action,'receive');assert.equal(catching.caught,true);assert.ok(catching.age>=1.5);
+    assert.equal(world.agents.get(agent.id).action,'read');assert.equal(world.agents.get(agent.id).pending.size,1);
+    for(let i=0;i<40;i++){world.update(.1);renderer.draw();}
+    assert.equal(renderer.life.visual(actor(),world).action,'read');
     assert.equal(JSON.stringify(world.log).includes('PRIVATE-FIXTURE'),false);
     world.apply(e);assert.equal(world.agents.size,1);assert.equal(world.packets.filter(p=>p.kind==='prompt').length,0);
-    world.apply({provider,sessionId:e.sessionId,type:'stop'});renderer.draw();
-    assert.equal(renderer.snapshot().promptFlights[0].kind,'result');assert.equal(agent.resting,true);
-    for(let i=0;i<650;i++){world.update(.1);renderer.draw();}
-    assert.equal(renderer.life.actors.get(agent.id).phase,'home');
-    world.apply({...e,id:'fresh-prompt'});assert.equal(world.packets.length,1);world.restore(snapshot);assert.equal(world.packets.length,0);
+    world.idleDelay=20;world.apply({provider,sessionId:e.sessionId,type:'stop'});renderer.draw();
+    assert.equal(renderer.snapshot().promptFlights[0].kind,'result');assert.equal(world.agents.get(agent.id).resting,true);
+    for(let i=0;i<100;i++){world.update(.1);renderer.draw();}
+    assert.equal(renderer.life.snapshot().actors[0].lingering,true);
+    for(let i=0;i<550;i++){world.update(.1);renderer.draw();}
+    assert.equal(actor().phase,'home');
+    // A prompt reaching a robot at home: splash at the door when it steps out, letter still waiting.
+    world.apply({...e,id:'fresh-prompt'});assert.equal(world.packets.length,1);renderer.draw();
+    for(let i=0;i<30&&!renderer.life.bursts.length;i++){world.update(.1);renderer.draw();}
+    assert.equal(renderer.life.bursts.length,1);assert.equal(renderer.snapshot().promptFlights[0].progress,0);
+    world.restore(snapshot);assert.equal(world.packets.length,0);
   }
 });

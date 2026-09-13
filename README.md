@@ -47,14 +47,18 @@ Same rig, 22 animations each: arrive, think, read, search, type, tool, test, sen
 
 ## Features
 
-- 🏠 **A common house.** Robots rest inside, come out through the door when a prompt arrives, and walk home after the answer. A new prompt brings them back out — no teleporting.
+- 🏠 **A common house.** Robots rest inside, come out through the door when a prompt arrives, wait in the garden holding up the reply once the answer ends ("All yours!"), and walk home after five minutes or the next nap signal. A new prompt brings them back out — no teleporting.
 - 🤖 **Sub-agents** appear as mini-bots orbiting their parent and report back when they finish.
-- 🐕 **A mechanical dog** patrols, flags waits and errors, and fetches the ball you throw on the desktop.
+- 📬 **Prompts land in the robot's hands.** The letter waits at the terminal until its robot is standing in the garden, then flies down the conduit and is caught mid-gesture — no more envelopes stuck at the door. A robot stepping out for a prompt gets a little splash.
+- 🌀 **Sub-agents step out of the portal** their parent opens while "Calling backup!", not out of the house.
+- 🐕 **A mechanical dog** patrols, flags waits and errors, fetches the ball you throw on the desktop, chases the butterfly, and shows a heart if you hold a click on it.
+- 🏀 **A basketball hoop that moves after every basket.** Always on a free spot, facing the screen centre. Drag-and-release the ball through it, or watch idle robots fetch the ball from the toy box and shoot (about 60 % accuracy). Streak, points and a locally saved best streak; real work always interrupts the game.
+- 🦋 **The garden lives on its own.** A butterfly visits the flowers by day; fireflies drift at night (21:00–07:00 local time). Hold a beat with real bass for a few seconds and idle robots dance while the flowers wobble.
 - 🎵 **Audio spectrum** of your PC sound — 48 log bands, 40 Hz to 20 kHz — with the current track title and artist (via Wallpaper Engine media integration).
 - 💬 **Speech bubbles** for actions, never for conversations.
 - 🖱️ **Interactive.** Click the garden to call idle robots over; click a robot to make it wave; drag to throw the ball.
 - 📐 **Any screen shape.** Landscape, portrait, square, ultrawide: the garden lays itself out and stays stable when the population changes.
-- 🎛️ **Tunable** from the Wallpaper Engine panel: background, character size, conduits, dog, ball, roaming, bubbles, spectrum width, taskbar margin, audio source.
+- 🎛️ **Tunable** from the Wallpaper Engine panel: background, character size, conduits, dog, ball, hoop, visitors, roaming, bubbles, spectrum width, taskbar margin, audio source.
 - 🚫 **No fake agents, ever.** If the relay is down the garden says so instead of pretending.
 
 ## Install
