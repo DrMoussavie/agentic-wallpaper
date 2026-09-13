@@ -1,4 +1,4 @@
-# Agent Transit
+# Agentic Wallpaper
 
 *Documentation détaillée en français. Version courte en anglais : [README.md](../README.md) · [Tuto d'installation Wallpaper Engine](INSTALLATION-WALLPAPER-ENGINE.fr.md) · [Démo en ligne](https://drmoussavie.github.io/agentic-wallpaper/)*
 

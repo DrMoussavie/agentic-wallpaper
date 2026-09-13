@@ -1,8 +1,8 @@
-# Installing Agent Transit on Wallpaper Engine
+# Installing Agentic Wallpaper on Wallpaper Engine
 
 *Version française : [INSTALLATION-WALLPAPER-ENGINE.fr.md](INSTALLATION-WALLPAPER-ENGINE.fr.md)*
 
-Agent Transit is a **web wallpaper**: a folder with a `project.json`, an HTML file and its assets. Wallpaper Engine renders it with its built-in browser. No installer, no admin rights.
+Agentic Wallpaper is a **web wallpaper**: a folder with a `project.json`, an HTML file and its assets. Wallpaper Engine renders it with its built-in browser. No installer, no admin rights.
 
 There are two layers:
 
@@ -49,7 +49,7 @@ Put the unzipped folder here (create `myprojects` if it does not exist):
 ### 4. Select it in Wallpaper Engine
 
 1. Open Wallpaper Engine (tray icon → **Open Wallpaper Engine**).
-2. In the **Installed** tab, the wallpaper **Agent Transit** appears with its preview. If you have many wallpapers, use the filter on the right and tick **My projects** / **Local**, or type `Agent Transit` in the search box.
+2. In the **Installed** tab, the wallpaper **Agentic Wallpaper** appears with its preview. If you have many wallpapers, use the filter on the right and tick **My projects** / **Local**, or type `Agentic Wallpaper` in the search box.
 3. Click it. If you have several monitors, first pick the monitor at the bottom of the window.
 
 The garden shows up immediately: the house top-left, grass and stones, and the message *“LE JARDIN EST PRÊT”* (the garden is ready) until agents connect.
@@ -85,7 +85,7 @@ All of them are live; no restart needed.
 
 | Symptom | Fix |
 |---|---|
-| Agent Transit is not in the Installed list | Check that `project.json` is directly in `projects\myprojects\agent-transit\`. Restart Wallpaper Engine. |
+| Agentic Wallpaper is not in the Installed list | Check that `project.json` is directly in `projects\myprojects\agent-transit\`. Restart Wallpaper Engine. |
 | Black screen, nothing drawn | Wallpaper Engine → Settings → General → make sure the browser engine (CEF) is not disabled by an antivirus. Try another web wallpaper to confirm. |
 | “RELAIS AUDIO DÉCONNECTÉ” | Either start the relay (part 2) or switch *Spectrum source* to *Native WE audio*. |
 | Robots never appear | Expected without the relay. The wallpaper only shows real sessions; there are no fake agents. |
@@ -102,7 +102,7 @@ This is the part that makes the garden alive. It needs [Node.js 20+](https://nod
 Paste this into **Claude Code** or **Codex** on your Windows PC. It installs exactly what is needed, for both apps, then lists the two clicks it cannot do for you.
 
 ```text
-Install Agent Transit from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
+Install Agentic Wallpaper from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
 
 1. Check Node.js >= 20 is available (install it with winget if not).
 2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit, then run: npm install
@@ -110,7 +110,7 @@ Install Agent Transit from https://github.com/DrMoussavie/agentic-wallpaper on t
 4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts with Windows, then start it now in the background with: npm start
 5. Verify http://127.0.0.1:49157/health answers.
 6. Run: npm run export  and copy dist/wallpaper to <Steam>\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit (find my Steam library path first).
-7. Finish by listing what I must do by hand: approve the hooks in the Codex app (Settings → Hooks → From configuration → Approve), and select "Agent Transit" in Wallpaper Engine → Installed.
+7. Finish by listing what I must do by hand: approve the hooks in the Codex app (Settings → Hooks → From configuration → Approve), and select "Agentic Wallpaper" in Wallpaper Engine → Installed.
 
 Do not touch anything else in my Claude Code or Codex settings.
 ```
@@ -124,7 +124,7 @@ npm install
 npm run hooks:install
 ```
 
-`hooks:install` merges Agent Transit's hook entries into `~/.claude/settings.json` (Claude Code) and the Codex configuration, backs up the originals in `.local/backups`, and touches nothing else. `npm run hooks:remove` takes them out again.
+`hooks:install` merges Agentic Wallpaper's hook entries into `~/.claude/settings.json` (Claude Code) and the Codex configuration, backs up the originals in `.local/backups`, and touches nothing else. `npm run hooks:remove` takes them out again.
 
 ### Approve the hooks
 

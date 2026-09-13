@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agent Transit — a live pixel-art wallpaper for your Claude Code &amp; Codex agents</title>
-<meta name="description" content="Agent Transit turns every Claude Code and Codex session into a little robot living in a pixel-art garden on your desktop. Free wallpaper for Wallpaper Engine, driven by agent hooks.">
-<meta property="og:title" content="Agent Transit — agentic wallpaper">
+<title>Agentic Wallpaper — a live pixel-art wallpaper for your Claude Code &amp; Codex agents</title>
+<meta name="description" content="Agentic Wallpaper turns every Claude Code and Codex session into a little robot living in a pixel-art garden on your desktop. Free wallpaper for Wallpaper Engine, driven by agent hooks.">
+<meta property="og:title" content="Agentic Wallpaper — agentic wallpaper">
 <meta property="og:description" content="Your Claude Code and Codex sessions as tiny robots in a pixel-art garden. Free, for Wallpaper Engine.">
 <meta property="og:image" content="https://drmoussavie.github.io/agentic-wallpaper/media/hero.png">
 <meta property="og:type" content="website">
@@ -17,10 +17,10 @@
 <link rel="stylesheet" href="site.css">
 </head>
 <body>
-<canvas id="world" aria-label="Live demo of the Agent Transit garden: robots leave the house, work, and walk back home"></canvas>
+<canvas id="world" aria-label="Live demo of the Agentic Wallpaper garden: robots leave the house, work, and walk back home"></canvas>
 
 <header class="top">
-  <a class="brand" href="#"><img src="icon.svg" alt="" width="22" height="22"><span>AGENT TRANSIT</span></a>
+  <a class="brand" href="#"><img src="icon.svg" alt="" width="22" height="22"><span>AGENTIC WALLPAPER</span></a>
   <nav>
     <a href="#how">How it works</a>
     <a href="#install">Install</a>
@@ -71,7 +71,7 @@
       <ol class="steps">
         <li><span>1</span><div><b>Download</b> <a href="https://github.com/DrMoussavie/agentic-wallpaper/releases/latest/download/agent-transit-wallpaper.zip">agent-transit-wallpaper.zip</a> and unzip it.</div></li>
         <li><span>2</span><div><b>Copy the folder</b> to <code>…\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit</code></div></li>
-        <li><span>3</span><div>In Wallpaper Engine, open <b>Installed → filter “My projects”</b>, pick <b>Agent Transit</b>, choose your monitor. Done — decor, dog, ball and native audio work right away.</div></li>
+        <li><span>3</span><div>In Wallpaper Engine, open <b>Installed → filter “My projects”</b>, pick <b>Agentic Wallpaper</b>, choose your monitor. Done — decor, dog, ball and native audio work right away.</div></li>
       </ol>
       <p class="muted">Full walkthrough with screenshots and settings: <a href="https://github.com/DrMoussavie/agentic-wallpaper/blob/master/docs/INSTALL-WALLPAPER-ENGINE.md">docs/INSTALL-WALLPAPER-ENGINE.md</a> · <a href="https://github.com/DrMoussavie/agentic-wallpaper/blob/master/docs/INSTALLATION-WALLPAPER-ENGINE.fr.md">version française</a></p>
     </div>
@@ -89,7 +89,7 @@
         <p class="muted">Paste this into <b>Claude Code</b> or <b>Codex</b> on your Windows PC. It installs exactly what is needed, for both apps, and tells you the two clicks it cannot do for you.</p>
         <div class="promptbox">
           <button class="copy" type="button" data-copy="agent-prompt">Copy prompt</button>
-<pre id="agent-prompt">Install Agent Transit from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
+<pre id="agent-prompt">Install Agentic Wallpaper from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
 
 1. Check Node.js >= 20 is available (install it with winget if not).
 2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit, then run: npm install
@@ -97,7 +97,7 @@
 4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts with Windows, then start it now in the background with: npm start
 5. Verify http://127.0.0.1:49157/health answers.
 6. Run: npm run export  and copy dist/wallpaper to &lt;Steam&gt;\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit (find my Steam library path first).
-7. Finish by listing what I must do by hand: approve the hooks in the Codex app (Settings → Hooks → From configuration → Approve), and select "Agent Transit" in Wallpaper Engine → Installed.
+7. Finish by listing what I must do by hand: approve the hooks in the Codex app (Settings → Hooks → From configuration → Approve), and select "Agentic Wallpaper" in Wallpaper Engine → Installed.
 
 Do not touch anything else in my Claude Code or Codex settings.</pre>
         </div>
@@ -108,7 +108,7 @@ cd agentic-wallpaper
 npm install
 npm run hooks:install     # adds the hooks to Claude Code AND Codex
 npm start                 # relay on http://127.0.0.1:49157</code></pre>
-        <p class="muted">Then approve the hooks in the Codex app (<i>Settings → Hooks → From configuration</i>) and select Agent Transit in Wallpaper Engine. Details: <a href="https://github.com/DrMoussavie/agentic-wallpaper/blob/master/docs/INSTALL-WALLPAPER-ENGINE.md#part-2--connect-your-real-agents">install guide, part 2</a>.</p>
+        <p class="muted">Then approve the hooks in the Codex app (<i>Settings → Hooks → From configuration</i>) and select Agentic Wallpaper in Wallpaper Engine. Details: <a href="https://github.com/DrMoussavie/agentic-wallpaper/blob/master/docs/INSTALL-WALLPAPER-ENGINE.md#part-2--connect-your-real-agents">install guide, part 2</a>.</p>
       </div>
       <div class="grid two">
         <div class="tile"><h3>Privacy by design</h3><p>The relay listens on <code>127.0.0.1</code> only. Session ids are hashed. Prompts, messages and commands are never sent to the wallpaper — only the <em>kind</em> of activity. No model API, no API key.</p></div>
@@ -119,7 +119,7 @@ npm start                 # relay on http://127.0.0.1:49157</code></pre>
 
   <footer class="block">
     <div class="card foot">
-      <p><b>Agent Transit</b> · released under <a href="https://creativecommons.org/licenses/by-nc/4.0/" rel="noopener">CC BY-NC 4.0</a> · <a href="https://github.com/DrMoussavie/agentic-wallpaper" rel="noopener">Source on GitHub</a></p>
+      <p><b>Agentic Wallpaper</b> · released under <a href="https://creativecommons.org/licenses/by-nc/4.0/" rel="noopener">CC BY-NC 4.0</a> · <a href="https://github.com/DrMoussavie/agentic-wallpaper" rel="noopener">Source on GitHub</a></p>
       <p class="fine">Claude Code and Codex are trademarks of their respective owners. This project is an independent fan-made tool and is not affiliated with Anthropic or OpenAI.</p>
     </div>
   </footer>

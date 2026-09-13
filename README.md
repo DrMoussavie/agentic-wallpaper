@@ -2,7 +2,7 @@
 
 <img src="public/icon.svg" width="72" alt="">
 
-# Agent Transit
+# Agentic Wallpaper
 
 **A live pixel-art wallpaper where your Claude Code and Codex sessions are little robots.**
 
@@ -19,7 +19,7 @@ They leave the house when you prompt, read, search, run tests, spawn sub-agents,
 
 🇫🇷 [Documentation complète en français](docs/README.fr.md) · [Tuto d'installation](docs/INSTALLATION-WALLPAPER-ENGINE.fr.md)
 
-<img src="docs/media/demo.gif" width="880" alt="Agent Transit running: robots leave the house, work in the garden, the dog patrols, the audio spectrum pulses at the bottom">
+<img src="docs/media/demo.gif" width="880" alt="Agentic Wallpaper running: robots leave the house, work in the garden, the dog patrols, the audio spectrum pulses at the bottom">
 
 </div>
 
@@ -27,7 +27,7 @@ They leave the house when you prompt, read, search, run tests, spawn sub-agents,
 
 ## What it is
 
-Agent Transit is a **[Wallpaper Engine](https://www.wallpaperengine.io/) web wallpaper** plus a tiny **local relay**. The relay receives the hook events that Claude Code and Codex already emit (session start, prompt, tool use, sub-agent, stop…) and streams them to the wallpaper. Each session becomes a robot in a procedural pixel-art garden.
+Agentic Wallpaper is a **[Wallpaper Engine](https://www.wallpaperengine.io/) web wallpaper** plus a tiny **local relay**. The relay receives the hook events that Claude Code and Codex already emit (session start, prompt, tool use, sub-agent, stop…) and streams them to the wallpaper. Each session becomes a robot in a procedural pixel-art garden.
 
 <table>
 <tr>
@@ -63,7 +63,7 @@ Same rig, 22 animations each: arrive, think, read, search, type, tool, test, sen
 
 1. Download [`agent-transit-wallpaper.zip`](https://github.com/DrMoussavie/agentic-wallpaper/releases/latest/download/agent-transit-wallpaper.zip) and unzip it.
 2. Copy the folder to `…\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit\`.
-3. In Wallpaper Engine → **Installed**, pick **Agent Transit**. Set *Spectrum source* to *Native WE audio* if you skip the relay.
+3. In Wallpaper Engine → **Installed**, pick **Agentic Wallpaper**. Set *Spectrum source* to *Native WE audio* if you skip the relay.
 
 **Live agents — works with Claude Code *and* Codex, both at once.**
 
@@ -71,7 +71,7 @@ Same rig, 22 animations each: arrive, think, read, search, type, tool, test, sen
 <summary><b>🤖 Let your agent install it</b> — paste this into Claude Code or Codex on your Windows PC</summary>
 
 ```text
-Install Agent Transit from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
+Install Agentic Wallpaper from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
 
 1. Check Node.js >= 20 is available (install it with winget if not).
 2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit, then run: npm install
@@ -79,7 +79,7 @@ Install Agent Transit from https://github.com/DrMoussavie/agentic-wallpaper on t
 4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts with Windows, then start it now in the background with: npm start
 5. Verify http://127.0.0.1:49157/health answers.
 6. Run: npm run export  and copy dist/wallpaper to <Steam>\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit (find my Steam library path first).
-7. Finish by listing what I must do by hand: approve the hooks in the Codex app (Settings → Hooks → From configuration → Approve), and select "Agent Transit" in Wallpaper Engine → Installed.
+7. Finish by listing what I must do by hand: approve the hooks in the Codex app (Settings → Hooks → From configuration → Approve), and select "Agentic Wallpaper" in Wallpaper Engine → Installed.
 
 Do not touch anything else in my Claude Code or Codex settings.
 ```
@@ -154,4 +154,4 @@ Actively developed. Ideas and bug reports welcome in [Issues](https://github.com
 
 [CC BY-NC 4.0](LICENSE) — use it, modify it, share it, credit it; no commercial use.
 
-Claude Code and Codex are trademarks of their respective owners. Agent Transit is an independent project and is not affiliated with Anthropic or OpenAI. The robots, the garden and every asset in this repository are original.
+Claude Code and Codex are trademarks of their respective owners. Agentic Wallpaper is an independent project and is not affiliated with Anthropic or OpenAI. The robots, the garden and every asset in this repository are original.
