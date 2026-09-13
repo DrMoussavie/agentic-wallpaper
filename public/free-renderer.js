@@ -14,11 +14,45 @@
     const ball=root.TransitToy?new root.TransitToy.Ball():null,hoop=root.TransitToy?.Hoop?new root.TransitToy.Hoop(life.seed):null;let toyHintAt=0,toyHintUntil=0,savedBest=readBest();if(hoop)hoop.best=savedBest;
     const visitors=root.TransitVisitors?new root.TransitVisitors.Visitors(life.seed):null;let clockHour=null;
     let groove=0,danceSince=null,dancing=false,petting=null;
+    let terrainKey='',terrain=[];
+    const terrainCanvas=typeof root.OffscreenCanvas==='function'?new root.OffscreenCanvas(1,1):root.document?.createElement?.('canvas');
     const box=(x,y,w,h,c)=>{if(w<=0||h<=0)return;ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h)));};
     const text=(s,x,y,c='#71858e',size=5,align='left')=>{ctx.font=`${size}px monospace`;ctx.fillStyle=c;ctx.textAlign=align;ctx.fillText(s,Math.round(x),Math.round(y));ctx.textAlign='left';};
     const path=(pts,c,w=1)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.lineJoin='bevel';ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(Math.round(p.x)+.5,Math.round(p.y)+.5):ctx.moveTo(Math.round(p.x)+.5,Math.round(p.y)+.5));ctx.stroke();};
     if(typeof Image!=='undefined')for(const [name,spec] of Object.entries(root.TransitProps||{})){const image=new Image();image.onload=()=>{images[name]=image;draw();};image.src=spec.file;}
     function prop(name,x,y,width,height){const image=images[name],spec=root.TransitProps?.[name];if(!image||!spec)return;const [sx,sy,sw,sh]=spec.crop;const h=height||width*sh/sw;ctx.drawImage(image,sx,sy,sw,sh,Math.round(x-width/2),Math.round(y-h),Math.round(width),Math.round(h));}
+    const terrainImage=typeof root.Image==='function'?new root.Image():null;
+    if(terrainImage){terrainImage.onload=()=>{terrainKey='';draw();};terrainImage.src='assets/props/terrain-v1.png';}
+    function drawTerrain(){
+      if(!terrainImage||!terrainImage.complete||!terrainImage.naturalWidth)return;
+      const bottom=Math.max(70,H-lastFooter-12),key=[W,bottom,life.seed].join(':');
+      // Screen blending makes the atlas's black margins invisible on all themes.
+      function composite(image){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.52;ctx.drawImage(image,0,0);ctx.restore();}
+      if(key===terrainKey&&terrainCanvas){composite(terrainCanvas);return;}
+      if(key!==terrainKey){
+        terrainKey=key;terrain=[];
+        const rng=root.TransitLife.random(life.seed^0x39d174),height=bottom-36;
+        const columns=Math.max(1,Math.round(W/260)),rows=Math.max(1,Math.round(height/200));
+        const cw=W/columns,ch=height/rows;
+        const sw=terrainImage.naturalWidth/2,sh=terrainImage.naturalHeight/2;
+        for(let row=0;row<rows;row++)for(let col=0;col<columns;col++){
+          const variant=(row*columns+col+Math.floor(rng()*2))%4;
+          const width=Math.min(cw*.96,ch*1.55)*( .9+rng()*.1),height=width*.66;
+          const x=Math.max(4,Math.min(W-width-4,(col+.5)*cw-width/2+(rng()-.5)*cw*.12));
+          const y=Math.max(34,Math.min(bottom-height,36+(row+.5)*ch-height/2+(rng()-.5)*ch*.12));
+          terrain.push({x:Math.round(x),y:Math.round(y),width:Math.round(width),height:Math.round(height),
+            sx:Math.round((variant%2)*sw+sw*.065),sy:Math.round(Math.floor(variant/2)*sh+sh*.20),
+            sw:Math.round(sw*.87),sh:Math.round(sh*.70)});
+        }
+      }
+      if(terrainCanvas){terrainCanvas.width=W;terrainCanvas.height=H;}
+      const target=terrainCanvas?terrainCanvas.getContext('2d'):ctx;
+      target.save();target.imageSmoothingEnabled=false;target.globalCompositeOperation='screen';
+      if(!terrainCanvas)target.globalAlpha=.52;
+      for(const p of terrain)target.drawImage(terrainImage,p.sx,p.sy,p.sw,p.sh,p.x,p.y,p.width,p.height);
+      target.restore();
+      if(terrainCanvas)composite(terrainCanvas);
+    }
     function resize(){
       const b=canvas.getBoundingClientRect(),n=world.agents.size;
       // Smaller default: 33px on a 1080px short edge; 66px on a 1440px short edge.
@@ -75,9 +109,35 @@
     // The toy box shows the ball resting inside instead of a lone pixel.
     function drawToyBox(){
       const b=ball.basket;
-      box(b.x-10,b.y-15,20,2,'#4f6b5d');box(b.x-9,b.y-13,18,6,'#1c2f29');
+      box(b.x-11,b.y-12,22,12,'#293238');box(b.x-9,b.y-14,18,2,'#657272');
+      box(b.x-9,b.y-11,18,9,'#131c20');
       if(ball.state==='hidden')ballSprite(b.x,b.y-10);
-      box(b.x-9,b.y-6,18,8,'#253d35');box(b.x-10,b.y-8,20,3,'#638373');box(b.x-5,b.y-4,10,1,'#426052');
+      box(b.x-10,b.y-6,20,8,'#63716f');box(b.x-11,b.y-8,22,3,'#a2aca1');
+      for(let x=b.x-8;x<b.x+9;x+=4)box(x,b.y-5,2,5,'#465551');
+      box(b.x-3,b.y-5,6,4,'#b5beb1');box(b.x-1,b.y-4,2,2,'#4e7777');
+    }
+    function drawKennel(){
+      const s=life.scene,x=Math.max(22,s.house.x-34),y=s.gate.y+34;
+      box(x-14,y-17,28,17,'#596462');box(x-12,y-16,24,15,'#9aa39b');
+      for(let i=0;i<5;i++)box(x-17+i*3,y-18-i*2,34-i*6,3,'#3f5153');
+      box(x-14,y-19,28,2,'#748584');box(x-12,y-4,24,2,'#7e8b81');
+      box(x-5,y-11,10,12,'#172124');box(x-3,y-13,6,2,'#172124');
+      box(x-4,y-1,8,2,'#52777a');box(x-16,y+1,32,2,'#313d3c');
+      // Tiny bone plaque: a quiet visual cue, no text at this scale.
+      box(x-3,y-19,6,1,'#bbc1b3');box(x-4,y-20,2,3,'#bbc1b3');box(x+2,y-20,2,3,'#bbc1b3');
+    }
+    function drawQuietProps(s){
+      // Reuse the cleared plant positions, avoiding the house, bench and audio.
+      s.plants.forEach((p,i)=>{if(i%5!==0||p.y<s.gate.y+70)return;
+        const x=Math.round(p.x),y=Math.round(p.y-14);
+        if(i%3===0){ // Low stone cairn.
+          box(x-6,y-2,12,3,'#3b4547');box(x-4,y-5,8,3,'#626b69');box(x-2,y-7,5,2,'#7c8380');
+        }else if(i%3===1){ // Concrete planter.
+          box(x-6,y-7,12,2,'#75807b');box(x-5,y-5,10,6,'#46524e');box(x-3,y-10,1,3,'#596e61');box(x+1,y-11,2,4,'#667b68');
+        }else{ // Small stepping stones.
+          box(x-8,y-2,7,3,'#3b4647');box(x+2,y-5,8,3,'#505c5c');box(x+5,y+2,5,2,'#303d3e');
+        }
+      });
     }
     function drawHoop(){
       const x=hoop.x,y=hoop.y,f=hoop.facing,r=hoop.rim(),hot=hoop.rimUntil>hoop.time;
@@ -86,9 +146,11 @@
       const reach=r.half*2+2,rimX=Math.min(x,x+f*reach);box(rimX,r.y-1,reach+1,2,hot?'#ffb070':'#e98b4a');box(x+f*reach-(f<0?1:0),r.y-2,1,1,'#ffd2a3');
       const swing=hoop.netUntil>hoop.time?Math.sin((hoop.netUntil-hoop.time)*19)*Math.min(2.5,(hoop.netUntil-hoop.time)*3):0;
       for(let i=0;i<4;i++){const nx=x+f*(3+i*5)+swing*(i%2?1.4:1);box(nx,r.y+1,1,7,'#dfe8e3');if(i<3)box(nx+f,r.y+4+i%2,f*4,1,'#b8c6c0');}
-      if(hoop.streak>0)text(String(hoop.streak),x,y-47,'#f1c76b',5,'center');
-      if(hoop.flashUntil>hoop.time){ctx.globalAlpha=Math.min(1,(hoop.flashUntil-hoop.time)*1.5);text('SWISH!',x+f*8,y-54,'#f1c76b',6,'center');ctx.globalAlpha=1;}
-      if(hoop.score>0)text(`${hoop.score} PTS · REC ${hoop.best}`,x,y+9,'#466457',4,'center');
+      // Scoreboard text follows the bubble size setting so it stays readable on any screen.
+      const k=Math.max(.75,Math.min(2,settings.bubbleScale)),small=Math.round(4*k),medium=Math.round(5*k),big=Math.round(6*k);
+      if(hoop.streak>1)text(`SÉRIE ${hoop.streak}`,x,y-47-medium,'#f1c76b',medium,'center');
+      if(hoop.flashUntil>hoop.time){ctx.globalAlpha=Math.min(1,(hoop.flashUntil-hoop.time)*1.5);text('SWISH!',x+f*8,y-52-medium-big,'#f1c76b',big,'center');ctx.globalAlpha=1;}
+      if(hoop.score>0)text(`${hoop.score} PTS · RECORD ${hoop.best}`,x,y+5+small,'#5f8272',small,'center');
     }
     function drawBurst(b){
       const age=life.time-b.since,q=Math.min(1,age/1.3),c=colors[b.provider]||'#c9daa0';ctx.globalAlpha=1-q;
@@ -126,11 +188,13 @@
       if(petting&&guide&&life.time-petting.since>1){guide.loveUntil=life.time+2.6;petting=null;}
       ctx.globalAlpha=1;ctx.fillStyle=settings.background==='night'?'#03080c':'#000';ctx.fillRect(0,0,W,H);
       if(settings.background==='grid')for(let x=15;x<W;x+=28)for(let y=35;y<H;y+=28)box(x,y,1,1,'#0c171b');
+      drawTerrain();
       // The house anchors the upper left; its garden follows the available screen width.
       path([{x:s.left+6,y:s.busY+5},{x:s.right-8,y:s.busY+5}],'#18231f');
       for(let x=s.left+14;x<s.right-5;x+=13)box(x,s.busY+8,6,1,'#142019');
       const mids=dancing?Math.max(0,spectrum?.mids||0):0;
       for(const plant of s.plants)prop(plant.type,plant.x,plant.y+(dancing&&plant.type==='flowers'?Math.round(Math.sin(life.time*9+plant.x*.3)*(1+mids*1.5)):0),plant.width);
+      drawQuietProps(s);
       spectrum?.draw(ctx,W,contentHeight,settings.audioWidth);
       if(settings.media)media?.draw(ctx,W,contentHeight,settings.audioWidth,settings.audio);
       drawCorner(s);
@@ -162,13 +226,14 @@
       for(const actor of ordered){const a=actor.agent,visual=life.visual(actor,world);const chatter=actor.chatter?.until>life.time&&!['wait','error','receive','celebrate','offline'].includes(visual.action)&&!visual.expecting&&!actor.play?actor.chatter:null;if(chatter)visual.mood=chatter.mood;visuals.set(actor,{visual,chatter});
         layers.push({y:actor.y,draw(){box(actor.x-8,actor.y+2,17,2,'#101b18');
           ctx.save();if(actor.phase==='entering'){ctx.beginPath();const doorway=s.house.width*.2;ctx.rect(s.door.x-doorway/2,s.door.y-s.house.height*.38,doorway,s.house.height*.4);ctx.clip();ctx.globalAlpha=1-(visual.entering||0);}
-          robot(ctx,actor.x,actor.y,a.provider,visual.action,visual.age,{...visual,free:true,scale:a.parent?.62:1,showMini:false,dance:dancing&&!actor.play&&!visual.expecting&&actor.phase==='outside'});ctx.restore();}});
+          robot(ctx,actor.x,actor.y,a.provider,visual.action,visual.age,{...visual,skinId:root.TransitSprites.skinFor(a.id,a.provider),free:true,scale:a.parent?.62:1,showMini:false,dance:dancing&&!actor.play&&!visual.expecting&&actor.phase==='outside'});ctx.restore();}});
         if(toysOn&&ball.state==='robot'&&ball.carrier===actor.id)layers.push({y:actor.y+.01,draw(){ballSprite(ball.x,ball.y);}});
       }
       if(hoopOn&&hoop.active)layers.push({y:hoop.y,draw:drawHoop});
       if(toysOn&&ball.basket)layers.push({y:ball.basket.y+2,draw:drawToyBox});
+      if(settings.pet)layers.push({y:s.gate.y+36,draw:drawKennel});
       if(toysOn&&!['hidden','robot'].includes(ball.state))layers.push({y:ball.state==='carried'&&guide?guide.y+.01:ball.y,draw(){ballSprite(ball.x,ball.y);}});
-      if(settings.pet&&guide&&guide.x!==null)layers.push({y:guide.y,draw(){pet(ctx,guide.x,guide.y,guide.time,{moving:guide.walking,flip:guide.facing<0,alert:guide.reason,happy:dancing||guide.loveUntil>life.time});}});
+      if(settings.pet&&guide&&guide.x!==null)layers.push({y:guide.y,draw(){pet(ctx,guide.x,guide.y,guide.time,{moving:guide.walking,flip:guide.facing<0,alert:guide.reason,happy:dancing||guide.loveUntil>life.time,carrying:guide.job==='carried',running:guide.job==='fetch'||guide.job==='chase'});}});
       layers.sort((a,b)=>a.y-b.y);for(const layer of layers)layer.draw();
       for(const burst of life.bursts)drawBurst(burst);
       for(const actor of ordered){const a=actor.agent,{visual,chatter}=visuals.get(actor);

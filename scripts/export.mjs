@@ -6,6 +6,7 @@ await mkdir(dest,{recursive:true});
 for(const file of ['wallpaper.html','animations.js','gestures.js','rig.js','world.js','props.js','life.js','audio.js','media.js','pet-guide.js','toy.js','visitors.js','free-renderer.js','app.js','icon.svg'])await copyFile(path.join(root,'public',file),path.join(dest,file));
 await mkdir(path.join(dest,'assets'),{recursive:true});
 await cp(path.join(root,'public/assets/props'),path.join(dest,'assets/props'),{recursive:true});
+await cp(path.join(root,'public/assets/pet'),path.join(dest,'assets/pet'),{recursive:true});
 await copyFile(path.join(root,'public/assets/model-01.png'),path.join(dest,'preview.png'));
 // Property labels are localization tokens (ui_*): Wallpaper Engine shows the user's Steam language, English otherwise.
 const properties={

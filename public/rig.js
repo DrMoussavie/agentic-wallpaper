@@ -4,8 +4,36 @@
   const MODEL=Object.freeze({headWidth:18,headHeight:14,bodyWidth:8,bodyHeight:9,
     codex:Object.freeze({shell:'#e4edec',light:'#fbfcf3',rim:'#96afbb',joint:'#597383',boot:'#7693a3',glove:'#f1f4ea',accent:colors.codex,antennae:1}),
     claude:Object.freeze({shell:'#525f70',light:'#8b9baa',rim:'#354553',joint:'#ac916b',boot:'#435666',glove:'#c9c8b9',accent:colors.claude,antennae:2})});
+  // Stable cosmetic variations: geometry and provider antennae never change.
+  const SKINS=Object.freeze([
+    {name:'Classic',weight:75},{name:'Cherry',weight:4,codex:'#d56370',claude:'#be5167'},
+    {name:'Lime',weight:3,codex:'#9bc653',claude:'#80b344'},
+    {name:'Cobalt',weight:3,codex:'#5888d7',claude:'#596fc8'},
+    {name:'Violet',weight:3,codex:'#ab70cf',claude:'#9460bb'},
+    {name:'Tangerine',weight:3,codex:'#df9950',claude:'#cc8145'},
+    {name:'Bubblegum',weight:4,codex:'#df78b2',claude:'#ce65a2'},
+    {name:'Mint',weight:3,codex:'#63c9a6',claude:'#51b298'},
+    {name:'Lunar',weight:1,rare:true,codex:'#c1b9ec',claude:'#a19acb'},
+    {name:'Stardust',weight:1,rare:true,codex:'#ffdf00',claude:'#ffd000'}
+  ].map(Object.freeze));
+  function tint(hex,target,amount){
+    const color=Number.parseInt(hex.slice(1),16);
+    return '#'+[16,8,0].map(shift=>Math.round(((color>>shift)&255)*(1-amount)+target*amount).toString(16).padStart(2,'0')).join('');
+  }
+  // Repaint the whole shell, including trim, mittens and boots, once per palette.
+  // Screen and antenna lights keep the provider's cyan / amber identity.
+  const PALETTES=Object.fromEntries(['codex','claude'].map(provider=>[provider,SKINS.map(variant=>{
+    const base=MODEL[provider],shell=variant[provider];
+    return shell?Object.freeze({...base,shell,light:tint(shell,255,.26),rim:tint(shell,0,.38),
+      joint:tint(shell,0,.64),boot:tint(shell,0,.23),glove:tint(shell,255,.1)}):base;
+  })]));
+  function skinFor(id,provider='codex'){
+    let hash=2166136261;for(const ch of provider+':'+String(id)){hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;}
+    let pick=hash%100;for(let i=0;i<SKINS.length;i++){pick-=SKINS[i].weight;if(pick<0)return i;}return 0;
+  }
   function robot(ctx,x,y,provider='codex',action='idle',time=0,opt={}){
-    const skin=MODEL[provider]||MODEL.codex, spec=root.TransitAnimations.ACTIONS[action]||root.TransitAnimations.ACTIONS.idle;
+    const base=MODEL[provider]||MODEL.codex,variant=SKINS[opt.skinId]||SKINS[0];
+    const skin=PALETTES[provider]?.[opt.skinId]||base, spec=root.TransitAnimations.ACTIONS[action]||root.TransitAnimations.ACTIONS.idle;
     const p=((time%spec.duration)+spec.duration)%spec.duration/spec.duration;
     ctx.save();ctx.translate(Math.round(x),Math.round(y));if(opt.scale)ctx.scale(opt.scale,opt.scale);if(opt.flip)ctx.scale(-1,1);
     const r=(x,y,w,h,c=skin.shell)=>{if(w<=0||h<=0)return;ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h)));};
@@ -38,6 +66,7 @@
     ctx.save();ctx.translate(0,pose.headY);
     // No animation branch can substitute another head, body or skin.
     r(-6,-27,12,1,skin.rim);r(-8,-26,16,13,skin.rim);r(-9,-24,18,9,skin.rim);r(-7,-26,14,12);r(-8,-24,16,9);r(-6,-26,12,1,skin.light);r(-8,-23,1,6,skin.light);
+    if(opt.skinId){r(-5,-26,3,1,skin.accent);if(variant.rare){r(4,-26,2,1,'#fff3bc');r(6,-25,1,2,'#fff3bc');}}
     r(-6,-23,12,8,colors.ink);r(-5,-24,10,1,skin.joint);r(-7,-22,1,6,skin.joint);
     if(skin.antennae===2){r(-6,-31,1,5,skin.joint);r(5,-31,1,5,skin.joint);r(-7,-32,3,2,skin.accent);r(4,-32,3,2,skin.accent);}else{r(0,-31,1,4,skin.joint);r(-1,-33,3,3,skin.accent);r(-1,-33,2,1,skin.light);}
     const e=pose.eyes,c=skin.accent,g=pose.gaze;
@@ -46,7 +75,22 @@
     const mitten=([hx,hy])=>{r(hx-1,hy-2,3,5,skin.joint);r(hx-2,hy-1,5,3,skin.joint);r(hx-1,hy-1,3,3,skin.glove);r(hx-1,hy-1,2,1,skin.light);};mitten(pose.l);mitten(pose.r);
     ctx.restore();pose.over();ctx.restore();
   }
+  let petImage=null;
+  if(typeof root.Image==='function'){petImage=new root.Image();petImage.src='assets/pet/puppy-v2.png';}
+  function petFrame(time,opt={}){
+    const moving=opt.moving!==false;
+    const row=moving?0:opt.happy?3:opt.alert||opt.carrying?1:(time%8<2?2:1);
+    const fps=moving?(opt.running?12:8):row===3?8:row===2?3:3;
+    return {row,col:Math.floor(Math.max(0,time)*fps)%6};
+  }
   function pet(ctx,x,y,time=0,opt={}){
+    const image=opt.image||petImage;
+    if(image&&(image.naturalWidth||image.width)&&image.complete!==false){
+      const frame=petFrame(time,opt);ctx.save();ctx.imageSmoothingEnabled=false;
+      ctx.translate(Math.round(x),Math.round(y));if(opt.flip)ctx.scale(-1,1);
+      ctx.drawImage(image,frame.col*48,frame.row*40,48,40,-24,-38,48,40);
+      ctx.restore();return;
+    }
     ctx.save();ctx.translate(Math.round(x),Math.round(y));if(opt.flip)ctx.scale(-1,1);
     const r=(a,b,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(a,b,w,h);};
     const step=opt.moving===false?0:Math.floor(time*6)%2,tail=Math.floor(time*(opt.alert||opt.happy?9:4))%2;
@@ -55,5 +99,5 @@
     if(opt.alert)r(4,-5,4,1,opt.alert==='error'?'#ed8582':'#edb56d');
     ctx.restore();
   }
-  root.TransitSprites={robot,pet,colors,MODEL};
+  root.TransitSprites={robot,pet,petFrame,skinFor,SKINS,colors,MODEL};
 })(globalThis);

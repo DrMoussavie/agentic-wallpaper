@@ -1,0 +1,22 @@
+<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atelier — chien et skins</title>
+<style>body{background:#080d10;color:#c8d3cd;font:14px monospace;margin:32px auto;max-width:1100px;padding:0 20px}h1{font-size:22px}p{color:#81938e;line-height:1.7}a{color:#81b6b4}canvas{width:100%;image-rendering:pixelated}button{background:#233330;color:#c8d3cd;border:1px solid #526b61;padding:10px;cursor:pointer}</style>
+<h1>Atelier du jardin</h1><p>Classiques : 75 % · Couleurs : 23 % · Lunar : 1 % · Stardust or : 1 %. Chaque conversation conserve sa finition. Ici, toutes les variantes sont exposées pour les comparer.</p>
+<button id="pause">Pause</button> <a href="/?mode=live">Retour au jardin</a>
+<canvas id="preview" width="1100" height="640" aria-label="Vingt skins de robots et quatre animations du chien"></canvas>
+<p>Chien : marche · repos et oreilles · reniflement · jeu et caresses. Cinq couleurs, une seule planche de 24 poses.</p>
+<script src="animations.js"></script><script src="gestures.js"></script><script src="rig.js"></script>
+<script>
+const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');let time=0,last=0,paused=false;
+document.querySelector('button').onclick=()=>{paused=!paused;document.querySelector('button').textContent=paused?'Reprendre':'Pause';};
+function frame(now){if(last&&!paused)time+=(now-last)/1000;last=now;ctx.fillStyle='#080d10';ctx.fillRect(0,0,1100,640);ctx.imageSmoothingEnabled=false;
+['codex','claude'].forEach((provider,row)=>{ctx.fillStyle='#a9c4bd';ctx.font='16px monospace';ctx.fillText(provider.toUpperCase(),12,30+row*190);
+TransitSprites.SKINS.forEach((skin,i)=>{const x=55+i*110,y=140+row*190;
+TransitSprites.robot(ctx,x,y,provider,['idle','type','read','walk'][Math.floor(time/5)%4],time,{skinId:i,scale:2,showMini:false});
+ctx.font='12px monospace';ctx.fillStyle=skin.rare?'#dec991':'#829b93';ctx.textAlign='center';ctx.fillText(skin.name,x,y+24);ctx.fillText(skin.weight+' %',x,y+40);ctx.textAlign='left';});});
+const labels=['Marche','Oreilles / repos','Renifle','Jeu / caresses'];
+for(let i=0;i<4;i++){const x=100+i*280;ctx.save();ctx.translate(x,560);ctx.scale(3,3);
+TransitSprites.pet(ctx,0,0,i===2?time%2:i===1?2+time%5:time,{moving:i===0,happy:i===3,alert:i===1});
+ctx.restore();ctx.fillStyle='#829b93';ctx.font='14px monospace';ctx.fillText(labels[i],x-40,600);}
+requestAnimationFrame(frame);}requestAnimationFrame(frame);
+</script></html>

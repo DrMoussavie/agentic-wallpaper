@@ -107,7 +107,7 @@
     followDog(guide){
       if(this.state==='fetch'&&Math.hypot(guide.x-this.x,guide.y-this.y)<16)this.state='carried';
       if(this.state==='carried'){
-        this.x=guide.x+guide.facing*10;this.y=guide.y-8;
+        this.x=guide.x+guide.facing*12;this.y=guide.y-12;
         if(Math.hypot(guide.x-this.basket.x,guide.y-this.basket.y)<12){this.state='hidden';this.vx=0;this.vy=0;this.shot=null;}
       }
     }

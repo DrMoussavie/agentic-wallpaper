@@ -25,6 +25,7 @@
       }
       const destination=target?{x:target.x+(target.x+28>b.right?-24:24),y:target.y+10}:toyTarget?{...toyTarget}:chasing?chasing:this.patrol?{...this.patrol}:{x:this.x??life.scene.bench.x,y:this.y??life.scene.bench.y};
       const limitY=b.bottom;
+      if(this.loveUntil>life.time&&!target&&!toyTarget&&this.x!==null){destination.x=this.x;destination.y=this.y;}
       destination.x=clamp(destination.x,18,life.width-18);destination.y=clamp(destination.y,30,limitY);
       if(this.x===null){this.x=life.scene.bench.x-10;this.y=life.scene.bench.y+15;}
       this.x=clamp(this.x,18,life.width-18);this.y=clamp(this.y,30,life.height-20);
