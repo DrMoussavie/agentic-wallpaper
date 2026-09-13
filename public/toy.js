@@ -116,7 +116,7 @@
   // A basketball hoop that visits the garden at a random spot, stays a while, then moves on.
   class Hoop {
     constructor(seed=1){this.random=root.TransitLife.random(seed^0x5a17);this.time=0;this.state='away';this.x=null;this.y=null;this.facing=1;this.nextAt=0;this.relocateAt=null;this.relocate=true;this.score=0;this.streak=0;this.best=0;this.netUntil=-9;this.flashUntil=-9;this.rimUntil=-9;this.lastShot=null;this.appearedAt=0;}
-    get active(){return this.state==='up';}
+    get active(){return this.state==='up'&&!this.travel;}
     // Rim centre and half width; the rim sticks out from the backboard towards the open side (screen centre).
     rim(){return{x:this.x+this.facing*11,y:this.y-27,half:9};}
     board(){return{x:this.x,top:this.y-42,bottom:this.y-22};}
@@ -140,13 +140,21 @@
         if(best)break;
       }
       if(!best){if(previous)return false;best={x:(b.left+b.right)/2,y:Math.max(b.top+52,b.bottom-40)};}
-      this.x=Math.round(best.x);this.y=Math.round(best.y);this.facing=this.x>life.width/2?-1:1;this.state='up';this.appearedAt=this.time;this.relocateAt=null;return true;
+      const destination={x:Math.round(best.x),y:Math.round(best.y)};
+      if(previous&&this.state==='up'){this.travel={from:previous,to:destination,start:this.time,duration:1.1};}
+      else{this.x=destination.x;this.y=destination.y;this.travel=null;}
+      this.facing=destination.x>life.width/2?-1:1;this.state='up';this.appearedAt=this.time;this.relocateAt=null;return true;
     }
     update(dt,life,enabled,ball){
       this.time+=clamp(dt,0,.2);
-      if(!enabled){if(this.state==='up'){this.state='away';this.nextAt=this.time+1;}return;}
+      if(!enabled){if(this.state==='up'){this.state='away';this.nextAt=this.time+1;}this.travel=null;return;}
       if(this.state==='away'&&this.time>=this.nextAt){if(!this.spawn(life,ball))this.nextAt=this.time+5;}
       if(this.state==='up'){
+        if(this.travel){
+          const m=this.travel,q=clamp((this.time-m.start)/m.duration,0,1),e=q*q*(3-2*q);
+          this.x=m.from.x+(m.to.x-m.from.x)*e;this.y=m.from.y+(m.to.y-m.from.y)*e;
+          if(q>=1)this.travel=null;
+        }
         const b=life.bounds;
         // The hoop never leaves the screen: an impossible spot after a resize is replaced at once.
         if(this.x<b.left+20||this.x>b.right-20||this.y<b.top+40||this.y>b.bottom+2){this.state='away';this.nextAt=this.time;return;}
@@ -176,7 +184,7 @@
       }
     }
     scored(ball){
-      this.score++;this.streak++;this.best=Math.max(this.best,this.streak);this.netUntil=this.time+1.3;this.flashUntil=this.time+2.2;
+      this.score++;this.streak++;this.best=Math.max(this.best,this.streak);this.netUntil=this.time+1.3;this.flashUntil=this.time+2.2;this.rimUntil=-9;
       if(this.relocate)this.relocateAt=this.time+1.5;this.lastShot={by:ball.shot?.by||'you',scored:true,at:this.time};if(ball.shot)ball.shot.scored=true;
     }
     missed(shot){this.streak=0;this.lastShot={by:shot?.by||'you',scored:false,at:this.time};}

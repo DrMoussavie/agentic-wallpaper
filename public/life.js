@@ -17,21 +17,21 @@
     // The waiting corner: a paved patch with a bench whose length follows the screen width (2 to 6 seats).
     const benchLength=clamp(Math.round(span*.07),46,118),seats=Math.max(2,Math.floor((benchLength-6)/19));
     const bench={x:Math.round(Math.min(right-benchLength/2-16,homeX+house.width/2+42+benchLength/2)),y:gate.y+16,length:benchLength,seats};
-    const corner={left:bench.x-benchLength/2-12,right:bench.x+benchLength/2+14,top:bench.y-18,bottom:bench.y+46};
+    const corner={left:bench.x-benchLength/2-12,right:bench.x+benchLength/2+14,top:bench.y-18,bottom:bench.y+64};
     const plants=[];
-    // Sparse groups across the whole screen; population changes never reshuffle the scenery.
-    const field={left:24,right:width-24,top:42,bottom:height-Math.max(20,bottomInset-12)},fw=field.right-field.left,fh=field.bottom-field.top;
-    const groups=clamp(Math.round(fw*fh/56000),4,70),columns=clamp(Math.round(Math.sqrt(groups*fw/fh)),1,groups),rows=Math.ceil(groups/columns);
+    // Sparse groups scattered at random below the house floor; population changes never reshuffle the scenery.
+    const field={left:24,right:width-24,top:homeY+6,bottom:height-Math.max(20,bottomInset-12)},fw=field.right-field.left,fh=Math.max(1,field.bottom-field.top);
+    const groups=clamp(Math.round(fw*fh/48000),4,80),spacing=Math.sqrt(fw*fh/groups)*.55;
     const clear=p=>p.x-p.width/2>=field.left&&p.x+p.width/2<=field.right&&p.y-p.width>=field.top&&p.y<=field.bottom&&
       !(Math.abs(p.x-homeX)<house.width/2+p.width+14&&p.y>homeY-house.height-12&&p.y<gate.y+20)&&
       !(Math.abs(p.y-busY)<p.width+12)&&
       !(p.x>right-90&&p.y>homeY-45&&p.y<homeY+18)&&
       !(p.x+p.width/2>corner.left-6&&p.x-p.width/2<corner.right+6&&p.y>corner.top-6&&p.y-p.width<corner.bottom+6);
-    for(let row=0;row<rows;row++)for(let col=0;col<columns;col++){
+    for(let g=0;g<groups;g++){
       let anchor=null;
-      for(let attempt=0;attempt<8&&!anchor;attempt++){
-        const candidate={x:field.left+(col+.15+r()*.7)*fw/columns,y:field.top+(row+.15+r()*.7)*fh/rows,width:14+r()*8};
-        if(clear(candidate))anchor=candidate;
+      for(let attempt=0;attempt<24&&!anchor;attempt++){
+        const candidate={x:field.left+r()*fw,y:field.top+22+r()*Math.max(1,fh-22),width:14+r()*8};
+        if(clear(candidate)&&plants.every(p=>Math.hypot(p.x-candidate.x,(p.y-candidate.y)*1.4)>spacing))anchor=candidate;
       }
       if(!anchor)continue;
       const choice=r();plants.push({...anchor,type:choice<.72?'grass':choice<.88?'flowers':'stones'});
@@ -92,7 +92,7 @@
     spots(){
       const b=this.scene.bench,c=this.scene.corner,list=[];
       for(let i=0;i<b.seats;i++)list.push({x:Math.round(b.x-b.length/2+10+i*19),y:b.y+1,seated:true});
-      for(let x=c.left+12;x<=c.right-10;x+=20)list.push({x:Math.round(x),y:b.y+38,seated:false});
+      for(const dy of [38,56])for(let x=c.left+12;x<=c.right-10;x+=20)list.push({x:Math.round(x+(dy===56?10:0)),y:b.y+dy,seated:false});
       return list;
     }
     rest(a,dt){
@@ -204,7 +204,10 @@
         }
         a.expecting=false;
         if(this.lingering(a)){this.rest(a,dt);continue;}
-        if(a.spot!=null){a.spot=null;a.parked=false;a.seated=false;}
+        // Leaving the corner: once the new letter is caught, the robot walks back to its own work spot.
+        if(a.spot!=null){a.spot=null;a.parked=false;a.seated=false;a.backToWork=true;}
+        if(a.backToWork===true&&!this.pendingDelivery(a.id)&&!(a.caughtAt!=null&&this.time-a.caughtAt<CAUGHT_FOR))a.backToWork=this.constrain({...a.homeSpot});
+        if(a.backToWork&&a.backToWork!==true&&!['wait','error'].includes(a.agent.action)&&!this.pendingDelivery(a.id)){const pace=Math.max(21,Math.hypot(this.bounds.right-this.bounds.left,this.bounds.bottom-this.bounds.top)/24);if(this.move(a,a.backToWork,dt,pace))a.backToWork=null;else continue;}
         if(a.play){if(!roaming)this.stopPlaying(a,ball);else{this.play(a,dt,ball,hoop);continue;}}
         // A robot waiting for its prompt stands still so the capsule lands in its hands.
         const delivery=this.pendingDelivery(a.id);

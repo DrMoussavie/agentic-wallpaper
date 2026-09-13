@@ -22,33 +22,36 @@
     if(typeof Image!=='undefined')for(const [name,spec] of Object.entries(root.TransitProps||{})){const image=new Image();image.onload=()=>{images[name]=image;draw();};image.src=spec.file;}
     function prop(name,x,y,width,height){const image=images[name],spec=root.TransitProps?.[name];if(!image||!spec)return;const [sx,sy,sw,sh]=spec.crop;const h=height||width*sh/sw;ctx.drawImage(image,sx,sy,sw,sh,Math.round(x-width/2),Math.round(y-h),Math.round(width),Math.round(h));}
     const terrainImage=typeof root.Image==='function'?new root.Image():null;
-    if(terrainImage){terrainImage.onload=()=>{terrainKey='';draw();};terrainImage.src='assets/props/terrain-v1.png';}
+    if(terrainImage){terrainImage.onload=()=>{terrainKey='';draw();};terrainImage.src='assets/props/garden-v2.png';}
     function drawTerrain(){
       if(!terrainImage||!terrainImage.complete||!terrainImage.naturalWidth)return;
       const bottom=Math.max(70,H-lastFooter-12),key=[W,bottom,life.seed].join(':');
       // Screen blending makes the atlas's black margins invisible on all themes.
-      function composite(image){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.52;ctx.drawImage(image,0,0);ctx.restore();}
+      function composite(image){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.38;ctx.drawImage(image,0,0);ctx.restore();}
       if(key===terrainKey&&terrainCanvas){composite(terrainCanvas);return;}
       if(key!==terrainKey){
         terrainKey=key;terrain=[];
-        const rng=root.TransitLife.random(life.seed^0x39d174),height=bottom-36;
-        const columns=Math.max(1,Math.round(W/260)),rows=Math.max(1,Math.round(height/200));
-        const cw=W/columns,ch=height/rows;
-        const sw=terrainImage.naturalWidth/2,sh=terrainImage.naturalHeight/2;
-        for(let row=0;row<rows;row++)for(let col=0;col<columns;col++){
-          const variant=(row*columns+col+Math.floor(rng()*2))%4;
-          const width=Math.min(cw*.96,ch*1.55)*( .9+rng()*.1),height=width*.66;
-          const x=Math.max(4,Math.min(W-width-4,(col+.5)*cw-width/2+(rng()-.5)*cw*.12));
-          const y=Math.max(34,Math.min(bottom-height,36+(row+.5)*ch-height/2+(rng()-.5)*ch*.12));
-          terrain.push({x:Math.round(x),y:Math.round(y),width:Math.round(width),height:Math.round(height),
-            sx:Math.round((variant%2)*sw+sw*.065),sy:Math.round(Math.floor(variant/2)*sh+sh*.20),
-            sw:Math.round(sw*.87),sh:Math.round(sh*.70)});
+        // Patches never rise above the house floor and are scattered rather than gridded.
+        const rng=root.TransitLife.random(life.seed^0x39d174),s=life.scene,top=Math.round(s.house.y+4),height=Math.max(40,bottom-top);
+        const count=Math.max(2,Math.round(W*height/52000)),base=Math.min(W/Math.max(1,Math.round(W/260))*.8,height/Math.max(1,Math.round(height/200))*1.35);
+        const sw=terrainImage.naturalWidth/4,sh=terrainImage.naturalHeight/3,offset=Math.floor(rng()*12);
+        for(let i=0;i<count;i++){
+          const variant=(i+offset)%12,width=Math.min(base,220)*(.8+rng()*.2),ph=width*.72;let placed=null;
+          for(let attempt=0;attempt<30&&!placed;attempt++){
+            const x=4+rng()*Math.max(1,W-width-8),y=top+rng()*Math.max(1,height-ph);
+            const overlapsCorner=s.corner&&x<s.corner.right+8&&x+width>s.corner.left-8&&y<s.corner.bottom+8&&y+ph>s.corner.top-8;
+            if(!overlapsCorner&&terrain.every(p=>Math.abs(p.x+p.width/2-(x+width/2))>(p.width+width)*.42||Math.abs(p.y+p.height/2-(y+ph/2))>(p.height+ph)*.42))placed={x,y};
+          }
+          if(!placed)continue;
+          terrain.push({x:Math.round(placed.x),y:Math.round(placed.y),width:Math.round(width),height:Math.round(ph),
+            sx:Math.round((variant%4)*sw+sw*.04),sy:Math.round(Math.floor(variant/4)*sh+sh*.12),
+            sw:Math.round(sw*.92),sh:Math.round(sh*.84)});
         }
       }
       if(terrainCanvas){terrainCanvas.width=W;terrainCanvas.height=H;}
       const target=terrainCanvas?terrainCanvas.getContext('2d'):ctx;
       target.save();target.imageSmoothingEnabled=false;target.globalCompositeOperation='screen';
-      if(!terrainCanvas)target.globalAlpha=.52;
+      if(!terrainCanvas)target.globalAlpha=.38;
       for(const p of terrain)target.drawImage(terrainImage,p.sx,p.sy,p.sw,p.sh,p.x,p.y,p.width,p.height);
       target.restore();
       if(terrainCanvas)composite(terrainCanvas);
@@ -141,16 +144,45 @@
     }
     function drawHoop(){
       const x=hoop.x,y=hoop.y,f=hoop.facing,r=hoop.rim(),hot=hoop.rimUntil>hoop.time;
-      box(x-4,y-1,8,2,'#2c3a37');box(x-1,y-40,2,40,'#4a5a57');box(x-1,y-40,1,40,'#6d7f7b');
-      box(x-1,y-44,3,22,'#c5cfc9');box(x,y-43,1,20,'#e6eeea');box(x-1,y-31,3,5,'#e9a15b');
+      const moving=!!hoop.travel,shake=hot?Math.round(Math.sin(hoop.time*70)*1.5):0;
+      if(images.hoop){
+        ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(-f,1);
+        // Target square sits at the physical backboard; the ring is still drawn separately.
+        ctx.drawImage(images.hoop,0,0,24,48,-11+shake,-48,24,48);ctx.restore();
+      }else{box(x-4,y-1,8,2,'#2c3a37');box(x-1,y-40,2,40,'#6d7f7b');box(x-4,y-44,8,19,'#c5cfc9');}
+      if(moving){
+        for(const dx of [-5,5]){box(x+dx-2,y-1,4,4,'#263539');box(x+dx+(Math.floor(hoop.time*16)%2)-1,y,1,2,'#a0aaa0');}
+        box(x-f*13,y+1,3,1,'#475649');box(x-f*19,y,2,1,'#303e36');
+      }
+      ctx.save();ctx.translate(0,shake);
       const reach=r.half*2+2,rimX=Math.min(x,x+f*reach);box(rimX,r.y-1,reach+1,2,hot?'#ffb070':'#e98b4a');box(x+f*reach-(f<0?1:0),r.y-2,1,1,'#ffd2a3');
       const swing=hoop.netUntil>hoop.time?Math.sin((hoop.netUntil-hoop.time)*19)*Math.min(2.5,(hoop.netUntil-hoop.time)*3):0;
       for(let i=0;i<4;i++){const nx=x+f*(3+i*5)+swing*(i%2?1.4:1);box(nx,r.y+1,1,7,'#dfe8e3');if(i<3)box(nx+f,r.y+4+i%2,f*4,1,'#b8c6c0');}
+      ctx.restore();
+      if(hot){const q=Math.max(0,(hoop.rimUntil-hoop.time)/.35);ctx.globalAlpha=q;for(const d of [-1,1])box(r.x+f*r.half+d*(6+(1-q)*6),r.y-4-(1-q)*5,2,1,'#edb56d');ctx.globalAlpha=1;}
+      const age=hoop.lastShot?.scored?hoop.time-hoop.lastShot.at:9;
+      if(age<.9){ctx.globalAlpha=1-age/.9;for(let i=0;i<8;i++){const angle=i*Math.PI/4,rad=7+age*22;box(r.x+Math.cos(angle)*rad,r.y-6+Math.sin(angle)*rad*.6,2,2,i%2?'#a7cd90':'#f1cd6c');}ctx.globalAlpha=1;}
       // Scoreboard text follows the bubble size setting so it stays readable on any screen.
       const k=Math.max(.75,Math.min(2,settings.bubbleScale)),small=Math.round(4*k),medium=Math.round(5*k),big=Math.round(6*k);
       if(hoop.streak>1)text(`SÉRIE ${hoop.streak}`,x,y-47-medium,'#f1c76b',medium,'center');
       if(hoop.flashUntil>hoop.time){ctx.globalAlpha=Math.min(1,(hoop.flashUntil-hoop.time)*1.5);text('SWISH!',x+f*8,y-52-medium-big,'#f1c76b',big,'center');ctx.globalAlpha=1;}
       if(hoop.score>0)text(`${hoop.score} PTS · RECORD ${hoop.best}`,x,y+5+small,'#5f8272',small,'center');
+    }
+    // Trees stand in the foreground: robots and the dog pass behind them, and a tree fades while someone is hidden by it.
+    function drawTrees(ordered){
+      if(!images.trees)return;
+      const s=life.scene,rng=root.TransitLife.random(life.seed^0x7a3e1);
+      terrain.forEach((patch,i)=>{
+        if(i>=14)return;
+        const width=30+(i%3)*4,height=Math.round(width*4/3),side=rng()<.5?.2:.78;
+        const x=Math.round(patch.x+patch.width*side),y=Math.round(patch.y+patch.height*(.6+rng()*.3));
+        if(y-height<s.house.y+2||x<width/2||x>W-width/2||y>H-lastFooter)return;
+        if(s.corner&&x>s.corner.left-24&&x<s.corner.right+24&&y>s.corner.top-15&&y<s.corner.bottom+height)return;
+        if(Math.abs(x-s.house.x)<s.house.width/2+width&&y<s.gate.y+40)return;
+        const behind=ordered.some(a=>a.y<y+4&&a.y>y-height-6&&Math.abs(a.x-x)<width/2+9)||
+          settings.pet&&guide?.x!==null&&guide?.y<y+4&&guide?.y>y-height&&Math.abs(guide.x-x)<width/2+8;
+        ctx.save();ctx.globalAlpha=behind?.42:.92;ctx.drawImage(images.trees,(i%4)*24,0,24,32,x-width/2,y-height,width,height);ctx.restore();
+      });
     }
     function drawBurst(b){
       const age=life.time-b.since,q=Math.min(1,age/1.3),c=colors[b.provider]||'#c9daa0';ctx.globalAlpha=1-q;
@@ -229,13 +261,15 @@
           robot(ctx,actor.x,actor.y,a.provider,visual.action,visual.age,{...visual,skinId:root.TransitSprites.skinFor(a.id,a.provider),free:true,scale:a.parent?.62:1,showMini:false,dance:dancing&&!actor.play&&!visual.expecting&&actor.phase==='outside'});ctx.restore();}});
         if(toysOn&&ball.state==='robot'&&ball.carrier===actor.id)layers.push({y:actor.y+.01,draw(){ballSprite(ball.x,ball.y);}});
       }
-      if(hoopOn&&hoop.active)layers.push({y:hoop.y,draw:drawHoop});
+      if(hoopOn&&hoop.state==='up')layers.push({y:hoop.y,draw:drawHoop});
       if(toysOn&&ball.basket)layers.push({y:ball.basket.y+2,draw:drawToyBox});
       if(settings.pet)layers.push({y:s.gate.y+36,draw:drawKennel});
       if(toysOn&&!['hidden','robot'].includes(ball.state))layers.push({y:ball.state==='carried'&&guide?guide.y+.01:ball.y,draw(){ballSprite(ball.x,ball.y);}});
       if(settings.pet&&guide&&guide.x!==null)layers.push({y:guide.y,draw(){pet(ctx,guide.x,guide.y,guide.time,{moving:guide.walking,flip:guide.facing<0,alert:guide.reason,happy:dancing||guide.loveUntil>life.time,carrying:guide.job==='carried',running:guide.job==='fetch'||guide.job==='chase'});}});
+      
       layers.sort((a,b)=>a.y-b.y);for(const layer of layers)layer.draw();
       for(const burst of life.bursts)drawBurst(burst);
+      drawTrees(ordered);
       for(const actor of ordered){const a=actor.agent,{visual,chatter}=visuals.get(actor);
         const receiptAge=actor.caughtAt!=null?life.time-actor.caughtAt:99;
         if(receiptAge>=0&&receiptAge<.8){
@@ -252,7 +286,8 @@
           const cheer=actor.cheerUntil>life.time?actor.cheer:null,playing=actor.play?.stage;
           const caption=urgent?actor.phrase:incoming?actor.phrase:cheer?(cheer==='swish'?'Swish!':'Almost!'):playing==='aim'?'Watch this!':playing?'Ball time!':visual.social?'Hey there!':chatter?chatter.text:visual.caught?'New quest!':actor.phrase;
           if(actor.caption!==caption){actor.caption=caption;actor.captionSince=life.time;}
-          const age=(life.time-actor.captionSince)%12;
+          // A delivered answer says it once, then only every 40 s: the letter already tells the story.
+          const age=(life.time-actor.captionSince)%(visual.delivered?40:12);
           const displayCaption=caption==='Listening...'?`Listening${'.'.repeat([1,2,3,2,1][Math.floor(life.time*3)%5])}`:caption;
           if(settings.bubbles&&(urgent||incoming||chatter||cheer||age<4.5))speech(displayCaption,actor,a.action==='error'?'#e2ad9f':a.action==='wait'?'#ead1a4':'#c1d0c1',urgent?1:Math.max(0,Math.min(1,.35+age*4,(4.5-age)*3)));
         }

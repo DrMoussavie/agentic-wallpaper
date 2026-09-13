@@ -9,6 +9,28 @@ function garden(width=640,height=900,seed=7){
   return{life,ball,hoop};
 }
 
+test('Le panier roule entre deux positions, sans collision active pendant le déplacement',()=>{
+  const {life,ball,hoop}=garden();hoop.update(.1,life,true,ball);
+  const before={x:hoop.x,y:hoop.y};hoop.spawn(life,ball);
+  const destination={...hoop.travel.to};assert.equal(hoop.active,false);
+  hoop.update(.2,life,true,ball);
+  assert.ok(Math.hypot(hoop.x-before.x,hoop.y-before.y)>0);
+  assert.ok(Math.hypot(hoop.x-destination.x,hoop.y-destination.y)>0);
+  for(let i=0;i<6;i++)hoop.update(.2,life,true,ball);
+  assert.equal(hoop.active,true);assert.equal(hoop.travel,null);
+  assert.deepEqual({x:hoop.x,y:hoop.y},destination);
+});
+
+test('Un contact sur le bout de l’anneau déclenche une vibration, sans célébration de panier',()=>{
+  const {ball,hoop}=garden();hoop.x=300;hoop.y=500;hoop.facing=1;hoop.state='up';hoop.time=2;
+  const rim=hoop.rim();ball.x=rim.x+rim.half+4;ball.y=rim.y;ball.vx=-40;ball.vy=0;
+  hoop.collide(ball,ball.x+2,ball.y);
+  assert.ok(hoop.rimUntil>hoop.time);assert.equal(hoop.score,0);
+  assert.ok(hoop.flashUntil<hoop.time);assert.ok(ball.vx>0);
+  hoop.scored(ball);assert.equal(hoop.score,1);assert.ok(hoop.netUntil>hoop.time);
+  assert.ok(hoop.rimUntil<hoop.time);
+});
+
 test('Le panier est toujours là, sur un emplacement libre, et change de place à chaque panier marqué',()=>{
   for(const [width,height] of [[1080,1920],[2560,1080],[640,900]]){
     const {life,ball,hoop}=garden(width,height,3);const spots=new Set();
