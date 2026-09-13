@@ -37,8 +37,14 @@ h3{font-size:1rem;margin:8px 0 6px}
 .btn.primary{background:var(--green);color:#04120a;border-color:var(--green)}
 .btn.primary:hover{background:#9be6bb}
 .fine{font-size:.78rem;color:var(--muted);margin:0}
-.scroll-hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);color:var(--muted);font-size:14px;animation:bob 1.8s ease-in-out infinite}
-@keyframes bob{50%{transform:translate(-50%,6px)}}
+.scroll-hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--green);font-family:var(--display);font-size:11px;letter-spacing:.14em;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--line);animation:bob 1.6s ease-in-out infinite}
+.scroll-hint:hover{text-decoration:none;color:var(--ink)}
+@keyframes bob{50%{transform:translate(-50%,7px)}}
+/* Every few seconds the hero card (not the garden) gives a little hop to say "there is more below". Stops once the visitor scrolls. */
+.hero-card{animation:nudge 7s ease-in-out 3s infinite}
+@keyframes nudge{0%,88%,100%{transform:translateY(0)}91%{transform:translateY(-14px)}94%{transform:translateY(0)}96.5%{transform:translateY(-6px)}98.5%{transform:translateY(0)}}
+body.scrolled .hero-card,body.scrolled .scroll-hint{animation:none}
+@media (prefers-reduced-motion:reduce){.hero-card,.scroll-hint{animation:none}}
 
 .block{padding:6vh 5vw;display:flex;justify-content:center}
 .block .card{width:min(980px,100%)}

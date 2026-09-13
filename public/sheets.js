@@ -1,6 +1,6 @@
 (function(root){
   function sheet(factory,id,family){
-    const a=root.TransitAnimations.ACTIONS[id],canvas=factory(1280,760),ctx=canvas.getContext('2d');ctx.fillStyle='#080e12';ctx.fillRect(0,0,1280,760);ctx.fillStyle=family==='codex'?'#73d8e8':'#edb56d';ctx.font='16px monospace';ctx.fillText(`AGENT TRANSIT  /  ${family.toUpperCase()}  /  MODÈLE 01`,40,40);ctx.fillStyle='#e4edec';ctx.font='30px sans-serif';ctx.fillText(a.name,40,85);ctx.fillStyle='#879ca8';ctx.font='14px sans-serif';ctx.fillText(`${a.duration.toFixed(1)} secondes · 8 étapes · même tête, même corps, mêmes proportions`,40,114);
+    const a=root.TransitAnimations.ACTIONS[id],canvas=factory(1280,760),ctx=canvas.getContext('2d');ctx.fillStyle='#080e12';ctx.fillRect(0,0,1280,760);ctx.fillStyle=family==='codex'?'#73d8e8':'#edb56d';ctx.font='16px monospace';ctx.fillText(`AGENTIC WALLPAPER  /  ${family.toUpperCase()}  /  MODÈLE 01`,40,40);ctx.fillStyle='#e4edec';ctx.font='30px sans-serif';ctx.fillText(a.name,40,85);ctx.fillStyle='#879ca8';ctx.font='14px sans-serif';ctx.fillText(`${a.duration.toFixed(1)} secondes · 8 étapes · même tête, même corps, mêmes proportions`,40,114);
     for(let i=0;i<8;i++){
       const x=32+i%4*308,y=145+Math.floor(i/4)*285;ctx.fillStyle='#000';ctx.fillRect(x,y,292,265);ctx.fillStyle='#233640';ctx.fillRect(x+16,y+206,259,1);
       root.TransitSprites.robot(ctx,x+106,y+203,family,id,a.duration*(i+.36)/8,{scale:4});

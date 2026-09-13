@@ -42,7 +42,7 @@
       <p class="compat"><span class="dot cyan"></span> Codex <span class="sep">+</span> <span class="dot amber"></span> Claude Code — both apps, at the same time, in the same garden</p>
       <p class="fine">Free · CC BY-NC 4.0 · Windows · Wallpaper Engine · no API key, nothing leaves your machine</p>
     </div>
-    <a class="scroll-hint" href="#how" aria-label="Scroll down">▼</a>
+    <a class="scroll-hint" href="#how" aria-label="Scroll down"><span>scroll</span>▼</a>
   </section>
 
   <section id="how" class="block">
@@ -131,6 +131,7 @@ npm start                 # relay on http://127.0.0.1:49157</code></pre>
 </main>
 
 <script>
+let nudged=false;window.addEventListener('scroll',()=>{if(!nudged&&window.scrollY>40){nudged=true;document.body.classList.add('scrolled');}},{passive:true});
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>{x.classList.toggle('active',x===t);x.setAttribute('aria-selected',x===t);});document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.panel!==t.dataset.tab);}));
 document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent);b.textContent='Copied ✓';}catch{b.textContent='Select & copy';}setTimeout(()=>b.textContent='Copy prompt',1800);}));
 </script>
