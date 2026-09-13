@@ -1,5 +1,6 @@
 /* Generated images, original alpha retained. Crops only remove empty margins when drawing. */
 globalThis.TransitProps={
+  "sky": {"file":"assets/props/sky-v1.png","crop":[0,0,48,32]},
   "trees": {"file":"assets/props/trees-v2.png","crop":[0,0,24,32]},
   "hoop": {"file":"assets/props/hoop-v2.png","crop":[0,0,24,48]},
   "grass": {

@@ -71,6 +71,16 @@ Same rig, 22 animations each: arrive, think, read, search, type, tool, test, sen
 
 **Live agents — works with Claude Code *and* Codex, both at once.**
 
+**One-shot installer** (Node.js 20+ required — `winget install OpenJS.NodeJS.LTS`):
+
+```powershell
+git clone https://github.com/DrMoussavie/agentic-wallpaper
+cd agentic-wallpaper
+powershell -ExecutionPolicy Bypass -File Install.ps1
+```
+
+`Install.ps1` installs the dependencies, merges the hooks into Claude Code and Codex (backups kept), builds and copies the wallpaper into Wallpaper Engine, and registers the relay autostart — a per-user scheduled task that starts the relay **only while Agentic Wallpaper is selected** in Wallpaper Engine and lets it exit after 10 minutes without a wallpaper or Studio connected. Switch to another wallpaper and nothing keeps running. A little robot walks across the console while it works. `Uninstall.ps1` undoes all of it (`-KeepHooks`, `-KeepWallpaper` to keep parts).
+
 <details open>
 <summary><b>🤖 Let your agent install it</b> — paste this into Claude Code or Codex on your Windows PC</summary>
 
@@ -80,7 +90,7 @@ Install Agentic Wallpaper from https://github.com/DrMoussavie/agentic-wallpaper 
 1. Check Node.js >= 20 is available (install it with winget if not).
 2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit, then run: npm install
 3. Run: npm run hooks:install  (it merges the hooks into ~/.claude/settings.json and the Codex config, keeps backups, changes nothing else).
-4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts with Windows, then start it now in the background with: npm start
+4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts automatically (only while the wallpaper is selected in Wallpaper Engine), then start it now in the background with: npm start
 5. Verify http://127.0.0.1:49157/health answers.
 6. Run: npm run export  and copy dist/wallpaper to <Steam>\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit (find my Steam library path first).
 7. Select "Agentic Wallpaper" in Wallpaper Engine → Installed is a click I do myself; just tell me.

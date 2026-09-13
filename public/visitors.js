@@ -49,5 +49,16 @@
     }
     snapshot(){return{hour:this.hour,night:this.night,butterfly:this.butterfly?{x:this.butterfly.x,y:this.butterfly.y,resting:this.butterfly.resting>0}:null,fireflies:this.fireflies.length};}
   }
-  root.TransitVisitors={Visitors,isNight};
+  function skyTone(hour){
+    const h=((hour%24)+24)%24;
+    const smooth=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};
+    const light=smooth((h-6)/2)*(1-smooth((h-19)/2));
+    const warm=Math.max(0,1-Math.abs(h-7)/1.5,1-Math.abs(h-19.5)/1.5);
+    const mix=(a,b,k)=>a.map((v,i)=>Math.round(v+(b[i]-v)*k));
+    const rgb=a=>'rgb('+a.join(',')+')';
+    return{light,sky:rgb(mix(mix([5,10,24],[39,79,111],light),[82,65,79],warm*.38)),
+      horizon:rgb(mix(mix([10,17,28],[47,75,88],light),[101,77,68],warm*.4)),
+      ground:rgb(mix([5,9,11],[22,29,29],light))};
+  }
+  root.TransitVisitors={Visitors,isNight,skyTone};
 })(globalThis);

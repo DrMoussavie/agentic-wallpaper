@@ -13,6 +13,8 @@ test('Les propriétés Wallpaper Engine commandent le vrai rendu sans réinitial
   apply({bottomMargin:{value:0}});assert.equal(settings.bottomMargin,0);
   apply({bottomMargin:{value:999}});assert.equal(settings.bottomMargin,200);
   apply({bottomMargin:{value:80}});
+  apply({background:{value:3}});assert.equal(settings.background,'cycle');
+  apply({background:{value:0}});assert.equal(settings.background,'black');
   apply({audioWidth:{value:75}});assert.equal(settings.audioWidth,75);assert.equal(settings.pet,true);assert.equal(settings.bubbleScale,1.8);
   apply({audioWidth:{value:1000}});assert.equal(settings.audioWidth,100);
   apply({demopopulation:{value:12},demomode:{value:true}});assert.equal(sandbox.TransitApp.world.mode,'live');assert.equal(sandbox.TransitApp.world.agents.size,0);sandbox.TransitApp.advance(120);assert.equal(sandbox.TransitApp.world.agents.size,0);

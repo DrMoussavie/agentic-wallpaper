@@ -1,27 +1,31 @@
 ﻿param([switch]$Remove)
+# Registers a per-user scheduled task: at logon and every 5 minutes, start-relay.ps1 starts the relay only when
+# Agentic Wallpaper is selected in Wallpaper Engine (the relay itself exits after 10 idle minutes). No admin rights.
 $ErrorActionPreference = 'Stop'
+$taskName = 'Agentic Wallpaper relay'
 $shortcutPath = Join-Path ([Environment]::GetFolderPath('Startup')) 'Agent Transit - relais.lnk'
 $shellObject = New-Object -ComObject WScript.Shell
-if ($Remove) {
+function Remove-LegacyShortcut {
     if (Test-Path -LiteralPath $shortcutPath) {
         $existing = $shellObject.CreateShortcut($shortcutPath)
-        if ($existing.Description -ne 'Agent Transit local relay - managed startup') { throw 'Ce raccourci appartient à une autre installation.' }
-        Remove-Item -LiteralPath $shortcutPath
+        if ($existing.Description -eq 'Agent Transit local relay - managed startup') { Remove-Item -LiteralPath $shortcutPath }
     }
+}
+if ($Remove) {
+    Remove-LegacyShortcut
+    if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false }
     Write-Output 'Démarrage automatique du relais désactivé. Wallpaper Engine est inchangé.'
     exit 0
 }
-if (Test-Path -LiteralPath $shortcutPath) {
-    $existing = $shellObject.CreateShortcut($shortcutPath)
-    if ($existing.Description -ne 'Agent Transit local relay - managed startup') { throw 'Un autre raccourci utilise déjà ce nom.' }
-}
 $nodeExe = (Get-Command node.exe -ErrorAction Stop).Source
 $scriptPath = Join-Path $PSScriptRoot 'start-relay.ps1'
-$shortcut = $shellObject.CreateShortcut($shortcutPath)
-$shortcut.TargetPath = Join-Path $PSHOME 'powershell.exe'
-$shortcut.Arguments = '-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "{0}" -NodePath "{1}"' -f $scriptPath, $nodeExe
-$shortcut.WorkingDirectory = Split-Path -Parent $PSScriptRoot
-$shortcut.Description = 'Agent Transit local relay - managed startup'
-$shortcut.WindowStyle = 7
-$shortcut.Save()
-Write-Output ('Démarrage automatique installé : ' + $shortcutPath)
+$arguments = '-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "{0}" -NodePath "{1}"' -f $scriptPath, $nodeExe
+$action = New-ScheduledTaskAction -Execute (Join-Path $PSHOME 'powershell.exe') -Argument $arguments -WorkingDirectory (Split-Path -Parent $PSScriptRoot)
+$logon = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+$logon.Delay = 'PT20S'
+$repeat = New-ScheduledTaskTrigger -Once -At (Get-Date).Date -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 3650)
+$settings = New-ScheduledTaskSettingsSet -Hidden -ExecutionTimeLimit (New-TimeSpan -Minutes 2) -MultipleInstances IgnoreNew -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+Remove-LegacyShortcut
+if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) { Unregister-ScheduledTask -TaskName $taskName -Confirm:$false }
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($logon, $repeat) -Settings $settings -Description 'Starts the Agentic Wallpaper relay while the wallpaper is selected in Wallpaper Engine.' | Out-Null
+Write-Output ('Démarrage automatique installé : tâche planifiée "{0}" (à l''ouverture de session, puis toutes les 5 minutes, seulement si le fond est sélectionné).' -f $taskName)

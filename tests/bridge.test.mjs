@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createBridge } from '../bridge/server.mjs';
 import {spawn} from 'node:child_process';
+import http from 'node:http';
 import {mkdtemp,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -25,4 +26,12 @@ test('Vrai processus de hook → pont isolé, pour les deux familles ; sortie to
   const run=(provider,body)=>new Promise((resolve,reject)=>{const child=spawn(process.execPath,[fileURLToPath(new URL('../bridge/hook.mjs',import.meta.url)),provider],{env:{...process.env,TRANSIT_CONNECTION_FILE:config},windowsHide:true});let out='',err='';child.stdout.on('data',v=>out+=v);child.stderr.on('data',v=>err+=v);child.on('error',reject);child.on('exit',code=>resolve({code,out,err}));child.stdin.end(body);});
   try{for(const provider of ['codex','claude']){const result=await run(provider,JSON.stringify({session_id:`fixture-${provider}`,hook_event_name:'SubagentStart',agent_id:'fake-child',agent_type:'Explore',prompt:'NO-CONTENT'}));assert.deepEqual(result,{code:0,out:'{}\n',err:''});}assert.equal(b.world.events,2);assert.equal(b.world.agents.size,4);assert.equal(JSON.stringify(b.snapshot()).includes('NO-CONTENT'),false);assert.equal((await run('codex','not-json')).out,'{}\n');}finally{await b.close();}
   const offline=await run('codex',JSON.stringify({session_id:'offline-fixture',hook_event_name:'Stop'}));assert.deepEqual(offline,{code:0,out:'{}\n',err:''});
+});
+
+test('Lancé automatiquement, le relais s’arrête après une période sans client ; un fond connecté le garde en vie',async()=>{
+  let idle=0;const b=await createBridge({port:0,writeConfig:false,idleExitMs:900,onIdle:()=>{idle++;}});
+  try{
+    const req=http.get(`http://127.0.0.1:${b.port}/stream`,()=>{});req.on('error',()=>{});await new Promise(r=>setTimeout(r,1300));assert.equal(idle,0);
+    req.destroy();await new Promise(r=>setTimeout(r,1600));assert.equal(idle,1);
+  }finally{await b.close();}
 });

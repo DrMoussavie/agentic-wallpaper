@@ -13,7 +13,7 @@ const properties={
   tubes:{order:2,text:'ui_tubes',type:'bool',value:true},
   pet:{order:3,text:'ui_pet',type:'bool',value:true},
   pixelscale:{order:4,text:'ui_pixelscale',type:'combo',value:1,options:[{label:'ui_scale_mini',value:.75},{label:'ui_scale_small',value:1},{label:'ui_scale_large',value:1.4}]},
-  background:{order:5,text:'ui_background',type:'combo',value:0,options:[{label:'ui_bg_black',value:0},{label:'ui_bg_night',value:1},{label:'ui_bg_grid',value:2}]},
+  background:{order:5,text:'ui_background',type:'combo',value:0,options:[{label:'ui_bg_black',value:0},{label:'ui_bg_night',value:1},{label:'ui_bg_grid',value:2},{label:'ui_bg_cycle',value:3}]},
   roam:{order:6,text:'ui_roam',type:'bool',value:true},
   social:{order:7,text:'ui_social',type:'bool',value:true},
   audio:{order:8,text:'ui_audio',type:'bool',value:true},
@@ -31,7 +31,7 @@ const properties={
 const localization={
   'en-us':{
     ui_tubes:'Data conduits',ui_pet:'Guide dog (flags waits and errors)',ui_pixelscale:'Character size',ui_scale_mini:'Miniature',ui_scale_small:'Small',ui_scale_large:'Larger',
-    ui_background:'Background',ui_bg_black:'Absolute black',ui_bg_night:'Night blue',ui_bg_grid:'Micro-dots',
+    ui_background:'Background',ui_bg_black:'Absolute black',ui_bg_night:'Night blue',ui_bg_grid:'Micro-dots',ui_bg_cycle:'Local day/night cycle — blue sky',
     ui_roam:'Idle robots wander around',ui_social:'Decorative meetings and click reactions',ui_audio:'PC sound spectrum',ui_bubbles:'Small speech bubbles',ui_toy:'Ball to throw (the dog puts it away)',
     ui_bubblescale:'Bubble size',ui_bubble_small:'Small',ui_bubble_readable:'Readable',ui_bubble_large:'Large',
     ui_audiowidth:'Spectrum width (%)',ui_media:'Track title and artist',ui_bottommargin:'Bottom margin / taskbar (px)',
@@ -40,7 +40,7 @@ const localization={
   },
   'fr-fr':{
     ui_tubes:'Conduits de données',ui_pet:'Chien guide (attentes et erreurs)',ui_pixelscale:'Taille des personnages',ui_scale_mini:'Miniatures',ui_scale_small:'Petits',ui_scale_large:'Plus grands',
-    ui_background:'Fond',ui_bg_black:'Noir absolu',ui_bg_night:'Bleu nuit',ui_bg_grid:'Micro-points',
+    ui_background:'Fond',ui_bg_black:'Noir absolu',ui_bg_night:'Bleu nuit',ui_bg_grid:'Micro-points',ui_bg_cycle:'Cycle réel — ciel bleu',
     ui_roam:'Promenades des agents disponibles',ui_social:'Rencontres décoratives et réactions au clic',ui_audio:'Spectre du son du PC',ui_bubbles:'Petites bulles en anglais',ui_toy:'Balle à lancer (le chien la range)',
     ui_bubblescale:'Taille des bulles',ui_bubble_small:'Petites',ui_bubble_readable:'Lisibles',ui_bubble_large:'Grandes',
     ui_audiowidth:'Largeur du spectre (%)',ui_media:'Titre et artiste de la musique',ui_bottommargin:'Marge basse / barre des tâches (px)',

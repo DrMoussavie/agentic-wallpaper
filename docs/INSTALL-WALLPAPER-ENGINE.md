@@ -109,7 +109,7 @@ Install Agentic Wallpaper from https://github.com/DrMoussavie/agentic-wallpaper 
 1. Check Node.js >= 20 is available (install it with winget if not).
 2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit, then run: npm install
 3. Run: npm run hooks:install  (it merges the hooks into ~/.claude/settings.json and the Codex config, keeps backups, changes nothing else).
-4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts with Windows, then start it now in the background with: npm start
+4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts automatically (only while the wallpaper is selected in Wallpaper Engine), then start it now in the background with: npm start
 5. Verify http://127.0.0.1:49157/health answers.
 6. Run: npm run export  and copy dist/wallpaper to <Steam>\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit (find my Steam library path first).
 7. Select "Agentic Wallpaper" in Wallpaper Engine → Installed is a click I do myself; just tell me.
@@ -148,7 +148,7 @@ To start it silently with Windows (no console, no browser):
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1
 ```
 
-This creates one shortcut in your Startup folder. Same command with `-Remove` to undo.
+This registers a per-user scheduled task (at logon, then every 5 minutes) that starts the relay only while Agentic Wallpaper is selected in Wallpaper Engine; started that way, the relay exits after 10 minutes without a connected wallpaper or Studio. Same command with `-Remove` to undo. `Install.ps1` at the repo root runs every step for you, and `Uninstall.ps1` removes everything again.
 
 ### What is (and is not) sent
 

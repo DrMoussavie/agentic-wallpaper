@@ -12,8 +12,8 @@ import '../public/world.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const publicRoot=path.join(root,'public');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.json':'application/json; charset=utf-8'};
-export async function createBridge({port=49157,writeConfig=true,lineageResolver=null,initialSnapshot=null,statusReader=null,audioHub=null,reconcileInterval=60000}={}){
-  const token=randomBytes(32).toString('hex');const clients=new Set();const world=new globalThis.TransitWorld.World();world.mode='live';let started=Date.now(),counts={codex:0,claude:0},recent=[];
+export async function createBridge({port=49157,writeConfig=true,lineageResolver=null,initialSnapshot=null,statusReader=null,audioHub=null,reconcileInterval=60000,idleExitMs=0,onIdle=null}={}){
+  const token=randomBytes(32).toString('hex');const clients=new Set();const world=new globalThis.TransitWorld.World();world.mode='live';let started=Date.now(),counts={codex:0,claude:0},recent=[],lastClientAt=Date.now();
   if(initialSnapshot){
     world.restore(initialSnapshot);
     for(const a of world.agents.values())a.observedAt=Number(a.observedAt)||Date.now()-Math.max(0,-a.last)*1000;
@@ -75,7 +75,7 @@ export async function createBridge({port=49157,writeConfig=true,lineageResolver=
     }
     if(req.method==='GET'&&url.pathname==='/stream'){
       if(clients.size>=20){res.writeHead(503);res.end();return;}
-      res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache, no-transform','Connection':'keep-alive'});res.write('retry: 2500\n\n');res.write(encode(snapshot()));clients.add(res);req.on('close',()=>clients.delete(res));return;
+      res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache, no-transform','Connection':'keep-alive'});res.write('retry: 2500\n\n');res.write(encode(snapshot()));clients.add(res);lastClientAt=Date.now();req.on('close',()=>{clients.delete(res);lastClientAt=Date.now();});return;
     }
     if(req.method==='POST'&&url.pathname==='/ingest'){
       const supplied=String(req.headers['x-transit-token']||'');
@@ -105,17 +105,19 @@ export async function createBridge({port=49157,writeConfig=true,lineageResolver=
   if(writeConfig){await mkdir(path.join(root,'.local'),{recursive:true});await writeFile(path.join(root,'.local/connection.json'),JSON.stringify({port:actualPort,token}),{mode:0o600});}
   const heartbeat=setInterval(()=>{tick();for(const c of clients)c.write(': heartbeat\n\n');},15000);heartbeat.unref();
   const verificationTimer=statusReader?setInterval(()=>{if(world.agents.size)void reconcile();},Math.max(1000,reconcileInterval)):null;verificationTimer?.unref();
-  return {server,port:actualPort,token,world,snapshot,reconcile,async close(){clearInterval(heartbeat);clearInterval(verificationTimer);audioHub?.close();for(const c of clients)c.end();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}};
+  // Started automatically, the relay leaves when no wallpaper or Studio has been connected for a while.
+  const idleTimer=idleExitMs>0?setInterval(()=>{if(!clients.size&&Date.now()-lastClientAt>=idleExitMs){clearInterval(idleTimer);(onIdle||(()=>{}))();}},Math.max(200,Math.min(60000,idleExitMs/4))):null;idleTimer?.unref();
+  return {server,port:actualPort,token,world,snapshot,reconcile,async close(){clearInterval(heartbeat);clearInterval(verificationTimer);if(idleTimer)clearInterval(idleTimer);audioHub?.close();for(const c of clients)c.end();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   try{
-    const resume=process.argv.indexOf('--resume'),initialSnapshot=resume>=0?JSON.parse(await readFile(process.argv[resume+1],'utf8')):null;
+    const resume=process.argv.indexOf('--resume'),initialSnapshot=resume>=0?JSON.parse(await readFile(process.argv[resume+1],'utf8')):null,auto=process.argv.includes('--auto');
     const lineageResolver=createLineageResolver(),venv=path.join(root,'.local/audio-venv');
     const venvConfig=await readFile(path.join(venv,'pyvenv.cfg'),'utf8').catch(()=>'');
     // Start the base interpreter directly: the Windows venv launcher can orphan a child on kill.
     const python=process.env.TRANSIT_PYTHON||venvConfig.match(/^executable\s*=\s*(.+)$/m)?.[1].trim()||path.join(venv,'Scripts/python.exe');
     const audioHub=createAudioHub({python,pythonPath:path.join(venv,'Lib/site-packages')});
-    const bridge=await createBridge({port:Number(process.env.TRANSIT_PORT)||49157,lineageResolver,initialSnapshot,statusReader:createStatusReader({python,lineageResolver}),audioHub});
+    const bridge=await createBridge({port:Number(process.env.TRANSIT_PORT)||49157,lineageResolver,initialSnapshot,statusReader:createStatusReader({python,lineageResolver}),audioHub,idleExitMs:auto?10*60*1000:0,onIdle:async()=>{console.log('Aucun fond ni Studio connecté depuis 10 minutes : le relais s’arrête.');await bridge.close();process.exit(0);}});
     await bridge.reconcile();
     process.on('exit',()=>audioHub.close());
     console.log(`Agent Transit prêt : http://127.0.0.1:${bridge.port}`);console.log('Pont local actif. Ctrl+C pour arrêter. Aucun appel à une API de modèle.');

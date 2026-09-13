@@ -198,19 +198,34 @@
     // The sky marks the time of day: sun and slow clouds by day, moon and twinkling stars by night, warm light at dawn and dusk.
     let skyKey='',stars=[],clouds=[];
     function drawSky(s){
-      const hour=visitors?.hour??12,night=visitors?.night,dusk=!night&&(hour<8||hour>=19),skyBottom=Math.max(20,s.house.y-s.house.height-6),key=[W,H,life.seed].join(':');
+      const hour=visitors?.hour??12,tone=root.TransitVisitors?.skyTone(hour),cycle=settings.background==='cycle';
+      const light=tone?.light??1,skyBottom=Math.max(54,Math.min(180,H*.2,s.busY+2)),key=[W,skyBottom,life.seed].join(':');
+      if(cycle&&tone){
+        // Broad, low-brightness bands keep the sky blue and the ground charcoal.
+        const gradient=ctx.createLinearGradient(0,0,0,skyBottom);gradient.addColorStop(0,tone.sky);gradient.addColorStop(.7,tone.sky);gradient.addColorStop(1,tone.horizon);
+        ctx.fillStyle=gradient;ctx.fillRect(0,0,W,skyBottom);
+        for(let i=0;i<4;i++){ctx.globalAlpha=(4-i)/5;box(0,skyBottom+i*3,W,3,tone.horizon);}ctx.globalAlpha=1;
+      }
       if(key!==skyKey){skyKey=key;const rng=root.TransitLife.random(life.seed^0x51a7);stars=[];clouds=[];
-        for(let i=0;i<Math.round(W/22);i++)stars.push({x:Math.round(30+rng()*(W-60)),y:Math.round(8+rng()*Math.max(4,skyBottom-8)),phase:rng()*7,size:rng()<.2?2:1});
-        for(let i=0;i<Math.max(2,Math.round(W/420));i++)clouds.push({x:rng()*W,y:Math.round(14+rng()*Math.max(4,skyBottom-24)),w:26+Math.round(rng()*22),speed:2+rng()*2.5});}
-      if(night){
-        for(const st of stars){const tw=.35+.65*Math.max(0,Math.sin(life.time*1.3+st.phase));if(st.y>skyBottom)continue;ctx.globalAlpha=tw;box(st.x,st.y,st.size,st.size,'#dfe8f3');}
-        ctx.globalAlpha=1;const mx=W-46,my=30;box(mx-5,my-7,10,14,'#e9edd8');box(mx-7,my-5,14,10,'#e9edd8');box(mx-3,my-9,6,18,'#e9edd8');
-        box(mx-1,my-7,10,14,'#000');box(mx+1,my-5,10,10,'#000');box(mx+2,my-9,6,18,'#000');
-      }else{
-        const t=Math.max(0,Math.min(1,(hour-7)/12)),sx=Math.round(60+(W-120)*t),sy=Math.round(skyBottom-4-Math.sin(t*Math.PI)*Math.max(6,skyBottom-18)),c=dusk?'#e9a15b':'#f1d27a';
-        box(sx-3,sx===0?0:sy-5,6,10,c);box(sx-5,sy-3,10,6,c);box(sx-2,sy-2,4,4,dusk?'#ffd2a3':'#fff3bc');
-        if(dusk){ctx.globalAlpha=.35;box(sx-8,sy,16,1,c);box(sx-11,sy+2,22,1,c);ctx.globalAlpha=1;}
-        for(const cl of clouds){const x=((cl.x+life.time*cl.speed)%(W+cl.w*2))-cl.w;ctx.globalAlpha=dusk?.5:.42;box(x,cl.y+2,cl.w,3,'#2b3a42');box(x+4,cl.y,cl.w-8,2,'#2b3a42');box(x+8,cl.y-2,cl.w-16,2,'#2b3a42');box(x+2,cl.y+5,cl.w-4,1,'#1f2c33');ctx.globalAlpha=1;}
+        for(let i=0;i<Math.max(5,Math.round(W/95));i++)stars.push({x:Math.round(18+rng()*(W-36)),y:Math.round(15+rng()*Math.max(4,skyBottom-36)),phase:rng()*7});
+        for(let i=0;i<Math.max(2,Math.round(W/340));i++)clouds.push({x:rng()*W,y:Math.round(25+rng()*Math.max(4,skyBottom-55)),w:36+Math.round(rng()*20),speed:1+rng()*1.5});}
+      const image=images.sky;
+      const sprite=(index,x,y,width,alpha)=>{
+        if(!image||alpha<=0)return;ctx.globalAlpha=alpha;
+        ctx.drawImage(image,index*48,0,48,32,Math.round(x-width/2),Math.round(y-width/3),width,Math.round(width*2/3));
+      };
+      if(light<1){
+        for(const st of stars)sprite(4,st.x,st.y,14,(1-light)*(.3+.35*(.5+.5*Math.sin(life.time*.65+st.phase))));
+        sprite(3,W-42,32,34,(1-light)*.85);
+        const comet=life.time%85;
+        if(comet>65&&comet<66.8){
+          const q=(comet-65)/1.8;sprite(5,W*.78-q*W*.25,22+q*(skyBottom-34),26,Math.sin(q*Math.PI)*(1-light)*.65);
+        }
+      }
+      if(light>0){
+        const progress=Math.max(0,Math.min(1,(hour-7)/13)),sx=35+(W-70)*progress,sy=skyBottom*.65-Math.sin(progress*Math.PI)*skyBottom*.38;
+        sprite(0,sx,Math.max(22,sy),32+Math.round(Math.sin(life.time*.6)),light*.85);
+        clouds.forEach((cl,i)=>{const x=((cl.x+life.time*cl.speed)%(W+cl.w*2))-cl.w;sprite(1+i%2,x,cl.y+Math.round(Math.sin(life.time*.12+i)),cl.w,light*(cycle?.38:.23));});
       }
       ctx.globalAlpha=1;
     }
@@ -248,8 +263,8 @@
       updateDance(dt);
       if(hoop&&hoop.best>savedBest){savedBest=hoop.best;writeBest(savedBest);}
       if(petting&&guide&&life.time-petting.since>1){guide.loveUntil=life.time+2.6;petting=null;}
-      ctx.globalAlpha=1;ctx.fillStyle=settings.background==='night'?'#03080c':'#000';ctx.fillRect(0,0,W,H);
-      if(settings.visitors!==false)drawSky(s);
+      ctx.globalAlpha=1;ctx.fillStyle=settings.background==='cycle'?(root.TransitVisitors?.skyTone(visitors?.hour??12).ground||'#101718'):settings.background==='night'?'#03080c':'#000';ctx.fillRect(0,0,W,H);
+      if(settings.visitors!==false||settings.background==='cycle')drawSky(s);
       if(settings.background==='grid')for(let x=15;x<W;x+=28)for(let y=35;y<H;y+=28)box(x,y,1,1,'#0c171b');
       drawTerrain();
       // The house anchors the upper left; its garden follows the available screen width.
@@ -295,10 +310,11 @@
       if(hoopOn&&hoop.state==='up')layers.push({y:hoop.y,draw:drawHoop});
       if(toysOn&&ball.basket)layers.push({y:ball.basket.y+2,draw:drawToyBox});
       if(settings.pet)layers.push({y:s.gate.y+36,draw:drawKennel});
-      if(toysOn&&!['hidden','robot'].includes(ball.state))layers.push({y:ball.state==='carried'&&guide?guide.y+.01:ball.y,draw(){ballSprite(ball.x,ball.y);}});
       if(settings.pet&&guide&&guide.x!==null)layers.push({y:guide.y,draw(){pet(ctx,guide.x,guide.y,guide.time,{moving:guide.walking,flip:guide.facing<0,alert:guide.reason,happy:dancing||guide.loveUntil>life.time,carrying:guide.job==='carried',running:guide.job==='fetch'||guide.job==='chase'});}});
       
       layers.sort((a,b)=>a.y-b.y);for(const layer of layers)layer.draw();
+      // The ball flies over everything on the ground; only the foreground trees may hide it.
+      if(toysOn&&!['hidden','robot'].includes(ball.state))ballSprite(ball.x,ball.y);
       for(const burst of life.bursts)drawBurst(burst);
       drawTrees(ordered);
       for(const actor of ordered){const a=actor.agent,{visual,chatter}=visuals.get(actor);

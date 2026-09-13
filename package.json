@@ -10,7 +10,11 @@
     "hooks:install": "node scripts/install-hooks.mjs install",
     "hooks:remove": "node scripts/install-hooks.mjs remove",
     "export": "node scripts/export.mjs",
-    "assets": "node scripts/export-assets.mjs"
+    "assets": "node scripts/export-assets.mjs",
+    "install:pc": "powershell -NoProfile -ExecutionPolicy Bypass -File Install.ps1",
+    "uninstall:pc": "powershell -NoProfile -ExecutionPolicy Bypass -File Uninstall.ps1",
+    "startup:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1",
+    "startup:remove": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1 -Remove"
   },
   "engines": {
     "node": ">=20"
