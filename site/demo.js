@@ -36,6 +36,10 @@
     app.renderer.settings.background = 'cycle';
     app.renderer.resize(); app.renderer.draw();
     scheduleSubagents(app.world);
+    // Demo only: a whole day every four minutes, starting at 8 am, so visitors see dawn, day, dusk, night and back.
+    const started = performance.now();
+    const clock = () => { app.renderer.clockHour = (8 + (performance.now() - started) / 10000) % 24; requestAnimationFrame(clock); };
+    clock();
   });
 
   // The built-in demo cycle (112 s, see public/world.js) spawns a single mini-bot.
