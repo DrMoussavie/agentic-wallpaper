@@ -6,7 +6,7 @@
   function readBest(){try{return Math.max(0,Number(root.localStorage?.getItem(BEST_KEY))||0);}catch{return 0;}}
   function writeBest(value){try{root.localStorage?.setItem(BEST_KEY,String(value));}catch{}}
   function createRenderer(canvas,world){
-    const ctx=canvas.getContext('2d',{alpha:false});let W=360,H=640,life=new root.TransitLife.Life(),previousTime=world.time,lastCount=-1;
+    const ctx=canvas.getContext('2d',{alpha:false});let W=360,H=640,viewScale=1,life=new root.TransitLife.Life(),previousTime=world.time,lastCount=-1;
     const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:false,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true},images={},packetPaths=new Map();
     let bubbleRects=[];const random=root.TransitLife.random(life.seed^0x7e5721);let nextChatter=8,quietSince=null;
     const spectrum=root.TransitAudio?.createSpectrum(),guide=root.TransitPet?new root.TransitPet.Guide():null;let lastFooter=-1,lastMediaVisible=false,contentHeight=640,bottomInset=0,lastDpr=1;let promptVisuals=[];
@@ -24,6 +24,7 @@
       // Smaller default: 33px on a 1080px short edge; 66px on a 1440px short edge.
       let scale=Math.max(1,Math.min(3,Math.floor(Math.min(b.width,b.height)/700*settings.scale)));
       while(scale>1&&(b.width/scale<260||b.height/scale<230))scale--;
+      viewScale=scale;
       const width=Math.max(180,Math.floor(b.width/scale)),height=Math.max(180,Math.floor(b.height/scale));
       // World coordinates retain small sprites; rasterize text at the display's actual resolution.
       const dpr=Math.max(1,Number(root.devicePixelRatio)||1),pixelWidth=Math.max(1,Math.round(b.width*dpr)),pixelHeight=Math.max(1,Math.round(b.height*dpr));
@@ -232,9 +233,15 @@
         if(settings.bubbles&&resting&&ball.time<toyHintUntil)speech(hoopOn&&hoop.active?'Shoot me!':'Grab me!',{x:ball.x,y:ball.y+24},'#e4c3aa');
       }
       if(visitors&&settings.visitors!==false){if(visitors.butterfly)drawButterfly(visitors.butterfly);for(const f of visitors.fireflies)drawFirefly(f);}
-      text('AGENTIC WALLPAPER',14,18,'#3e574e',5);text(world.mode==='demo'?'DÉMO':world.connection==='open'?'LIVE':'HORS LIGNE',W-14,18,'#577466',4,'right');
-      const population=world.population(true);text(`${population.conversations} CONV ACTIVES · ${population.subagents} MINI-BOTS`,14,27,'#466457',4);
-      if(!world.agents.size)text(world.connection==='open'?'LA MAISON ATTEND TES AGENTS':'LE JARDIN EST PRÊT',s.house.x+s.house.width+12,s.house.y-25,'#658274',5);
+      // Corner text is sized in screen pixels (not world pixels) so it stays legible at every scale.
+      const live=world.mode!=='demo'&&world.connection==='open',T=Math.max(8,Math.round(15/viewScale)),L=Math.max(6,Math.round(12/viewScale));
+      text('AGENTIC WALLPAPER',14,T+6,'#7fd6a5',T);text(world.mode==='demo'?'DEMO':live?'LIVE':'OFFLINE',W-14,T+6,'#7fd6a5',L,'right');
+      const population=world.population(true);
+      if(live)text(`${population.conversations} ACTIVE CONVERSATIONS · ${population.subagents} MINI-BOTS`,14,T+L+10,'#8fa89b',L);
+      // Next to the house: without a relay (Workshop subscribers) or in the demo, say where the agents come from.
+      const hx=s.house.x+s.house.width+12,hy=s.house.y-25;
+      if(!live){text('CONNECT YOUR CLAUDE CODE & CODEX AGENTS',hx,hy,'#e6efe9',L);text('github.com/DrMoussavie/agentic-wallpaper',hx,hy+L+3,'#7ee8ff',L);}
+      else if(!world.agents.size)text('THE HOUSE IS WAITING FOR YOUR AGENTS',hx,hy,'#8fa89b',L);
     }
     const local=(x,y)=>{const b=canvas.getBoundingClientRect();return{x:x*W/Math.max(1,b.width),y:y*H/Math.max(1,b.height)};};
     return{draw,resize,settings,spectrum,media,guide,ball,hoop,visitors,get life(){return life;},get scene(){return{...life.scene,stations:[]};},get positions(){return life.actors;},set clockHour(value){clockHour=value;},get dancing(){return dancing;},
