@@ -101,6 +101,10 @@
 
 Do not touch anything else in my Claude Code or Codex settings.</pre>
         </div>
+        <div class="grid two after-prompt">
+          <div class="tile"><h3><span class="dot amber"></span> Claude Code</h3><p>Nothing to approve. The hooks in <code>~/.claude/settings.json</code> are picked up automatically; start or resume a session and the robot appears.</p></div>
+          <div class="tile"><h3><span class="dot cyan"></span> Codex</h3><p>One manual step: open <b>Settings → Hooks → From configuration</b>, check the entries pointing to <code>bridge/hook.mjs codex</code> and click <b>Approve</b>. Unapproved hooks are silently ignored.</p></div>
+        </div>
       </div>
       <div class="panel" data-panel="manual" hidden>
         <pre><code>git clone https://github.com/DrMoussavie/agentic-wallpaper

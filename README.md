@@ -86,6 +86,8 @@ Do not touch anything else in my Claude Code or Codex settings.
 
 </details>
 
+> **After the install:** **Claude Code** needs nothing more — the hooks in `~/.claude/settings.json` are picked up automatically. **Codex** needs one click: *Settings → Hooks → From configuration → Approve* on the Agentic Wallpaper entries; unapproved hooks are silently ignored.
+
 **Or by hand:**
 
 ```bash

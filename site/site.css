@@ -75,3 +75,5 @@ h3{font-size:1rem;margin:8px 0 6px}
 .promptbox pre{margin:0;white-space:pre-wrap;font-size:.84rem;padding-top:44px}
 .copy{position:absolute;top:10px;right:10px;background:var(--green);color:#04120a;border:0;border-radius:8px;padding:7px 12px;font:inherit;font-weight:700;font-size:.82rem;cursor:pointer}
 .copy:hover{background:#9be6bb}
+.after-prompt{margin-top:14px}
+.tile h3 .dot{margin-right:6px}
