@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),dest=path.join(root,'dist/wallpaper');
 await mkdir(dest,{recursive:true});
-for(const file of ['wallpaper.html','animations.js','gestures.js','rig.js','world.js','props.js','life.js','audio.js','media.js','pet-guide.js','toy.js','visitors.js','free-renderer.js','app.js','icon.svg'])await copyFile(path.join(root,'public',file),path.join(dest,file));
+for(const file of ['wallpaper.html','animations.js','gestures.js','rig.js','world.js','props.js','life.js','audio.js','media.js','pet-guide.js','toy.js','free-renderer.js','app.js','icon.svg'])await copyFile(path.join(root,'public',file),path.join(dest,file));
 await mkdir(path.join(dest,'assets'),{recursive:true});
 await cp(path.join(root,'public/assets/props'),path.join(dest,'assets/props'),{recursive:true});
 await copyFile(path.join(root,'public/assets/model-01.png'),path.join(dest,'preview.png'));
@@ -12,8 +12,6 @@ properties.roam={order:6,text:'Promenades des agents disponibles',type:'bool',va
 properties.social={order:7,text:'Rencontres décoratives et réactions au clic',type:'bool',value:true};
 properties.bubbles={order:9,text:'Petites bulles en anglais',type:'bool',value:true};
 properties.toy={order:10,text:'Balle à lancer (le chien la range)',type:'bool',value:true};
-properties.hoop={order:16,text:'Panier de basket itinérant (robots et balle)',type:'bool',value:true};
-properties.visitors={order:17,text:'Papillons le jour, lucioles la nuit',type:'bool',value:true};
 properties.bubbleScale={order:11,text:'Taille des bulles',type:'combo',value:1.4,options:[{label:'Petites',value:1},{label:'Lisibles',value:1.4},{label:'Grandes',value:1.8}]};
 properties.media={order:13,text:'Titre et artiste de la musique',type:'bool',value:false};
 properties.bottomMargin={order:14,text:'Marge basse / barre des tâches (px)',type:'slider',value:80,min:0,max:200,step:4,precision:0};
@@ -63,13 +61,6 @@ Hz inventées dans Wallpaper Engine. Dégradé vertical vert, jaune, orange, rou
 Jeu : cliquer pour sortir la balle, glisser-lâcher pour la lancer et la faire
 rebondir avec le curseur. Après 4 s d’immobilité, le chien la range. Reprendre
 la balle avant qu’il la touche annule sa récupération.
-Un panier de basket apparaît à un endroit libre du jardin pendant environ
-90 s, puis change de place. Marquer allonge sa visite. Les robots disponibles
-vont eux-mêmes tirer de temps en temps ; tout événement réel interrompt le jeu.
-La meilleure série est mémorisée localement par le fond.
-Le jour, un papillon visite les fleurs et le chien le poursuit ; la nuit
-(21 h – 7 h, heure du PC), des lucioles. Quand les graves du son du PC
-montent quelques secondes, les robots au repos dansent et les fleurs vibrent.
 
 Ce dossier est un export local, pas une publication Workshop déjà effectuée.
 Guide : https://docs.wallpaperengine.io/en/web/first/gettingstarted.html
