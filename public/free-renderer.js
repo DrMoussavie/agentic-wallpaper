@@ -6,7 +6,7 @@
   function readBest(){try{return Math.max(0,Number(root.localStorage?.getItem(BEST_KEY))||0);}catch{return 0;}}
   function writeBest(value){try{root.localStorage?.setItem(BEST_KEY,String(value));}catch{}}
   function createRenderer(canvas,world){
-    const ctx=canvas.getContext('2d',{alpha:false});let W=360,H=640,viewScale=1,life=new root.TransitLife.Life(),previousTime=world.time,lastCount=-1;
+    const ctx=canvas.getContext('2d',{alpha:false});let W=360,H=640,viewScale=1,linkBoxes=[],linkToast=0,life=new root.TransitLife.Life(),previousTime=world.time,lastCount=-1;
     const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:false,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true},images={},packetPaths=new Map();
     let bubbleRects=[];const random=root.TransitLife.random(life.seed^0x7e5721);let nextChatter=8,quietSince=null;
     const spectrum=root.TransitAudio?.createSpectrum(),guide=root.TransitPet?new root.TransitPet.Guide():null;let lastFooter=-1,lastMediaVisible=false,contentHeight=640,bottomInset=0,lastDpr=1;let promptVisuals=[];
@@ -235,20 +235,29 @@
       if(visitors&&settings.visitors!==false){if(visitors.butterfly)drawButterfly(visitors.butterfly);for(const f of visitors.fireflies)drawFirefly(f);}
       // Corner text is sized in screen pixels (not world pixels) so it stays legible at every scale.
       const live=world.mode!=='demo'&&world.connection==='open',T=Math.max(8,Math.round(15/viewScale)),L=Math.max(6,Math.round(12/viewScale));
-      text('AGENTIC WALLPAPER',14,T+6,'#7fd6a5',T);text(world.mode==='demo'?'DEMO':live?'LIVE':'OFFLINE',W-14,T+6,'#7fd6a5',L,'right');
+      linkBoxes=[];const markLink=(str,x,y,size)=>{ctx.font=`${size}px monospace`;linkBoxes.push({x:x-2,y:y-size,w:ctx.measureText(str).width+4,h:size+4});};
+      text('AGENTIC WALLPAPER',14,T+6,'#7fd6a5',T);markLink('AGENTIC WALLPAPER',14,T+6,T);text(world.mode==='demo'?'DEMO':live?'LIVE':'OFFLINE',W-14,T+6,'#7fd6a5',L,'right');
       const population=world.population(true);
       if(live)text(`${population.conversations} ACTIVE CONVERSATIONS · ${population.subagents} MINI-BOTS`,14,T+L+10,'#8fa89b',L);
       // Next to the house: without a relay (Workshop subscribers) or in the demo, say where the agents come from.
       const hx=s.house.x+s.house.width+12,hy=s.house.y-25;
-      if(!live){text('CONNECT YOUR CLAUDE CODE & CODEX AGENTS',hx,hy,'#e6efe9',L);text('github.com/DrMoussavie/agentic-wallpaper',hx,hy+L+3,'#7ee8ff',L);}
+      if(!live){
+        text('CONNECT YOUR CLAUDE CODE & CODEX AGENTS',hx,hy,'#e6efe9',L);text(GITHUB_LABEL,hx,hy+L+3,'#7ee8ff',L);markLink(GITHUB_LABEL,hx,hy+L+3,L);
+        ctx.fillStyle='#7ee8ff';ctx.fillRect(Math.round(hx),Math.round(hy+L+5),Math.round(linkBoxes[1].w-4),1); // underline: it is clickable
+        if(linkToast>life.time)text('LINK COPIED — PASTE IT IN YOUR BROWSER',hx,hy+2*L+8,'#8fa89b',L);
+      }
       else if(!world.agents.size)text('THE HOUSE IS WAITING FOR YOUR AGENTS',hx,hy,'#8fa89b',L);
     }
+    const GITHUB_URL='https://github.com/DrMoussavie/agentic-wallpaper',GITHUB_LABEL='github.com/DrMoussavie/agentic-wallpaper';
+    // Clicking the title or the link opens the repository. Wallpaper Engine may block window.open: then copy the URL instead.
+    function openGithub(){let opened=null;try{opened=root.open(GITHUB_URL,'_blank','noopener');}catch{}if(!opened){linkToast=life.time+4;try{root.navigator?.clipboard?.writeText(GITHUB_URL).catch(()=>{});}catch{}}}
+    const linkHit=(x,y)=>{const p=local(x,y);return linkBoxes.some(b=>p.x>=b.x&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h);};
     const local=(x,y)=>{const b=canvas.getBoundingClientRect();return{x:x*W/Math.max(1,b.width),y:y*H/Math.max(1,b.height)};};
     return{draw,resize,settings,spectrum,media,guide,ball,hoop,visitors,get life(){return life;},get scene(){return{...life.scene,stations:[]};},get positions(){return life.actors;},set clockHour(value){clockHour=value;},get dancing(){return dancing;},
       clear(){life=new root.TransitLife.Life();life.resize(W,H,world.agents.size,lastFooter);previousTime=world.time;lastCount=-1;packetPaths.clear();if(ball){ball.release(0,true);ball.state='hidden';ball.carrier=null;}if(hoop){hoop.state='away';hoop.nextAt=hoop.time;}if(visitors)visitors.butterfly=null;},
       hit(x,y){const p=local(x,y);return life.outside().reverse().find(a=>Math.abs(a.x-p.x)<15&&p.y>a.y-34&&p.y<a.y+5)?.id;},interact(x,y){const p=local(x,y);if(settings.pet&&guide?.hit(p.x,p.y)){guide.point();return;}if(!settings.social)return;life.invite(p.x,p.y,this.hit(x,y),world);},
-      pointerDown(x,y,stamp){const p=local(x,y);if(settings.toy&&(ball?.hit(p.x,p.y)||ball?.basketHit(p.x,p.y)))return ball.press(p.x,p.y,stamp);if(settings.pet&&guide?.hit(p.x,p.y)){guide.point();petting={since:life.time};return true;}this.interact(x,y);if(settings.toy&&!this.hit(x,y))return ball?.press(p.x,p.y,stamp);return false;},
-      pointerMove(x,y,stamp){const p=local(x,y);ball?.move(p.x,p.y,stamp);if(petting&&!(guide?.hit(p.x,p.y)))petting=null;return ball?.state==='held'?'grabbing':ball?.hit(p.x,p.y)||ball?.basketHit(p.x,p.y)?'grab':'crosshair';},
+      pointerDown(x,y,stamp){if(linkHit(x,y)){openGithub();return false;}const p=local(x,y);if(settings.toy&&(ball?.hit(p.x,p.y)||ball?.basketHit(p.x,p.y)))return ball.press(p.x,p.y,stamp);if(settings.pet&&guide?.hit(p.x,p.y)){guide.point();petting={since:life.time};return true;}this.interact(x,y);if(settings.toy&&!this.hit(x,y))return ball?.press(p.x,p.y,stamp);return false;},
+      pointerMove(x,y,stamp){if(linkHit(x,y))return 'pointer';const p=local(x,y);ball?.move(p.x,p.y,stamp);if(petting&&!(guide?.hit(p.x,p.y)))petting=null;return ball?.state==='held'?'grabbing':ball?.hit(p.x,p.y)||ball?.basketHit(p.x,p.y)?'grab':'crosshair';},
       pointerUp(stamp,cancel=false){ball?.release(stamp,cancel);petting=null;},
       snapshot(){return{...life.snapshot(),raster:{width:canvas.width,height:canvas.height,dpr:lastDpr,worldWidth:W,worldHeight:H,contentHeight,bottomInset},guide:guide?.snapshot(),toy:ball?.snapshot(),hoop:hoop?.snapshot(),visitors:visitors?.snapshot(),dancing,promptFlights:promptVisuals,propsLoaded:Object.keys(images),renderedRobotHeight:Math.round(33*canvas.getBoundingClientRect().height/H),activeConduits:Math.min(3,packetPaths.size)};}};
   }
