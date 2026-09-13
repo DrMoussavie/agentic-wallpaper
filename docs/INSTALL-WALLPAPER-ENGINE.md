@@ -73,7 +73,7 @@ All of them are live; no restart needed.
 | Spectrum source | Local relay | Switch to **Native WE audio** if you do **not** run the relay |
 | Spectrum width | 35 % | 20–100 % |
 | Bottom margin | 80 px | Keeps the spectrum above the taskbar |
-| Track title & artist | off | Needs Wallpaper Engine's *media integration* enabled |
+| Track title & artist | on | Needs Wallpaper Engine's *media integration* enabled and a player that reports to Windows media sessions |
 
 **If you do not run the relay**, set *Spectrum source* to *Native WE audio* — otherwise the spectrum shows “RELAIS AUDIO DÉCONNECTÉ” (relay disconnected). That is on purpose: the wallpaper never fakes a signal.
 

@@ -73,7 +73,7 @@ Tout s'applique en direct, sans redémarrage.
 | Source du spectre | Relais local | Passe sur **Audio natif WE** si tu **ne** lances **pas** le relais |
 | Largeur du spectre | 35 % | 20–100 % |
 | Marge basse | 80 px | Garde le spectre au-dessus de la barre des tâches |
-| Titre et artiste | désactivé | Nécessite l'*intégration multimédia* de Wallpaper Engine |
+| Titre et artiste | activé | Nécessite l'*intégration multimédia* de Wallpaper Engine et un lecteur qui renseigne les sessions multimédias Windows |
 
 **Si tu ne lances pas le relais**, mets *Source du spectre* sur *Audio natif WE* — sinon le spectre affiche « RELAIS AUDIO DÉCONNECTÉ ». C'est voulu : le fond n'invente jamais de signal.
 
