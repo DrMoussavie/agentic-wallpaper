@@ -7,7 +7,7 @@
   function writeBest(value){try{root.localStorage?.setItem(BEST_KEY,String(value));}catch{}}
   function createRenderer(canvas,world){
     const ctx=canvas.getContext('2d',{alpha:false});let W=360,H=640,viewScale=1,linkBoxes=[],linkToast=0,life=new root.TransitLife.Life(),previousTime=world.time,lastCount=-1;
-    const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:true,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true},images={},packetPaths=new Map();
+    const settings={tubes:true,background:'black',scale:1,pet:true,roam:true,social:true,audio:true,audioSource:'relay',media:true,audioWidth:35,bottomMargin:80,bubbles:true,bubbleScale:1.4,toy:true,hoop:true,visitors:true,terrain:false},images={},packetPaths=new Map();
     let bubbleRects=[];const random=root.TransitLife.random(life.seed^0x7e5721);let nextChatter=8,quietSince=null;
     const spectrum=root.TransitAudio?.createSpectrum(),guide=root.TransitPet?new root.TransitPet.Guide():null;let lastFooter=-1,lastMediaVisible=false,contentHeight=640,bottomInset=0,lastDpr=1;let promptVisuals=[];
     const media=root.TransitMedia?.createNowPlaying();
@@ -27,7 +27,7 @@
       if(!terrainImage||!terrainImage.complete||!terrainImage.naturalWidth)return;
       const bottom=Math.max(70,H-lastFooter-12),key=[W,bottom,life.seed].join(':');
       // Screen blending makes the atlas's black margins invisible on all themes.
-      function composite(image){ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.38;ctx.drawImage(image,0,0);ctx.restore();}
+      function composite(image){if(!settings.terrain)return;ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=.38;ctx.drawImage(image,0,0);ctx.restore();}
       if(key===terrainKey&&terrainCanvas){composite(terrainCanvas);return;}
       if(key!==terrainKey){
         terrainKey=key;terrain=[];
@@ -52,7 +52,7 @@
       const target=terrainCanvas?terrainCanvas.getContext('2d'):ctx;
       target.save();target.imageSmoothingEnabled=false;target.globalCompositeOperation='screen';
       if(!terrainCanvas)target.globalAlpha=.38;
-      for(const p of terrain)target.drawImage(terrainImage,p.sx,p.sy,p.sw,p.sh,p.x,p.y,p.width,p.height);
+      if(terrainCanvas||settings.terrain)for(const p of terrain)target.drawImage(terrainImage,p.sx,p.sy,p.sw,p.sh,p.x,p.y,p.width,p.height);
       target.restore();
       if(terrainCanvas)composite(terrainCanvas);
     }
