@@ -106,14 +106,14 @@ Paste this into **Claude Code** or **Codex** on your Windows PC. It installs exa
 ```text
 Install Agentic Wallpaper from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
 
-1. Check Node.js >= 20 is available (install it with winget if not).
-2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit, then run: npm install
-3. Run: npm run hooks:install  (it merges the hooks into ~/.claude/settings.json and the Codex config, keeps backups, changes nothing else).
-4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts automatically (only while the wallpaper is selected in Wallpaper Engine), then start it now in the background with: npm start
-5. Verify http://127.0.0.1:49157/health answers.
-6. Run: npm run export  and copy dist/wallpaper to <Steam>\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit (find my Steam library path first).
-7. Select "Agentic Wallpaper" in Wallpaper Engine → Installed is a click I do myself; just tell me.
-8. IMPORTANT — end your answer with an explicit reminder, in bold: if I use Codex, I must approve the hooks myself in the Codex app (Settings → Hooks → From configuration → Approve on each Agentic Wallpaper entry), otherwise they are silently ignored and no robot will appear. If I use Claude Code, nothing to approve: the hooks are picked up automatically.
+1. Check Node.js >= 20 is available (if not: winget install OpenJS.NodeJS.LTS).
+2. Clone the repo into a permanent folder, e.g. %USERPROFILE%gent-transit.
+3. In that folder run: powershell -NoProfile -ExecutionPolicy Bypass -File Install.ps1 -NoAnimation
+   It installs the dependencies, merges the hooks into ~/.claude/settings.json and the Codex config (backups kept, nothing else changed), builds the wallpaper and copies it into Wallpaper Engine's projects\myprojectsgent-transit, registers a per-user scheduled task that starts the relay only while the wallpaper is selected, and starts the relay now. If it says Wallpaper Engine was not found, copy dist\wallpaper there yourself (find my Steam library path first).
+4. Verify http://127.0.0.1:49157/health answers.
+5. Select "Agentic Wallpaper" in Wallpaper Engine → Installed is a click I do myself; just tell me.
+6. IMPORTANT — end your answer with an explicit reminder, in bold: if I use Codex, I must approve the hooks myself in the Codex app (Settings → Hooks → From configuration → Approve on each Agentic Wallpaper entry), otherwise they are silently ignored and no robot will appear. If I use Claude Code, nothing to approve: the hooks are picked up automatically.
+To remove everything later, Uninstall.ps1 in the same folder undoes it all.
 
 Do not touch anything else in my Claude Code or Codex settings.
 ```
