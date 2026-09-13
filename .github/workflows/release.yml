@@ -1,0 +1,32 @@
+name: Build Wallpaper Engine package
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/export.mjs
+      - name: Zip as agent-transit/
+        run: |
+          mv dist/wallpaper dist/agent-transit
+          cd dist && zip -r ../agent-transit-wallpaper.zip agent-transit
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agent-transit-wallpaper
+          path: agent-transit-wallpaper.zip
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: agent-transit-wallpaper.zip
+          generate_release_notes: true

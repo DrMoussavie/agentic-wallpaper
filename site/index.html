@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Transit — a live pixel-art wallpaper for your Claude Code &amp; Codex agents</title>
+<meta name="description" content="Agent Transit turns every Claude Code and Codex session into a little robot living in a pixel-art garden on your desktop. Free wallpaper for Wallpaper Engine, driven by agent hooks.">
+<meta property="og:title" content="Agent Transit — agentic wallpaper">
+<meta property="og:description" content="Your Claude Code and Codex sessions as tiny robots in a pixel-art garden. Free, for Wallpaper Engine.">
+<meta property="og:image" content="https://drmoussavie.github.io/agentic-wallpaper/media/hero.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<canvas id="world" aria-label="Live demo of the Agent Transit garden: robots leave the house, work, and walk back home"></canvas>
+
+<header class="top">
+  <a class="brand" href="#"><img src="icon.svg" alt="" width="22" height="22"><span>AGENT TRANSIT</span></a>
+  <nav>
+    <a href="#how">How it works</a>
+    <a href="#install">Install</a>
+    <a href="#agents">Connect agents</a>
+    <a class="gh" href="https://github.com/DrMoussavie/agentic-wallpaper" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="card hero-card">
+      <p class="eyebrow">LIVE DEMO · click anywhere in the garden</p>
+      <h1>Your AI agents,<br>living on your desktop.</h1>
+      <p class="lead">Every <strong>Claude Code</strong> or <strong>Codex</strong> session becomes a small robot in a pixel-art garden. It leaves the house when you prompt, reads, searches, runs tests, spawns sub-agents, and walks home when the answer ends.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/DrMoussavie/agentic-wallpaper/releases/latest/download/agent-transit-wallpaper.zip">⬇ Get it for Wallpaper Engine</a>
+        <a class="btn" href="https://github.com/DrMoussavie/agentic-wallpaper" rel="noopener">★ Star on GitHub</a>
+      </div>
+      <p class="compat"><span class="dot cyan"></span> Codex <span class="sep">+</span> <span class="dot amber"></span> Claude Code — both apps, at the same time, in the same garden</p>
+      <p class="fine">Free · CC BY-NC 4.0 · Windows · Wallpaper Engine · no API key, nothing leaves your machine</p>
+    </div>
+    <a class="scroll-hint" href="#how" aria-label="Scroll down">▼</a>
+  </section>
+
+  <section id="how" class="block">
+    <div class="card">
+      <h2>What you are looking at</h2>
+      <p class="muted">The demo above replays a scripted day. On your desktop, the same garden reacts to your real sessions in real time.</p>
+      <div class="grid three">
+        <div class="tile"><span class="dot cyan"></span><h3>You send a prompt</h3><p>The robot wakes up, walks out of the house and starts thinking. An envelope flies from the hub to its sector.</p></div>
+        <div class="tile"><span class="dot amber"></span><h3>The agent works</h3><p>Reading, searching, editing, running tests, waiting for your approval, hitting an error, compacting context — 22 distinct animations.</p></div>
+        <div class="tile"><span class="dot green"></span><h3>The answer ends</h3><p>A little celebration, then the robot walks back home. A new prompt brings it out again; a closed session archives it.</p></div>
+      </div>
+      <ul class="features">
+        <li><b>Sub-agents</b> orbit their parent as mini-bots and report back when they finish.</li>
+        <li><b>Codex is white &amp; cyan</b>, one antenna. <b>Claude is dark &amp; amber</b>, two antennas.</li>
+        <li><b>A mechanical dog</b> patrols the garden, flags waits and errors, and fetches the ball you throw.</li>
+        <li><b>Audio spectrum</b> of your PC sound, 48 bands from 40 Hz to 20 kHz, with the current track title.</li>
+        <li><b>Click the garden</b> to call idle robots over. Click a robot to make it wave.</li>
+        <li><b>Any screen shape</b>: the garden lays itself out for landscape, portrait, square and ultrawide.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="install" class="block">
+    <div class="card">
+      <h2>Install on Wallpaper Engine</h2>
+      <ol class="steps">
+        <li><span>1</span><div><b>Download</b> <a href="https://github.com/DrMoussavie/agentic-wallpaper/releases/latest/download/agent-transit-wallpaper.zip">agent-transit-wallpaper.zip</a> and unzip it.</div></li>
+        <li><span>2</span><div><b>Copy the folder</b> to <code>…\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit</code></div></li>
+        <li><span>3</span><div>In Wallpaper Engine, open <b>Installed → filter “My projects”</b>, pick <b>Agent Transit</b>, choose your monitor. Done — decor, dog, ball and native audio work right away.</div></li>
+      </ol>
+      <p class="muted">Full walkthrough with screenshots and settings: <a href="https://github.com/DrMoussavie/agentic-wallpaper/blob/master/docs/INSTALL-WALLPAPER-ENGINE.md">docs/INSTALL-WALLPAPER-ENGINE.md</a> · <a href="https://github.com/DrMoussavie/agentic-wallpaper/blob/master/docs/INSTALLATION-WALLPAPER-ENGINE.fr.md">version française</a></p>
+    </div>
+  </section>
+
+  <section id="agents" class="block">
+    <div class="card">
+      <h2>Connect your real agents</h2>
+      <p>The living part needs a tiny local relay (Node ≥ 20) that receives the hook events of <b>Claude Code</b> and <b>Codex</b> — both supported, both at once — and streams them to the wallpaper.</p>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="agent" role="tab" aria-selected="true">🤖 Let your agent install it</button>
+        <button class="tab" data-tab="manual" role="tab" aria-selected="false">⌨️ Manual</button>
+      </div>
+      <div class="panel" data-panel="agent">
+        <p class="muted">Paste this into <b>Claude Code</b> or <b>Codex</b> on your Windows PC. It installs exactly what is needed, for both apps, and tells you the two clicks it cannot do for you.</p>
+        <div class="promptbox">
+          <button class="copy" type="button" data-copy="agent-prompt">Copy prompt</button>
+<pre id="agent-prompt">Install Agent Transit from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
+
+1. Check Node.js >= 20 is available (install it with winget if not).
+2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit, then run: npm install
+3. Run: npm run hooks:install  (it merges the hooks into ~/.claude/settings.json and the Codex config, keeps backups, changes nothing else).
+4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts with Windows, then start it now in the background with: npm start
+5. Verify http://127.0.0.1:49157/health answers.
+6. Run: npm run export  and copy dist/wallpaper to &lt;Steam&gt;\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit (find my Steam library path first).
+7. Finish by listing what I must do by hand: approve the hooks in the Codex app (Settings → Hooks → From configuration → Approve), and select "Agent Transit" in Wallpaper Engine → Installed.
+
+Do not touch anything else in my Claude Code or Codex settings.</pre>
+        </div>
+      </div>
+      <div class="panel" data-panel="manual" hidden>
+        <pre><code>git clone https://github.com/DrMoussavie/agentic-wallpaper
+cd agentic-wallpaper
+npm install
+npm run hooks:install     # adds the hooks to Claude Code AND Codex
+npm start                 # relay on http://127.0.0.1:49157</code></pre>
+        <p class="muted">Then approve the hooks in the Codex app (<i>Settings → Hooks → From configuration</i>) and select Agent Transit in Wallpaper Engine. Details: <a href="https://github.com/DrMoussavie/agentic-wallpaper/blob/master/docs/INSTALL-WALLPAPER-ENGINE.md#part-2--connect-your-real-agents">install guide, part 2</a>.</p>
+      </div>
+      <div class="grid two">
+        <div class="tile"><h3>Privacy by design</h3><p>The relay listens on <code>127.0.0.1</code> only. Session ids are hashed. Prompts, messages and commands are never sent to the wallpaper — only the <em>kind</em> of activity. No model API, no API key.</p></div>
+        <div class="tile"><h3>Honest by design</h3><p>No fake agents are ever shown. If the relay is down, the garden says so instead of pretending. A finished answer is not presented as a finished goal.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="block">
+    <div class="card foot">
+      <p><b>Agent Transit</b> · released under <a href="https://creativecommons.org/licenses/by-nc/4.0/" rel="noopener">CC BY-NC 4.0</a> · <a href="https://github.com/DrMoussavie/agentic-wallpaper" rel="noopener">Source on GitHub</a></p>
+      <p class="fine">Claude Code and Codex are trademarks of their respective owners. This project is an independent fan-made tool and is not affiliated with Anthropic or OpenAI.</p>
+    </div>
+  </footer>
+</main>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>{x.classList.toggle('active',x===t);x.setAttribute('aria-selected',x===t);});document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.panel!==t.dataset.tab);}));
+document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent);b.textContent='Copied ✓';}catch{b.textContent='Select & copy';}setTimeout(()=>b.textContent='Copy prompt',1800);}));
+</script>
+<script src="demo.js"></script>
+<script src="animations.js"></script>
+<script src="gestures.js"></script>
+<script src="rig.js"></script>
+<script src="world.js"></script>
+<script src="props.js"></script>
+<script src="life.js"></script>
+<script src="audio.js"></script>
+<script src="media.js"></script>
+<script src="pet-guide.js"></script>
+<script src="toy.js"></script>
+<script src="free-renderer.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

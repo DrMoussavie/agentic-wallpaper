@@ -1,117 +1,157 @@
-# Agent Transit — agentic wallpaper
+<div align="center">
 
-**EN** — A live pixel-art wallpaper for [Wallpaper Engine](https://www.wallpaperengine.io/) where each of your **Claude Code** and **Codex** sessions is a little robot: it leaves the house when you send a prompt, works, waits, errors out, spawns sub-agents, and walks home when the answer ends. Driven by the agents' hook events through a local relay (`127.0.0.1` only, no API key, no prompt content sent to the browser). Free, licensed CC BY-NC 4.0.
+<img src="public/icon.svg" width="72" alt="">
 
-Un petit jardin procédural en pixel art sur fond noir. Les robots, plus petits, sortent d’une maison commune et rejoignent des destinations calculées dans le jardin. Herbe, fleurs, pierres et maison sont de vraies images générées, conservées dans `public/assets/props`. La maison est ancrée en haut à gauche, avec une marge. Les déplacements s’étendent en dessous sur la largeur disponible de l’écran ; leur profondeur s’ajuste à la population et à la hauteur disponible. Les props se répartissent en petits groupes espacés sur toute la surface de l’écran, y compris au centre et en bas. Leur densité suit la surface disponible et leur disposition reste stable quand le nombre d’agents change.
+# Agent Transit
 
-## Ouvrir
+**A live pixel-art wallpaper where your Claude Code and Codex sessions are little robots.**
 
-Sur le PC configuré, le relais démarre automatiquement à l’ouverture de la session Windows, sans navigateur ni console. Le raccourci `Agent Transit - relais.lnk` du dossier Démarrage appelle `scripts/start-relay.ps1` et réutilise le relais s’il fonctionne déjà. Wallpaper Engine utilise son propre démarrage automatique. Pour un lancement manuel de développement :
+They leave the house when you prompt, read, search, run tests, spawn sub-agents,<br>and walk back home when the answer ends. Free, local, no API key.
 
-```powershell
-npm start
+[![Live demo](https://img.shields.io/badge/▶_live_demo-drmoussavie.github.io-7fd6a5?style=for-the-badge&labelColor=0b1a12)](https://drmoussavie.github.io/agentic-wallpaper/)
+[![Download](https://img.shields.io/badge/⬇_wallpaper_engine-download_zip-ffb454?style=for-the-badge&labelColor=0b1a12)](https://github.com/DrMoussavie/agentic-wallpaper/releases/latest/download/agent-transit-wallpaper.zip)
+
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/license-CC_BY--NC_4.0-lightgrey)](LICENSE)
+[![Wallpaper Engine](https://img.shields.io/badge/Wallpaper_Engine-web_wallpaper-blue)](docs/INSTALL-WALLPAPER-ENGINE.md)
+[![Node](https://img.shields.io/badge/node-%E2%89%A5%2020-339933?logo=node.js&logoColor=white)](package.json)
+[![Platform](https://img.shields.io/badge/platform-Windows-0078d4?logo=windows&logoColor=white)](#)
+[![Tests](https://img.shields.io/badge/tests-node%20--test-brightgreen)](tests)
+
+🇫🇷 [Documentation complète en français](docs/README.fr.md) · [Tuto d'installation](docs/INSTALLATION-WALLPAPER-ENGINE.fr.md)
+
+<img src="docs/media/demo.gif" width="880" alt="Agent Transit running: robots leave the house, work in the garden, the dog patrols, the audio spectrum pulses at the bottom">
+
+</div>
+
+---
+
+## What it is
+
+Agent Transit is a **[Wallpaper Engine](https://www.wallpaperengine.io/) web wallpaper** plus a tiny **local relay**. The relay receives the hook events that Claude Code and Codex already emit (session start, prompt, tool use, sub-agent, stop…) and streams them to the wallpaper. Each session becomes a robot in a procedural pixel-art garden.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**Codex** — white & cyan, one antenna<br>
+**Claude** — dark & amber, two antennas
+
+Same rig, 22 animations each: arrive, think, read, search, type, tool, test, send, receive, spawn, wait, error, compact, celebrate, pause, sleep, wake, clean, archive, offline, idle, walk.
+
+</td>
+<td width="50%">
+<img src="docs/media/characters.png" alt="The two characters: Codex and Claude">
+</td>
+</tr>
+</table>
+
+## Features
+
+- 🏠 **A common house.** Robots rest inside, come out through the door when a prompt arrives, and walk home after the answer. A new prompt brings them back out — no teleporting.
+- 🤖 **Sub-agents** appear as mini-bots orbiting their parent and report back when they finish.
+- 🐕 **A mechanical dog** patrols, flags waits and errors, and fetches the ball you throw on the desktop.
+- 🎵 **Audio spectrum** of your PC sound — 48 log bands, 40 Hz to 20 kHz — with the current track title and artist (via Wallpaper Engine media integration).
+- 💬 **Speech bubbles** for actions, never for conversations.
+- 🖱️ **Interactive.** Click the garden to call idle robots over; click a robot to make it wave; drag to throw the ball.
+- 📐 **Any screen shape.** Landscape, portrait, square, ultrawide: the garden lays itself out and stays stable when the population changes.
+- 🎛️ **Tunable** from the Wallpaper Engine panel: background, character size, conduits, dog, ball, roaming, bubbles, spectrum width, taskbar margin, audio source.
+- 🚫 **No fake agents, ever.** If the relay is down the garden says so instead of pretending.
+
+## Install
+
+**Just the wallpaper (decor, dog, ball, native audio) — no Node needed:**
+
+1. Download [`agent-transit-wallpaper.zip`](https://github.com/DrMoussavie/agentic-wallpaper/releases/latest/download/agent-transit-wallpaper.zip) and unzip it.
+2. Copy the folder to `…\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit\`.
+3. In Wallpaper Engine → **Installed**, pick **Agent Transit**. Set *Spectrum source* to *Native WE audio* if you skip the relay.
+
+**Live agents — works with Claude Code *and* Codex, both at once.**
+
+<details open>
+<summary><b>🤖 Let your agent install it</b> — paste this into Claude Code or Codex on your Windows PC</summary>
+
+```text
+Install Agent Transit from https://github.com/DrMoussavie/agentic-wallpaper on this Windows PC so it works with BOTH Claude Code and Codex.
+
+1. Check Node.js >= 20 is available (install it with winget if not).
+2. Clone the repo into a permanent folder, e.g. %USERPROFILE%\agent-transit, then run: npm install
+3. Run: npm run hooks:install  (it merges the hooks into ~/.claude/settings.json and the Codex config, keeps backups, changes nothing else).
+4. Run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1  so the relay starts with Windows, then start it now in the background with: npm start
+5. Verify http://127.0.0.1:49157/health answers.
+6. Run: npm run export  and copy dist/wallpaper to <Steam>\steamapps\common\wallpaper_engine\projects\myprojects\agent-transit (find my Steam library path first).
+7. Finish by listing what I must do by hand: approve the hooks in the Codex app (Settings → Hooks → From configuration → Approve), and select "Agent Transit" in Wallpaper Engine → Installed.
+
+Do not touch anything else in my Claude Code or Codex settings.
 ```
 
-- Studio : http://127.0.0.1:49157/
-- Atelier des 22 animations : http://127.0.0.1:49157/boards.html
-- Fond seul, événements réels : http://127.0.0.1:49157/wallpaper.html?mode=live
+</details>
 
-Le fond et le Studio affichent uniquement les événements réels. Le mode démo, ses boutons et ses paramètres Wallpaper Engine ont été supprimés. Les anciennes URL avec `mode=demo` ouvrent désormais le mode réel, sans faux agents.
+**Or by hand:**
 
-## La vie dans le fond
-
-- `public/life.js` calcule le jardin et le cycle maison → sortie par la porte → activité → retour → repos à l’intérieur. Les sorties sont espacées. Une nouvelle disposition change les destinations ; un redimensionnement conserve les identités et réajuste les chemins.
-- Le signal `Stop` marque une fin de réponse, pas forcément la fin définitive d’une conversation. Après son petit salut, le robot marche vers la maison et entre. Il reste associé à sa session. Un nouveau prompt le fait ressortir ; une nouvelle conversation reçoit sa propre identité. Un prompt reçu pendant le trajet de retour le fait repartir sans téléportation. Une fermeture de session termine également le trajet avant de masquer le personnage.
-- `public/free-renderer.js` utilise les quatre PNG référencés dans `public/props.js` et le modèle de robot inchangé. Les robots mesurent environ 33 pixels sur un écran au petit côté de 1080 pixels, contre 132 précédemment. Les étiquettes ont été supprimées ; la taille des bulles reste réglable.
-- Les agents disponibles se promènent doucement près de leur secteur, se saluent ou échangent un pixel décoratif. Un sous-agent rejoint le secteur du parent après sa sortie. Le chien optionnel parcourt le jardin, signale les attentes et erreurs et rapporte la balle abandonnée. Les sous-agents tournent autour de leur parent sous forme de mini-bots, tout en conservant leur activité.
-- Cliquer dans le jardin attire jusqu’à deux robots disponibles ; cliquer sur un robot disponible déclenche un salut. Le travail, les erreurs, les attentes et les trajets vers la maison gardent la priorité.
-- Les promenades et les rencontres se désactivent séparément. La pause du fond et celle de Wallpaper Engine suspendent le mouvement. Une connexion réelle perdue fige les promenades et affiche l’état inconnu.
-
-Les rencontres entre Codex et Claude sont des jeux décoratifs. Elles ne créent aucun événement, message ou sous-agent réel et ne modifient pas le statut des sessions. Seuls les paquets issus du suivi d’activité utilisent les conduits de données.
-
-Le réseau représente les événements reçus. Les petits transferts génériques sont limités à trois visibles ; les prompts et réponses ont leurs propres enveloppes animées, avec des trajets qui suivent le destinataire. Les conduits s’affichent pendant le transit. Un échange entre agents exige des identifiants connus et un résultat explicite. Le réglage réseau masque les lignes et les points génériques ; les enveloppes restent visibles.
-
-Galerie des props : http://127.0.0.1:49157/props.html. Les prompts exacts et les variantes rejetées sont documentés dans `docs/PROPS-PROMPTS.md`. `node scripts/props-manifest.mjs` vérifie la transparence et régénère les cadres d’affichage sans modifier les PNG.
-
-L’aperçu propose quatre proportions pour observer le comportement ; elles ne limitent pas les formats utilisables. Le fond seul remplit les dimensions de sa fenêtre.
-
-## Personnages et fichiers image
-
-Le modèle est figé dans `public/rig.js` : tête et corps communs à toutes les animations. Codex est blanc, cyan, avec une antenne. Claude est sombre, ambre, avec deux antennes. Les articulations et les accessoires sont animés dans `public/gestures.js`.
-
-Les fichiers livrés sont dans `public/assets` :
-
-- `model-01.png` : les deux personnages de référence.
-- `animations/codex/` et `animations/claude/` : 22 planches par famille, une PNG de huit étapes par action.
-- Dans ces mêmes dossiers, `*-sprites.png` : 24 images successives par action, fond transparent, cellules 96 × 80 ; fichier JSON voisin avec durée, ancrage et étapes.
-- `sprites/codex.png` et `sprites/claude.png` : atlas récapitulatifs à 16 images par action et leur JSON.
-- `index.json` : inventaire des fichiers.
-- `reading-reference-v2.png` : référence générée retenue pour la silhouette. Les PNG opérationnels sont rendus depuis le modèle commun pour éviter les dérives entre générations indépendantes.
-
-La planche de référence initiale `character-reference.png` reste conservée comme étape de travail, pas comme atlas de production. La génération de l’ordinateur qui changeait l’identité du robot a été rejetée.
-
-Dans l’atelier, **Planche** ouvre une action en grand avec lecture/pause, curseur temporel, étapes et téléchargements. Le petit chien mécanique est un compagnon décoratif facultatif ; il n’est pas compté comme agent. Les sous-agents observés possèdent leur propre identifiant et leur lien de parenté.
-
-## Brancher Codex et Claude Code
-
-```powershell
-npm run hooks:install
+```bash
+git clone https://github.com/DrMoussavie/agentic-wallpaper
+cd agentic-wallpaper
+npm install
+npm run hooks:install   # merges the hooks into Claude Code and Codex settings (backups kept)
+npm start               # relay on http://127.0.0.1:49157
 ```
 
-L’installation fusionne les entrées Agent Transit avec les configurations utilisateur, conserve les autres paramètres et sauvegarde les fichiers existants dans `.local/backups`. Pour retirer uniquement ces hooks : `npm run hooks:remove`.
+Then approve the hooks in the Codex app (*Settings → Hooks → From configuration → Approve*), send a message in any local session, and watch a robot leave the house.
 
-Dans **l’application Codex**, ouvrir **Paramètres → Hooks → Issus de la configuration**, examiner les commandes qui pointent vers `fond écran/bridge/hook.mjs codex` et cliquer sur **Approuver** pour chacune. Le bouton **Recharger les hooks** actualise la liste. Ce chemin et les libellés ont été vérifiés dans les fichiers de l’application Windows installée, version 26.903.9818.0. Les définitions non approuvées sont ignorées. Reprendre ou démarrer les sessions concernées après activation. L’alternative pour les utilisateurs du terminal est `codex` puis `/hooks`. Source : [confiance des hooks Codex](https://learn.chatgpt.com/docs/hooks).
+📖 **Full walkthrough with settings and troubleshooting: [docs/INSTALL-WALLPAPER-ENGINE.md](docs/INSTALL-WALLPAPER-ENGINE.md)**
 
-Dans **l’application Claude, onglet Code, sessions locales**, les hooks du fichier `~/.claude/settings.json` s’appliquent aussi : l’app et le CLI partagent cette configuration. Les versions actuelles rechargent normalement les modifications ; reprendre ou ouvrir une session pour vérifier la réception. Les sessions cloud ou SSH s’exécutent ailleurs et ne sont pas automatiquement reliées au relais Windows. Sources : [configuration partagée de Claude Code Desktop](https://code.claude.com/docs/en/desktop#shared-configuration) et [rechargement de la configuration](https://code.claude.com/docs/en/debug-your-config).
+## How it works
 
-Pour vérifier le branchement, laisser le relais lancé, ouvrir le Studio en mode réel (`http://127.0.0.1:49157/?mode=live`), puis envoyer un message dans une session locale de chaque application. Le compteur d’événements doit augmenter et un robot doit apparaître. `http://127.0.0.1:49157/health` indique séparément les compteurs Codex et Claude. La présence des hooks dans un fichier ne prouve pas encore leur exécution par l’application. Ces chemins concernent les clients Windows locaux ; un client dans WSL ou sur une autre machine utilise un autre environnement.
-
-Les hooks ne prennent aucune décision d’autorisation et renvoient `{}` même si le pont est indisponible. Ils ont une durée bornée. Les identifiants sont hachés ; les prompts, messages et commandes ne sont pas transmis au navigateur. Le nom du dossier de projet peut servir d’étiquette. Le pont écoute uniquement `127.0.0.1`. Aucun appel à une API de modèle ni clé API de modèle n’est nécessaire.
-
-Les événements observables et leurs limites sont détaillés dans `docs/AUDIT-DETECTION.md`. En particulier :
-
-- Début/reprise et retour d’un sous-agent : identifiant stable, sans doublon à la reprise. Les sous-agents Claude connus sont revérifiés toutes les 60 secondes : leurs marqueurs locaux de fin ou d’interruption peuvent corriger un hook de fin manqué. Les lectures sont bornées à 256 Ko par fichier, mises en cache, et une reprise plus récente est prioritaire. Un silence seul ne suffit pas.
-- Lecture, édition, recherche, tests : catégorie fiable avec un outil explicite, sinon reconnaissance prudente ou geste générique.
-- Une fin de réponse ne signifie pas que l’objectif complet est validé.
-- Une capsule vers un autre agent n’est expédiée que si un résultat d’envoi explicite est reconnu et le destinataire identifié.
-- Une notification de repos n’est pas une demande d’autorisation.
-- Les pensées internes, les messages non exposés par un outil et les échanges automatiques Codex ↔ Claude ne sont pas inventés.
-- Les actions rapides peuvent interrompre la séquence précédente : le mode réel donne priorité à l’état récent. L’atelier permet d’observer chaque cycle complet.
-
-## Wallpaper Engine
-
-```powershell
-npm run export
+```mermaid
+flowchart LR
+    CC[Claude Code<br/>hooks] -->|bridge/hook.mjs| R
+    CX[Codex<br/>hooks] -->|bridge/hook.mjs| R
+    R[(Local relay<br/>127.0.0.1:49157)] -->|SSE /stream| W[Wallpaper<br/>Wallpaper Engine]
+    R -->|SSE /audio/stream| W
+    A[WASAPI loopback<br/>48-band FFT] --> R
+    R -->|same stream| S[Studio<br/>browser]
 ```
 
-Le dossier prêt à importer est `dist/wallpaper`. Copier ce dossier dans `projects/myprojects/agent-transit` de Wallpaper Engine conserve le `project.json` contenant les propriétés. Puis sélectionner **Agent Transit** et l’écran voulu dans Wallpaper Engine. Le dossier contient uniquement le fond et ses ressources, sans hooks, données locales ou dépendances du relais.
+- **`bridge/hook.mjs`** is what the agents call. It posts a small JSON to the relay with a 500 ms timeout and always returns `{}` — it never blocks or decides anything.
+- **`bridge/server.mjs`** normalizes events, keeps the world state, reconciles missed sub-agent endings every 60 s, and streams snapshots to every connected client.
+- **`public/world.js`** is the shared state machine; **`public/life.js`** the garden, the house and the walking; **`public/free-renderer.js`** draws everything on a canvas at native resolution.
 
-Réglages disponibles : fond, personnages, conduits, chien, promenades, rencontres, bulles et leur taille, balle, spectre et sa largeur (20–100 %, 35 % par défaut), titre et artiste. Le spectre reste en bas à gauche, avec une marge basse de 80 pixels CSS pour dégager la barre des tâches (réglage 0–200 px). Le titre suit la même marge. Le canvas utilise la résolution native et la densité de pixels de l’écran : agrandir les personnages ou les bulles ne grossit plus un texte rasterisé en basse résolution. Le spectre garde un dégradé vertical vert → jaune → orange → rouge. Le mode démo et les petites étiquettes ont été retirés.
+### Privacy
 
-Par défaut, Wallpaper Engine et le navigateur utilisent exactement les mêmes 48 bandes du relais WASAPI, de 40 Hz à 20 kHz, avec les mêmes graduations. Les niveaux déjà calculés ne sont ni amplifiés ni reconvertis. Le relais partage un seul calcul FFT entre tous les clients. Une coupure de connexion masque le signal et indique une déconnexion, sans passer silencieusement à une autre source.
+- The relay binds to `127.0.0.1` only. Session ids are hashed.
+- Prompts, messages, file contents and commands are **never** sent to the wallpaper — only the *kind* of activity.
+- No model API is called, no API key is needed. Nothing leaves your machine.
+- What can and cannot be detected, honestly listed: [docs/AUDIT-DETECTION.md](docs/AUDIT-DETECTION.md).
 
-Le réglage **Source du spectre** propose aussi **Audio natif WE (décoratif, sans relais)** pour un usage autonome. Cette option utilise les valeurs natives brutes, sans la conversion logarithmique artificielle retirée. Elle affiche « Graves / Aigus » et ne prétend pas représenter les bandes Hz du relais. Ce mode est facultatif et désactivé par défaut. Source : [audio natif](https://docs.wallpaperengine.io/en/web/audio/visualizer.html).
+## Development
 
-Le titre et l’artiste apparaissent sur deux lignes discrètes au-dessus du spectre, tronquées à sa largeur. Activer l’intégration multimédia dans Wallpaper Engine et utiliser un lecteur qui renseigne les sessions multimédias Windows. Les informations se masquent lorsqu’elles sont absentes, à l’arrêt ou si l’intégration est désactivée ; la pause a une icône dédiée. Cette fonction native est absente du navigateur local. Source : [intégration multimédia](https://docs.wallpaperengine.io/en/web/audio/media.html).
-
-### Démarrage automatique local
-
-Le relais reste nécessaire pour les vrais agents et leurs sous-agents. Pour configurer une autre installation locale avec Node et les hooks déjà installés :
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/configure-startup.ps1
+```bash
+npm start            # relay + studio at http://127.0.0.1:49157/
+npm test             # node --test tests/*.test.mjs
+npm run export       # builds dist/wallpaper for Wallpaper Engine
+node scripts/site-build.mjs   # builds the GitHub Pages site into _site/
 ```
 
-Cela crée un seul raccourci dans le dossier Démarrage de l’utilisateur. Aucun droit administrateur, aucune modification permanente de la stratégie PowerShell, aucun démarrage supplémentaire de Wallpaper Engine. Le relais réutilise le processus existant et n’ouvre pas de navigateur. Journaux bornés par écrasement au démarrage dans `.local/autostart-*.log`. Pour retirer uniquement ce démarrage : même commande avec `-Remove`. Conserver le projet à son emplacement actuel ; refaire cette configuration après déplacement du dossier.
+| URL (relay running) | What |
+|---|---|
+| `/` | Studio: live activity, settings, four aspect-ratio previews |
+| `/boards.html` | Workshop of the 22 animations, with sheet inspector |
+| `/props.html` | Gallery of the generated props |
+| `/wallpaper.html` | The wallpaper alone, full window |
+| `/health` | Event counters per provider |
 
-Dans Wallpaper Engine : **Paramètres → Général → Démarrer avec Windows**. Cette option est déjà enregistrée et activée sur le PC de développement. Sélectionner Agent Transit une première fois sur l’écran voulu ; Wallpaper Engine restaure ensuite le fond choisi. [Démarrage officiel](https://help.wallpaperengine.io/en/functionality/automaticstartup.html).
+More docs (French): [style guide](docs/STYLE.md) · [interactions](docs/INTERACTIONS.md) · [image prompts](docs/IMAGE-PROMPTS.md) · [props prompts](docs/PROPS-PROMPTS.md) · [audio & reset](docs/RESET-ET-AUDIO.md).
 
-### Distribution Workshop
+## Roadmap
 
-Un abonné peut utiliser le décor, la balle, le chien et l’audio natif sans installer de compagnon. Les vrais agents nécessitent en plus le relais local et les hooks autorisés : le fond Web ne peut pas installer ces composants ou lancer un exécutable à la place de l’utilisateur. Aucune détection fictive ne remplace une connexion absente. Les fonds de type Application ont été retirés du Workshop public : ils ne constituent pas une solution de distribution du relais. [Annonce Wallpaper Engine](https://store.steampowered.com/news/posts/?appids=431960).
+Actively developed. Ideas and bug reports welcome in [Issues](https://github.com/DrMoussavie/agentic-wallpaper/issues).
 
-Ce projet n’est pas encore publié sur le Workshop. Une mise à jour demande de refaire l’export puis de recopier les fichiers dans le projet Wallpaper Engine. Les réglages de pause et de FPS sont pris en charge, avec un plafond de 60 FPS et 30 FPS par défaut.
+- [ ] One-click companion installer (relay + hooks) for people who do not want Node
+- [ ] Workshop publication of the decorative wallpaper
+- [ ] macOS / Linux relay for the browser and window modes
 
-## Licence
+## License
 
-Ce projet est publié sous [CC BY-NC 4.0](LICENSE) : usage et modification libres, attribution demandée, usage commercial interdit. Les noms Claude Code et Codex appartiennent à leurs éditeurs respectifs ; ce projet n'est affilié à aucun d'eux.
+[CC BY-NC 4.0](LICENSE) — use it, modify it, share it, credit it; no commercial use.
+
+Claude Code and Codex are trademarks of their respective owners. Agent Transit is an independent project and is not affiliated with Anthropic or OpenAI. The robots, the garden and every asset in this repository are original.
