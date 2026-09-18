@@ -379,7 +379,8 @@
           ctx.globalAlpha=1;
         }
         if(['outside','leaving','returning'].includes(actor.phase)){
-          const urgent=['wait','error','offline'].includes(a.action)||visual.action==='offline';
+          // A wait needs the user for as long as it lasts; an error only shouts for 20 seconds, then the dog keeps track of it.
+          const urgent=a.action==='wait'||visual.action==='offline'||a.action==='error'&&t-a.since<20;
           const incoming=!!life.pendingDelivery(a.id);
           const captionKey=urgent?(visual.action==='offline'?'offline':a.action):actor.phase==='returning'?'archive':incoming?'incoming':actor.phase==='leaving'?'arrive':visual.delivered?'delivered':visual.action;
           const cycle=Math.floor(life.time/12),stamp=captionKey+':'+cycle;

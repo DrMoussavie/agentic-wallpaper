@@ -110,7 +110,9 @@
       for(const agent of agents){let a=this.actors.get(agent.id);
         if(!a){const parent=this.actors.get(agent.parent),spot=this.point(parent?.homeSpot||null,28,60,agent.provider);
           a={id:agent.id,x:this.scene.door.x,y:this.scene.door.y,homeSpot:spot,target:null,route:[],phase:'queued',vx:0,vy:0,facing:1,born:this.time,action:agent.action,actionSince:agent.since,nextWander:this.time+8,meeting:null,walking:false,waveUntil:0,agent};this.actors.set(a.id,a);this.stats.spawned++;
-          if(this.wantsHome(a))a.phase='home';
+          const siblingsOut=agent.parent?[...this.actors.values()].filter(o=>o.agent.parent===agent.parent&&o.phase!=='home').length:0;
+          // A parent shows at most eight mini-bots in the garden; the rest of a large fleet rests in the house.
+          if(this.wantsHome(a)||siblingsOut>=8)a.phase='home';
           else if(parent&&parent.phase==='outside'&&parent.agent.action==='spawn'&&world.time-parent.agent.since<5)this.portal(a,parent,world);
           else this.queue(a);
         }

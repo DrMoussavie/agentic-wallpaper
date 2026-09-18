@@ -82,10 +82,11 @@
         if(a.next&&age>=(ACTIONS[a.action]?.duration||4)){
           const next=a.next;if(next==='retired'){a.retired=true;a.action='idle';a.next=null;}else this.setAction(a,next);
         }
-        if(!a.retired&&['idle','sleep'].includes(a.action)){
-          if(this.time-a.last>this.archiveDelay)this.setAction(a,'archive','retired');
-          else if(this.time-a.last>this.idleDelay&&a.action!=='sleep')this.setAction(a,'sleep');
-        }
+        // Silence is not a state: after archiveDelay without any event an agent with no tool in flight goes to the locker,
+        // errors included; a tool still pending (or a stale wait) gets four times that before it is archived too.
+        const silent=this.time-a.last;
+        if(!a.retired&&a.action!=='archive'&&(silent>this.archiveDelay&&!a.pending.size||silent>this.archiveDelay*4))this.setAction(a,'archive','retired');
+        else if(!a.retired&&a.action==='idle'&&this.time-a.last>this.idleDelay)this.setAction(a,'sleep');
       }
       for(const p of this.packets){if(this.time>=p.start+p.duration&&['mail','prompt'].includes(p.kind)){const recipient=this.agents.get(p.to);if(recipient)recipient.reaction={action:'receive',since:this.time,kind:p.kind};}}
       this.packets=this.packets.filter(p=>this.time<p.start+p.duration);
