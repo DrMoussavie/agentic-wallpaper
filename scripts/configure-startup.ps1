@@ -18,9 +18,10 @@ if ($Remove) {
     exit 0
 }
 $nodeExe = (Get-Command node.exe -ErrorAction Stop).Source
-$scriptPath = Join-Path $PSScriptRoot 'start-relay.ps1'
-$arguments = '-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File "{0}" -NodePath "{1}"' -f $scriptPath, $nodeExe
-$action = New-ScheduledTaskAction -Execute (Join-Path $PSHOME 'powershell.exe') -Argument $arguments -WorkingDirectory (Split-Path -Parent $PSScriptRoot)
+# wscript launches PowerShell fully hidden: a scheduled powershell.exe would flash a terminal window every run.
+$launcher = Join-Path $PSScriptRoot 'start-relay-hidden.vbs'
+$arguments = '"{0}" "{1}"' -f $launcher, $nodeExe
+$action = New-ScheduledTaskAction -Execute (Join-Path $env:SystemRoot 'System32\wscript.exe') -Argument $arguments -WorkingDirectory (Split-Path -Parent $PSScriptRoot)
 $logon = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
 $logon.Delay = 'PT20S'
 $repeat = New-ScheduledTaskTrigger -Once -At (Get-Date).Date -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration (New-TimeSpan -Days 3650)
